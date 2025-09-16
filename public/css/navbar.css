@@ -1,0 +1,51 @@
+/* Reset and base styles */
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #fff;
+}
+
+/* Navbar styles */
+.custom-navbar {
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 600;
+}
+
+.navbar-brand {
+  font-size: 24px;
+}
+
+.main-menu .nav-link {
+  font-size: 20px;
+  color: #141517;
+  padding: 41px 21px;
+  text-transform: capitalize;
+  transition: all 0.3s ease-out;
+}
+
+.main-menu .nav-link.active {
+  color: red;
+}
+
+.header-icons .nav-link {
+  font-size: 16px;
+  color: #000;
+  padding: 31px 19px;
+  transition: all 0.3s ease-out;
+}
+
+.navbar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-toggler {
+  border: none;
+}
