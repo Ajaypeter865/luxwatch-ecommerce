@@ -2,57 +2,69 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/user/navbar') %>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sign Up | Time Zone</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Watch shop | Login</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <!-- new bootstrap code -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/css/signup.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/signup.css">
+
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
 </head>
 
-<body>
-    <div class="container-fluid signup-container">
-        <div class="row">
-            <!-- Left Side -->
-            <div class="col-md-6 left-panel d-flex flex-column justify-content-center align-items-center text-white">
-                <h2>New to our Shop?</h2>
-                <p>There are advances being made in science and technology everyday, and a good example of this is
-                    the...</p>
-                <a href="/login" class="btn btn-outline-light mt-3">LOG IN</a>
-            </div>
 
-            <!-- Right Side -->
-            <div class="col-md-6 right-panel d-flex flex-column justify-content-center align-items-center">
-                <h2 class="mb-4 text-primary">Create an Account</h2>
-                <form action="/signup" method="POST" class="w-75">
-                    <div class="mb-3">
-                        <input type="text" name="username" class="form-control" placeholder="Username" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" name="confirmPassword" class="form-control"
-                            placeholder="Confirm Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">SIGN UP</button>
-                </form>
 
-                <div class="mt-3 w-75">
-                    <button class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-                        <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" class="me-2">
-                        Sign in with Google
-                    </button>
+<%- include('../partials/user/navbar') %>
+
+    <body>
+        <div class="container-fluid signup-container">
+            <div class="row">
+                <!-- Left Side -->
+                <div
+                    class="col-md-6 left-panel d-flex flex-column justify-content-center align-items-center text-white">
+                    <h2>New to our Shop?</h2>
+                    <p>There are advances being made in science and technology everyday, and a good example of this is
+                        the...</p>
+                    <a href="/login" class="btn btn-outline-light mt-3">LOG IN</a>
+                </div>
+
+                <!-- Right Side -->
+                <div class="col-md-6 right-panel d-flex flex-column justify-content-center align-items-center">
+                    <h2 class="mb-4 text-primary">Create an Account</h2>
+                    <form action="/signup" method="POST" class="w-75">
+                        <div class="mb-3">
+                            <input type="text" name="username" class="form-control" placeholder="Username" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="confirmPassword" class="form-control"
+                                placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">SIGN UP</button>
+                    </form>
+
+                    <div class="mt-3 w-75">
+                        <button class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                            <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" class="me-2">
+                            Sign in with Google
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 
 </html>

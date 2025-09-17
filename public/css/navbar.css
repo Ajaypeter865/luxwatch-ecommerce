@@ -1,51 +1,67 @@
-/* Reset and base styles */
-*,
-::after,
-::before {
-  box-sizing: border-box;
+/* --- HEADER & NAVBAR STYLES --- */
+.header-area .main-header {
+    padding: 0px 120px;
 }
 
-body {
-  margin: 0;
-  font-family: "Roboto", sans-serif;
-  background-color: #fff;
+.header-area .main-header .menu-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-/* Navbar styles */
-.custom-navbar {
-  font-family: "Josefin Sans", sans-serif;
-  font-weight: 600;
+.main-menu ul li {
+    display: inline-block;
+    position: relative;
 }
 
-.navbar-brand {
-  font-size: 24px;
+.main-menu ul li a {
+    font-size: 20px;
+    font-family: "Josefin Sans", sans-serif;
+    color: #141517;
+    font-weight: 600;
+    padding: 41px 21px;
+    display: block;
+    text-transform: capitalize;
+    transition: all .3s ease-out 0s;
 }
 
-.main-menu .nav-link {
-  font-size: 20px;
-  color: #141517;
-  padding: 41px 21px;
-  text-transform: capitalize;
-  transition: all 0.3s ease-out;
+.main-menu ul li:hover>a {
+    color: #ff2020;
 }
 
-.main-menu .nav-link.active {
-  color: red;
+.header-right ul {
+    display: flex !important;
+    justify-content: space-between;
 }
 
-.header-icons .nav-link {
-  font-size: 16px;
-  color: #000;
-  padding: 31px 19px;
-  transition: all 0.3s ease-out;
+.header-right span {
+    color: #000000;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 31px 19px;
 }
 
-.navbar-nav {
+.header-right span:hover {
+    color: #ff2020;
+}
+
+.header-sticky.sticky-bar {
+    background: #fff;
+    box-shadow: 0 10px 15px rgba(25, 25, 25, 0.1);
+}
+
+.sticky-bar {
+    left: 0;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+/* NEW */
+ul {
   list-style: none;
+  padding-left: 0;
   margin: 0;
-  padding: 0;
-}
-
-.navbar-toggler {
-  border: none;
 }
