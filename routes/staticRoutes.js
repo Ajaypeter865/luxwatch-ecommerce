@@ -6,7 +6,11 @@ router.get('/signup', async (req, res) => {
     res.render('user/signup')
 })
 
-router.get('/login', async (req, res) => {
-    res.render('user/login', { success: null, error: null })
+// router.get('/login', async (req, res) => {
+//   return  res.redirect('user/login')
+// })
+
+router.get('/', async (req, res) => {
+    res.send('Hello from home')
 })
 module.exports = router

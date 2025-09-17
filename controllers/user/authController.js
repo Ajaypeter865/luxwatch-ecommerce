@@ -1,6 +1,8 @@
 const userModel = require('../../models/user')
 const bcrypt = require('bcrypt')
-
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
+const cookies = require('cookie-parser')
 
 const signupUser = async (req, res) => {
    const { username, email, password, confirmPassword } = req.body
@@ -16,6 +18,7 @@ const signupUser = async (req, res) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10)
+
       await userModel.create({
          name: username,
          email,
@@ -35,11 +38,41 @@ const loginUser = async (req, res) => {
 
    const { email, password } = req.body
 
-   const signupUserUser = userModel.find({ email })
-   if (!signupUserUser) return res.render('user/login', { success: null, error: null })
-      
+   try {
 
+      const User = await userModel.findOne({ email })
+      if (!User) return res.render('user/login', { success: null, error: 'User already exits' })
+
+      const isMatch = await bcrypt.compare(password, User.password)
+      console.log('IsMatch =', isMatch);
+
+      if (!isMatch) return res.render('user/login', { success: null, error: 'Password is incorrect' })
+
+
+      const token = jwt.sign({
+         id: signupUser.id
+      }, process.env.secretKey,
+         { expiresIn: '7d' })
+
+      res.cookie('userToken', token, {
+         httponly: true,
+         secure: process.env.NODE_ENV = 'production',
+         sameSite: 'strict',
+         maxage: 7 * 24 * 60 * 60 * 10000
+      })
+
+      return res.redirect('/')
+   } catch (error) {
+      console.log('Error from loginuser', error.message, error.stack);
+      return res.render('user/login', { success: null, error: 'Something went wrong' })
+   }
 
 }
 
-module.exports = { signupUser }
+const getLoginUser = async (req, res) => {
+   res.render('user/login', {
+      success: null, error: null
+   })
+}
+
+module.exports = { signupUser, loginUser, getLoginUser }
