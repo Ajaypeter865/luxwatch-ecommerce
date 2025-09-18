@@ -2,7 +2,6 @@ const userModel = require('../../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const cookies = require('cookie-parser')
 
 const signupUser = async (req, res) => {
    const { username, email, password, confirmPassword } = req.body
@@ -69,10 +68,22 @@ const loginUser = async (req, res) => {
 
 }
 
+
+// GET CONTROLLERS
+
 const getLoginUser = async (req, res) => {
-   res.render('user/login', {
+   return res.render('user/login', {
       success: null, error: null
    })
 }
 
-module.exports = { signupUser, loginUser, getLoginUser }
+const getSignupUser = async (req, res) => {
+   return res.render('user/signup', { success: null, error: null })
+}
+
+module.exports = {
+   signupUser,
+   loginUser,
+   getLoginUser,
+   getSignupUser,
+}
