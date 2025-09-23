@@ -43,7 +43,6 @@ const loginUser = async (req, res) => {
       if (!User) return res.render('user/login', { success: null, error: 'User not exits' })
 
       const isMatch = await bcrypt.compare(password, User.password)
-      console.log('IsMatch =', isMatch);
 
       if (!isMatch) return res.render('user/login', { success: null, error: 'Password is incorrect' })
 
@@ -81,9 +80,15 @@ const getSignupUser = async (req, res) => {
    return res.render('user/signup', { success: null, error: null })
 }
 
+const getHomePage = async (req, res) => {
+   return res.render('user/index', { products : null, success: null, error: null ,})
+
+}
+
 module.exports = {
    signupUser,
    loginUser,
    getLoginUser,
    getSignupUser,
+   getHomePage,
 }
