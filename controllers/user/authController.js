@@ -81,7 +81,7 @@ const getSignupUser = async (req, res) => {
 }
 
 const getHomePage = async (req, res) => {
-   return res.render('user/index', { products : null, success: null, error: null ,})
+   return res.render('user/index', { products: null, success: null, error: null, })
 
 }
 
