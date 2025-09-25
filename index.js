@@ -9,6 +9,7 @@ const flash = require('connect-flash')
 
 
 
+
 // IMPORT MODULES
 const { connectMongoDB } = require('./connect');
 const staticRoutes = require('./routes/staticRoutes')
