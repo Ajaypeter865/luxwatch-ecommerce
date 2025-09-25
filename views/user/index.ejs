@@ -29,42 +29,9 @@
 <body>
     <%- include('../partials/user/navbar') %>
 
+<%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
         <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-        <script>
-            // Wait for the DOM to be fully loaded before running the script
-            document.addEventListener('DOMContentLoaded', () => {
-                const body = document.querySelector('body');
-                const successMessage = body.dataset.success;
-                const errorMessage = body.dataset.error;
-
-                if (successMessage) {
-                    Toastify({
-                        text: successMessage,
-                        duration: 3000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        style: {
-                            background: "linear-gradient(to right, #00b09b, #96c93d)",
-                        }
-                    }).showToast();
-                }
-
-                if (errorMessage) {
-                    Toastify({
-                        text: errorMessage,
-                        duration: 3000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        style: {
-                            background: "linear-gradient(to right, #e74c3c, #c0392b)",
-                        }
-                    }).showToast();
-                }
-            });
-        </script>
 
 
         <main>
@@ -75,12 +42,16 @@
                             <div class="row justify-content-between align-items-center">
                                 <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                     <div class="hero__caption">
-                                        <h1 data-animation="fadeInLeft" data-delay=".4s" data-duration="2000ms">Select
+                                        <h1 data-animation="fadeInLeft" data-delay=".4s" data-duration="2000ms">
+                                            Select
                                             Your
                                             New Perfect Style</h1>
-                                        <p data-animation="fadeInLeft" data-delay=".7s" data-duration="2000ms">Ut enim
+                                        <p data-animation="fadeInLeft" data-delay=".7s" data-duration="2000ms">
+                                            Ut enim
                                             ad
-                                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                                            minim veniam, quis nostrud exercitation ullamco laboris nisi
+                                            ut
+                                            aliquip ex
                                             ea
                                             commodo consequat is aute irure.</p>
                                         <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s"
@@ -102,12 +73,16 @@
                             <div class="row justify-content-between align-items-center">
                                 <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                     <div class="hero__caption">
-                                        <h1 data-animation="fadeInLeft" data-delay=".4s" data-duration="2000ms">Select
+                                        <h1 data-animation="fadeInLeft" data-delay=".4s" data-duration="2000ms">
+                                            Select
                                             Your
                                             New Perfect Style</h1>
-                                        <p data-animation="fadeInLeft" data-delay=".7s" data-duration="2000ms">Ut enim
+                                        <p data-animation="fadeInLeft" data-delay=".7s" data-duration="2000ms">
+                                            Ut enim
                                             ad
-                                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                                            minim veniam, quis nostrud exercitation ullamco laboris nisi
+                                            ut
+                                            aliquip ex
                                             ea
                                             commodo consequat is aute irure.</p>
                                         <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s"
@@ -132,7 +107,9 @@
                         <div class="col-xl-7 col-lg-8 col-md-10">
                             <div class="section-tittle mb-70 text-center">
                                 <h2>Popular Items</h2>
-                                <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                                <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                                    labore et
+                                    dolore
                                     magna
                                     aliqua. Quis ipsum suspendisse ultrices gravida.</p>
                             </div>
@@ -180,8 +157,12 @@
                         <div class="col-lg-5 col-md-6">
                             <div class="watch-details mb-40">
                                 <h2>Watch of Choice</h2>
-                                <p>Enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse.
+                                <p>Enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                                    ut
+                                    aliquip ex ea
+                                    commodo consequat. Duis aute irure dolor in reprehenderit in
+                                    voluptate velit
+                                    esse.
                                 </p>
                                 <a href="/shop" class="btn">Show Watches</a>
                             </div>
@@ -201,8 +182,12 @@
                         <div class="col-lg-5 col-md-6">
                             <div class="watch-details mb-40">
                                 <h2>Watch of Choice</h2>
-                                <p>Enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse.
+                                <p>Enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                                    ut
+                                    aliquip ex ea
+                                    commodo consequat. Duis aute irure dolor in reprehenderit in
+                                    voluptate velit
+                                    esse.
                                 </p>
                                 <a href="/shop" class="btn">Show Watches</a>
                             </div>
