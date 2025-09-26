@@ -22,11 +22,13 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: Boolean,
-        enum : ["admin", 'user'],
-        default : 'user'
+        enum: ["admin", 'user'],
+        default: 'user'
     },
-    isVerified: {
-        type: Boolean,
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
 
     },
 },

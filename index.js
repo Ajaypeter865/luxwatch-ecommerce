@@ -14,6 +14,8 @@ const flash = require('connect-flash')
 const { connectMongoDB } = require('./connect');
 const staticRoutes = require('./routes/staticRoutes')
 const authRoutes = require('./routes/authRoutes')
+const passportSetup = require('./config/passport');
+const passport = require('passport');
 
 
 // MIDDLEWARES
@@ -26,6 +28,8 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
 }))
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash())
 
 
