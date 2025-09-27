@@ -4,7 +4,7 @@ const { body, validationResult } = require('express-validator')
 const signUpValidator = [
     body('email').isEmail(),
     body('password').isLength({ min: 5 }),
-    body('name').isLength({ min: 3 }),
+    body('username').isLength({ min: 3 }),
 
     async (req, res, next) => {
         const error = validationResult(req)

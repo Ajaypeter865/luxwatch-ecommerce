@@ -13,10 +13,11 @@ const signupUser = async (req, res) => {
    try {
       const existingUser = await userModel.findOne({ email })
       if (existingUser) {
-         return res.render('user/signup')
+         return res.render('user/signup',{success:null, error:'User already exists'})
       }
 
       const hashedPassword = await bcrypt.hash(password, 10)
+      
 
       await userModel.create({
          name: username,
@@ -28,7 +29,7 @@ const signupUser = async (req, res) => {
       return res.render('user/login', { success: null, error: null })
    } catch (error) {
       console.error('Error from signupUser', error.message, error.stack);
-      return res.render('user/signup')
+      return res.render('user/signup', {success:null, error:null})
 
    }
 }
@@ -37,12 +38,16 @@ const loginUser = async (req, res) => {
 
    const { email, password } = req.body
 
+
    try {
 
       const User = await userModel.findOne({ email })
       if (!User) return res.render('user/login', { success: null, error: 'User not exits' })
 
+      
       const isMatch = await bcrypt.compare(password, User.password)
+
+
 
       if (!isMatch) return res.render('user/login', { success: null, error: 'Password is incorrect' })
 

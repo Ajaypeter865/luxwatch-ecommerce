@@ -17,11 +17,12 @@ const userSchema = new mongoose.Schema({
 
     },
     password: {
-        required: true,
+        required: function() {return !this.googleId},
         type: String,
+
     },
     role: {
-        type: Boolean,
+        type: String,
         enum: ["admin", 'user'],
         default: 'user'
     },
