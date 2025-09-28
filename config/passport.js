@@ -44,7 +44,6 @@ passport.use('google', new GoogleStratergy({
             }
 
             
-            console.log('Going to newuser');
             const newUser = await userModel.create({
                 name: profile.displayName || profile.givenName,
                 email: mail,
@@ -52,9 +51,8 @@ passport.use('google', new GoogleStratergy({
 
             })
             await newUser.save()
-        
-            console.log('User created', newUser);
-            
+               console.log('New user created');
+               
             return done(null, newUser)
 
         } catch (error) {
