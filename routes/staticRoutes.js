@@ -1,14 +1,16 @@
+// IMPORT DEPENDENCY
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 
-
+// IMPORT MODULES
 const { proctedAuth } = require('../middlewares/auth')
-const { getLoginUser, getSignupUser, getHomePage } = require('../controllers/user/authController')
+const { getLoginUser, getSignupUser, getHomePage, profilePage } = require('../controllers/user/authController')
 
-
+// ROUTES
 router.get('/signup', getSignupUser)
 router.get('/login', getLoginUser)
+router.get('/profile', profilePage)
 
 router.get('/', proctedAuth, getHomePage)
 

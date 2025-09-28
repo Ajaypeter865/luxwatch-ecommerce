@@ -90,10 +90,18 @@ const getHomePage = async (req, res) => {
 
 }
 
+const profilePage = async (req,res) => {
+   const user = await userModel.findOne({email }) 
+   console.log(user);
+   
+   return res.render('user/profile', {orders: null, user: user,})
+}
+
 module.exports = {
    signupUser,
    loginUser,
    getLoginUser,
    getSignupUser,
    getHomePage,
+   profilePage,
 }

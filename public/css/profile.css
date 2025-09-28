@@ -1,0 +1,96 @@
+/* =================
+   Profile Page
+=================== */
+
+.profile-page {
+    background-color: #f8f9fa; /* A light background for the whole page */
+}
+
+/* Sidebar Card Styling */
+.profile-sidebar-card {
+    border: none;
+    border-radius: 12px;
+}
+
+/* Avatar Circle */
+.profile-avatar .avatar-circle {
+    width: 90px;
+    height: 90px;
+    background-color: #ff2020; /* Your theme's primary red color */
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.profile-avatar .user-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Edit Profile Button */
+.profile-avatar .edit-btn {
+    padding: 18px 15px; /* --- UPDATED PADDING --- */
+    background-color: #ff2020;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- UNIFIED HOVER EFFECT FOR EDIT BUTTON AND NAV LINKS --- */
+.profile-avatar .edit-btn:hover,
+.profile-nav .nav-link:hover {
+    background-color: #000; /* Black on hover */
+    color: #fff;
+}
+
+/* Sidebar Navigation Menu */
+.profile-nav .nav-link {
+    color: #343a40; /* Dark gray text */
+    padding: 12px 15px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: left; /* --- ENSURES LEFT ALIGNMENT --- */
+}
+
+/* Active Navigation Link */
+.profile-nav .nav-link.active {
+    background-color: #ff2020; /* Red for active link */
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Logout Link Specific Styling */
+.profile-nav .logout-link {
+    color: #dc3545; /* Bootstrap's danger red color */
+}
+
+/* Main Content Card (Orders Section) */
+.main-content-card {
+    border: none;
+    border-radius: 12px;
+}
+
+.main-content-card .card-title {
+    font-weight: 700;
+    color: #333;
+}
+
+/* Individual Order Item */
+.order-item {
+    transition: box-shadow 0.3s ease;
+}
+
+.order-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
