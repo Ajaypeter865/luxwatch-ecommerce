@@ -13,11 +13,11 @@ const signupUser = async (req, res) => {
    try {
       const existingUser = await userModel.findOne({ email })
       if (existingUser) {
-         return res.render('user/signup',{success:null, error:'User already exists'})
+         return res.render('user/signup', { success: null, error: 'User already exists' })
       }
 
       const hashedPassword = await bcrypt.hash(password, 10)
-      
+
 
       await userModel.create({
          name: username,
@@ -29,7 +29,7 @@ const signupUser = async (req, res) => {
       return res.render('user/login', { success: null, error: null })
    } catch (error) {
       console.error('Error from signupUser', error.message, error.stack);
-      return res.render('user/signup', {success:null, error:null})
+      return res.render('user/signup', { success: null, error: null })
 
    }
 }
@@ -44,7 +44,7 @@ const loginUser = async (req, res) => {
       const User = await userModel.findOne({ email })
       if (!User) return res.render('user/login', { success: null, error: 'User not exists' })
 
-      
+
       const isMatch = await bcrypt.compare(password, User.password)
 
 
@@ -53,7 +53,12 @@ const loginUser = async (req, res) => {
 
 
       const token = jwt.sign({
-         id: signupUser.id
+         id: User._id,
+         name: User.name,
+         email: User.email,
+         googleId: User.googleId,
+         phone: User.phone
+
       }, process.env.secretKey,
          { expiresIn: '7d' })
 
@@ -89,12 +94,19 @@ const getHomePage = async (req, res) => {
    return res.render('user/index', { products: null, success: null, error: null })
 
 }
-
-const profilePage = async (req,res) => {
-   const user = await userModel.findOne({email }) 
-   console.log(user);
-   
-   return res.render('user/profile', {orders: null, user: user,})
+//                                        DEBUGGING REQ.USER 
+const profilePage = async (req, res) => {
+   try {
+      if (!req.auth || req.user) {
+         return res.render('user/index', { success: null, error: null })
+      } else {
+         return res.render('user/profile', { orders: null, user: req.auth || req.user })
+      }
+   } catch (error) {
+      console.log('Error from profilePage = ', error.stack, error.message);
+      return res.render('user/index',{success: null, error:null})
+      
+   }
 }
 
 module.exports = {

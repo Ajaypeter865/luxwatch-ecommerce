@@ -31,4 +31,5 @@ const proctedAuth = async (req, res, next) => {
     }
 }
 
+
 module.exports = { proctedAuth }

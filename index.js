@@ -27,7 +27,16 @@ app.use(session({
     secret: process.env.sessionSecret,
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false }
 }))
+
+                                                                     // DEBUGING REQ.USER                                               
+
+// app.use(async (req, res, next) => {
+//     console.log('Session = ', req.session);
+//     next()
+// })
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash())
