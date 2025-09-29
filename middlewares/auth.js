@@ -8,27 +8,41 @@ const getToken = async (req) => {
 const proctedAuth = async (req, res, next) => {
 
     const token = await getToken(req)
+    console.log('Token', token);
+
 
     if (req.user && req.user.googleId) {
-        const googleUser = await userModel.findOne({ googleId: req.user.googleId })
+        var googleUser = await userModel.findOne({ googleId: req.user.googleId })
+        console.log('Google user', googleUser);
+
 
         if (googleUser) {
             return next()
         }
     }
 
-    if (!token) return res.redirect('/login')
-    try {
 
+    // const googleUser1 = req.user && req.user.googleId
+    // const googleUser = await userModel.findOne({googleId: req.user.googleId})
+    // console.log('Googleuser ', googleUser);
+
+
+    console.log('Hiting token ');
+    if (token || googleUser) {
         const payload = await jwt.verify(token, process.env.secretKey)
         req.auth = payload
-        return next()
+        console.log('Going to next ');
 
-    } catch (error) {
-        console.log('Error from proctedAuth = ', error.message, error.stack);
+        return next()
+    } else {
+        console.error('Error from proctedAuth =');
         res.redirect('/login?error:Hey')
 
+
     }
+
+
+   
 }
 
 

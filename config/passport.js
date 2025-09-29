@@ -14,12 +14,12 @@ passport.serializeUser((user, done) => {
     done(null, user.id)
 })
 
-const deserializeUser = passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id, done) => {
     try {
         const user = await userModel.findById(id)
        return done(null, user)
     } catch (error) {
-        done(error, null)
+        return done(error, null)
     }
 })
 
@@ -62,5 +62,3 @@ passport.use('google', new GoogleStratergy({
         }
     }
 ))
-
-module.exports = deserializeUser

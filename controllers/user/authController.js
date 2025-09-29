@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
+// const deserializeUser = require('../../config/passport')   //REQ.USER CHECKING
+
 const signupUser = async (req, res) => {
    const { username, email, password, confirmPassword } = req.body
    console.log('Req.body = ', req.body);
@@ -94,18 +96,27 @@ const getHomePage = async (req, res) => {
    return res.render('user/index', { products: null, success: null, error: null })
 
 }
-//                                        DEBUGGING REQ.USER 
+
+
+//                                            DEBUGGING REQ.USER 
 const profilePage = async (req, res) => {
    try {
-      if (!req.auth || req.user) {
-         return res.render('user/index', { success: null, error: null })
-      } else {
+      // console.log(req.auth);
+      
+      console.log(`reqest from profile ${req.user} = user .!!,${req.auth} = auth`);
+      if (req.user || req.auth ) {
+         // return res.render('user/profile', { success: null, error: 'error' , products: null})
          return res.render('user/profile', { orders: null, user: req.auth || req.user })
+
+
+      } else {
+         return res.render('user/profile', { success: null, error: 'error' , products: null})
+         // return res.render('user/index', { orders: null, user:  req.user })
       }
    } catch (error) {
       console.log('Error from profilePage = ', error.stack, error.message);
-      return res.render('user/index',{success: null, error:null})
-      
+      return res.render('user/index', { success: null, error: null })
+
    }
 }
 

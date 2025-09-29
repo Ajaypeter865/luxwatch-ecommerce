@@ -7,14 +7,16 @@ const passport = require('passport')
 const { proctedAuth } = require('../middlewares/auth')
 const { getLoginUser, getSignupUser, getHomePage, profilePage } = require('../controllers/user/authController')
 
-const {deserializeUser} = require('../config/passport')  // REQ.USER
+//  const {deserializeUser} = require('../config/passport')  // REQ.USER
 
 // ROUTES
 router.get('/signup', getSignupUser)
 router.get('/login', getLoginUser)
-router.get('/profile',deserializeUser, proctedAuth, profilePage)
 
-// DEBUGGING REQ.USER
+
+router.get('/profile', proctedAuth, profilePage)
+
+ //                                                              DEBUGGING REQ.USER
 
 // router.get('/profile', proctedAuth, async (req, res) => {
 //     console.log('Running profile');

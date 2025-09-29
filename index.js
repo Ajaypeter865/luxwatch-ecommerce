@@ -14,8 +14,8 @@ const flash = require('connect-flash')
 const { connectMongoDB } = require('./connect');
 const staticRoutes = require('./routes/staticRoutes')
 const authRoutes = require('./routes/authRoutes')
-const passportSetup = require('./config/passport');
 const passport = require('passport');
+const passportSetup = require('./config/passport');  // IMPORTANT 
 
 
 // MIDDLEWARES
@@ -30,12 +30,6 @@ app.use(session({
     cookie: { secure: false }
 }))
 
-                                                                     // DEBUGING REQ.USER                                               
-
-// app.use(async (req, res, next) => {
-//     console.log('Session = ', req.session);
-//     next()
-// })
 
 app.use(passport.initialize());
 app.use(passport.session());
