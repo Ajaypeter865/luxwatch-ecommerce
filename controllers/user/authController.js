@@ -101,7 +101,6 @@ const getHomePage = async (req, res) => {
 //                                            DEBUGGING REQ.USER 
 const profilePage = async (req, res) => {
    try {
-      // console.log(req.auth);
       
       console.log(`reqest from profile ${req.user} = user .!!,${req.auth} = auth`);
       if (req.user || req.auth ) {
