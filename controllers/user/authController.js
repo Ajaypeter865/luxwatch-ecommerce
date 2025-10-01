@@ -93,7 +93,12 @@ const getSignupUser = async (req, res) => {
 }
 
 const getHomePage = async (req, res) => {
-   return res.render('user/index', { products: null, success: null, error: null })
+   return res.render('user/index', {
+      products: null,
+      success: null,
+      error: null,
+      user:  req.user || req.auth || null
+   })
 
 }
 
@@ -101,15 +106,16 @@ const getHomePage = async (req, res) => {
 //                                            DEBUGGING REQ.USER 
 const profilePage = async (req, res) => {
    try {
-      
+
       console.log(`reqest from profile ${req.user} = user .!!,${req.auth} = auth`);
-      if (req.user || req.auth ) {
+      if (req.user || req.auth) {
          // return res.render('user/profile', { success: null, error: 'error' , products: null})
+
          return res.render('user/profile', { orders: null, user: req.auth || req.user || null })
 
 
       } else {
-         return res.render('user/profile', { success: null, error: 'error' , products: null})
+         return res.render('user/profile', { success: null, error: 'error', products: null })
          // return res.render('user/index', { orders: null, user:  req.user })
       }
    } catch (error) {

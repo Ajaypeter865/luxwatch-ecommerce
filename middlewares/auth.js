@@ -5,6 +5,12 @@ const getToken = async (req) => {
     return req.cookies?.userToken
 }
 
+const resLocals = async (req, res, next) => {
+    res.locals.user =  req.user || req.auth || null
+    console.log('req.user', req.user, 'auth ', req.auth);
+
+    return next()
+}
 const proctedAuth = async (req, res, next) => {
     // GOOGLE AUTHENTICATION
     try {
@@ -33,4 +39,4 @@ const proctedAuth = async (req, res, next) => {
 
 
 
-module.exports = { proctedAuth }
+module.exports = { proctedAuth, resLocals }

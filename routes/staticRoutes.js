@@ -4,10 +4,9 @@ const router = express.Router()
 const passport = require('passport')
 
 // IMPORT MODULES
-const { proctedAuth } = require('../middlewares/auth')
+const { proctedAuth, resLocals } = require('../middlewares/auth')
 const { getLoginUser, getSignupUser, getHomePage, profilePage } = require('../controllers/user/authController')
 
-//  const {deserializeUser} = require('../config/passport')  // REQ.USER
 
 // ROUTES
 router.get('/signup', getSignupUser)
@@ -28,7 +27,7 @@ router.get('/profile', proctedAuth, profilePage)
 //................................. 
 
 
-router.get('/', proctedAuth, getHomePage)
+router.get('/', proctedAuth, resLocals,getHomePage)
 
 
 // GOOGLE AUTHENTICATION
