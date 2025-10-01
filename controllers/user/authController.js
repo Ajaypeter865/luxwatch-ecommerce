@@ -84,7 +84,7 @@ const loginUser = async (req, res) => {
 
 const getLoginUser = async (req, res) => {
    return res.render('user/login', {
-      success: null, error: null
+      success: null, error: null,
    })
 }
 
@@ -105,7 +105,7 @@ const profilePage = async (req, res) => {
       console.log(`reqest from profile ${req.user} = user .!!,${req.auth} = auth`);
       if (req.user || req.auth ) {
          // return res.render('user/profile', { success: null, error: 'error' , products: null})
-         return res.render('user/profile', { orders: null, user: req.auth || req.user })
+         return res.render('user/profile', { orders: null, user: req.auth || req.user || null })
 
 
       } else {

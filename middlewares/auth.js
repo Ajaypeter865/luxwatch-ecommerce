@@ -14,10 +14,17 @@ const proctedAuth = async (req, res, next) => {
         }
 
         // JWT AUTHENTICATION
+        const token = await getToken(req)
+        if (token) {
+           const payload = jwt.verify(token, process.env.secretKey)
+            req.auth = payload
+            return next()
+        }
 
-        const token = jwt.verify()
-
-    }catch(error){
+        res.redirect('/login?error=Unauthenticated')
+    } catch (error) {
+        console.log('Error from proctedAuth = ', error.message, error.stack);
+        res.redirect('/login?error=Servererror')
 
     }
 

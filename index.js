@@ -30,10 +30,20 @@ app.use(session({
     cookie: { secure: false }
 }))
 
-
+// PASSPORT JS 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// FLASH JS
 app.use(flash())
+
+// RES.LOCALS
+app.use((req, res, next) => {
+
+    res.locals.user = req.user || req.session.user || null
+    console.log('loacls', req.user, 'session ', req.session.user);
+    next()
+})
 
 
 // SET EJS

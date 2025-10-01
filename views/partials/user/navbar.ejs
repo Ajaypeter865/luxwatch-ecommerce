@@ -44,15 +44,15 @@
                 <div class="menu-wrapper">
                     <div class="logo">
                         <!-- <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a> -->
-                            <a href="index.html"><img src="/img/logo/logo.png" alt=""></a>
+                        <a href="index.html"><img src="/img/logo/logo.png" alt=""></a>
 
                     </div>
                     <div class="main-menu d-none d-lg-block">
-                        <nav>                                                
-                            <ul id="navigation">  
+                        <nav>
+                            <ul id="navigation">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="shop.html">shop</a></li>
-                                <li><a href="about.html">about</a></li>                                   
+                                <li><a href="about.html">about</a></li>
                                 <li><a href="contact.html">Contact</a></li>
                             </ul>
                         </nav>
@@ -64,8 +64,18 @@
                                     <span class="flaticon-search"></span>
                                 </div>
                             </li>
-                            <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
-                            <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a> </li>
+
+                            <%# This logic now works for both Passport and JWT %>
+                                <% if (user) { %>
+                                    <%# If currentUser exists (logged in via Passport or JWT), link to profile %>
+                                        <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
+                                        <% } else { %>
+                                            <%# If currentUser does NOT exist (logged out), link to login %>
+                                                <li> <a href="/login"><span class="flaticon-user"></span></a></li>
+                                                <% } %>
+
+                                                    <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a>
+                                                    </li>
                         </ul>
                     </div>
                 </div>
@@ -75,7 +85,4 @@
             </div>
         </div>
     </div>
-    </header>
-
-
-
+</header>
