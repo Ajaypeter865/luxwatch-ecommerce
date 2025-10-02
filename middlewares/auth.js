@@ -7,10 +7,11 @@ const getToken = async (req) => {
 
 const resLocals = async (req, res, next) => {
     res.locals.user =  req.user || req.auth || null
-    console.log('req.user', req.user, 'auth ', req.auth);
+    console.log('Function from resLocals: req.user', req.user, 'auth ', req.auth);
 
     return next()
 }
+
 const proctedAuth = async (req, res, next) => {
     // GOOGLE AUTHENTICATION
     try {
@@ -23,7 +24,8 @@ const proctedAuth = async (req, res, next) => {
         const token = await getToken(req)
         if (token) {
            const payload = jwt.verify(token, process.env.secretKey)
-            req.auth = payload
+
+            req.auth = payload                
             return next()
         }
 

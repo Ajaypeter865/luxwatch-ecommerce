@@ -37,7 +37,7 @@ passport.use('google', new GoogleStratergy({
                 return done(null, false, { message: 'No email found' })
             }
             const existingUser = await userModel.findOne({ email: mail.toLowerCase() })
-            console.log('existing user', existingUser);
+            console.log('Function from passport.js : existing user', existingUser);
             
             if (existingUser) {
                 return done(null, false, { message: 'User already exists' })
@@ -51,12 +51,12 @@ passport.use('google', new GoogleStratergy({
 
             })
             await newUser.save()
-               console.log('New user created');
+               console.log('Function from passport.js : New user created');
                
             return done(null, newUser)
 
         } catch (error) {
-            console.log('error in passportJs = ', error.message, error.stack);
+            console.log('Error in passportJs = ', error.message, error.stack);
             return done(error, null)
 
         }

@@ -92,12 +92,19 @@ const getSignupUser = async (req, res) => {
    return res.render('user/signup', { success: null, error: null })
 }
 
+
 const getHomePage = async (req, res) => {
+   // GIVING ACCESS TO WHO LOGGED IN ONLY
+
+   const user = await userModel.findById(req.auth.id)
+   console.log('Func from getHome page :', user);
+   
+
    return res.render('user/index', {
       products: null,
       success: null,
       error: null,
-      user:  req.user || req.auth || null
+      user:  req.user || req.auth || null 
    })
 
 }
@@ -107,7 +114,7 @@ const getHomePage = async (req, res) => {
 const profilePage = async (req, res) => {
    try {
 
-      console.log(`reqest from profile ${req.user} = user .!!,${req.auth} = auth`);
+      console.log(`Fucntion from profilePage : ${req.user} = user .!!,${req.auth} = auth`);
       if (req.user || req.auth) {
          // return res.render('user/profile', { success: null, error: 'error' , products: null})
 
