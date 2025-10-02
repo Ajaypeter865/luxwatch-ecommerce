@@ -9,7 +9,7 @@ const { signUpValidator, loginValidator } = require('../middlewares/validation')
 
 
 router.post('/signup', signUpValidator, signupUser)
-router.post('/login', loginValidator, loginUser)
+router.post('/login',loginValidator,  loginUser)   
 
 
 module.exports = router

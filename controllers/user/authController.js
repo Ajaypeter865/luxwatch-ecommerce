@@ -3,10 +3,9 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-// const deserializeUser = require('../../config/passport')   //REQ.USER CHECKING
 
 const signupUser = async (req, res) => {
-   const { username, email, password, confirmPassword } = req.body
+   const { username, email, phone, password } = req.body
    console.log('Req.body = ', req.body);
    if (password !== confirmPassword) {
       return res.render('user/signup')
@@ -24,6 +23,7 @@ const signupUser = async (req, res) => {
       await userModel.create({
          name: username,
          email,
+         phone,
          password: hashedPassword,
          role: null,
 
@@ -38,12 +38,18 @@ const signupUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
 
-   const { email, password } = req.body
+   const { identifier, password } = req.body
 
 
    try {
+      const userEmail = await userModel.findOne({ email: req.body.identifier })
 
-      const User = await userModel.findOne({ email })
+      const userPhone = await userModel.findOne({ phone: req.body.identifier })
+
+      const User = userEmail || userPhone
+
+      console.log('Func from loginUser: User = ', User);
+
       if (!User) return res.render('user/login', { success: null, error: 'User not exists' })
 
 
@@ -72,6 +78,7 @@ const loginUser = async (req, res) => {
       })
 
       return res.redirect('/')
+
    } catch (error) {
       console.log('Error from loginuser', error.message, error.stack);
       return res.render('user/login', { success: null, error: 'Something went wrong' })
@@ -94,23 +101,23 @@ const getSignupUser = async (req, res) => {
 
 
 const getHomePage = async (req, res) => {
-   // GIVING ACCESS TO WHO LOGGED IN ONLY
 
-   const user = await userModel.findById(req.auth.id)
-   console.log('Func from getHome page :', user);
-   
+   try {
 
-   return res.render('user/index', {
-      products: null,
-      success: null,
-      error: null,
-      user:  req.user || req.auth || null 
-   })
+      return res.render('user/index', {
+         products: null,
+         success: null,
+         error: null,
+         user: res.locals
+      })
+   } catch (error) {
+      console.log(`Error from ${getHomePage}:`, error.stack, error.message);
+   }
 
 }
 
 
-//                                            DEBUGGING REQ.USER 
+
 const profilePage = async (req, res) => {
    try {
 

@@ -15,19 +15,10 @@ router.get('/login', getLoginUser)
 
 router.get('/profile', proctedAuth, profilePage)
 
- //                                                              DEBUGGING REQ.USER
-
-// router.get('/profile', proctedAuth, async (req, res) => {
-//     console.log('Running profile');
-//     console.log('req.auth', req.auth);
-
-//     res.render('user/profile', {user: req.auth, orders:null})
-
-// })
-//................................. 
 
 
-router.get('/', proctedAuth, resLocals,getHomePage)
+
+router.get('/', proctedAuth, resLocals,getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
 
 
 // GOOGLE AUTHENTICATION

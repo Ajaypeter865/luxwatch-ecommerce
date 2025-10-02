@@ -37,7 +37,7 @@ app.use(passport.session());
 // FLASH JS
 app.use(flash())
 
-// RES.LOCALS ---- REQ.AUTH GETS UNDEFINED 
+// RES.LOCALS 
 app.use(async (req, res, next) => {
     res.locals.user = null
     return next()
