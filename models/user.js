@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
 
     },
     password: {
-        required: function() {return !this.googleId},
+        required: function () { return !this.googleId },
         type: String,
 
     },
@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema({
         sparse: true,
 
     },
+    resetOtp: Number,
+    otpExpires: Date,
 },
     {
         timestamps: true,

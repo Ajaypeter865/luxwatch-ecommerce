@@ -5,15 +5,18 @@ const passport = require('passport')
 
 // IMPORT MODULES
 const { proctedAuth, resLocals } = require('../middlewares/auth')
-const { getLoginUser, getSignupUser, getHomePage, profilePage } = require('../controllers/user/authController')
+
+// IMPORT GET MODULES
+const {  profilePage } = require('../controllers/user/authController')
+const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp} = require('../controllers/user/getController')
 
 
 // USER ROUTES
 router.get('/signup', getSignupUser)
 router.get('/login', getLoginUser)
-router.get('/forgotPassword', (req, res) => {
-    res.render('user/forgotPassword', { message: null })
-})
+router.get('/forgotPassword', getforgotPassword)
+router.get('enterotp', getEnterOtp)
+
 
 
 // HOME ROUTES

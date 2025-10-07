@@ -1,0 +1,85 @@
+/* === ADDED: Full-screen background styles === */
+body {
+    background-image: url(../img/hero/about_hero.png); /* Path to your background image */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+/* === MODIFIED: Added semi-transparent background === */
+.otp-modal {
+  border-radius: 12px;
+  padding: 30px 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+}
+
+.otp-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.otp-subtext {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.otp-input-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.otp-box {
+  width: 40px;
+  height: 45px;
+  font-size: 1.2rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* === MODIFIED: Changed focus color to red === */
+.otp-box:focus {
+  border-color: #ff2020;
+  box-shadow: 0 0 5px rgba(255, 32, 32, 0.4);
+  outline: none;
+}
+
+/* === MODIFIED: Changed button color and hover effect to red theme === */
+.btn-verify {
+  background-color: #ff2020;
+  color: white;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-verify:hover {
+  background-color: #e01b1b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 32, 32, 0.3);
+}
+
+/* === MODIFIED: Changed link color to red === */
+.resend-link {
+  font-size: 0.9rem;
+  color: #ff2020;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+  color: #000;
+}

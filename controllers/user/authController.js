@@ -1,6 +1,7 @@
 const userModel = require('../../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 
@@ -84,37 +85,47 @@ const loginUser = async (req, res) => {
 
 }
 
-
-// GET CONTROLLERS
-
-const getLoginUser = async (req, res) => {
-   return res.render('user/login', {
-      success: null, error: null,
-   })
-}
-
-const getSignupUser = async (req, res) => {
-   return res.render('user/signup', { success: null, error: null })
-}
-
-
-const getHomePage = async (req, res) => {
-
+const forgotPassword = async (req, res) => {
+   const { email } = req.body
    try {
-      // NEED TO RENDER PRODUCTS HERE
+      const user = await userModel.findOne({ email })
+      if (!user) return res.render('user/forgotPassword', { message: 'User does not exits' })
 
-      return res.render('user/index', {
-         products: null,
-         success: null,
-         error: null,
-         user: res.locals
+      const otp = Math.floor(100000 + Math.random() * 90000)
+      console.log('OTP =', otp);
+      const otpExpires = new Date(Date.now() + 5 * 60 * 1000)
+
+      user.resetOtp = otp,
+         user.otpExpires = otpExpires
+      await user.save()
+
+
+      const transporter = nodemailer.createTransport({
+         host: process.env.EMAIL_HOST,
+         port: process.env.EMAIL_PORT,
+         secure: true,
+         auth: {
+            user: process.env.emailUser,
+            pass: process.env.emailPassword,
+         }
+
       })
+
+      await transporter.sendMail({
+         from: `"My app" <${process.env.emailUser}>`,
+         to: email,
+         subject: 'This otp of restpassword',
+         html: ` <p>Your otp is <b>${otp}</b>.it experies in 5mins </p>`,
+
+      })
+
+      return res.render('user/enterOtp', { message: 'Your otp send successfully', email })
+
    } catch (error) {
-      console.log(`Error from getHomePage:`, error.stack, error.message);
+      console.log('Error from forgotPassword', error.message, error.stack);
+      res.render('user/forgotPassword', { success: null, error: 'Something went wrong ' })
    }
-
 }
-
 
 
 const profilePage = async (req, res) => {
@@ -138,11 +149,12 @@ const profilePage = async (req, res) => {
    }
 }
 
+
+
+
 module.exports = {
    signupUser,
    loginUser,
-   getLoginUser,
-   getSignupUser,
-   getHomePage,
    profilePage,
+   forgotPassword,
 }
