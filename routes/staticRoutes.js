@@ -8,17 +8,17 @@ const { proctedAuth, resLocals } = require('../middlewares/auth')
 const { getLoginUser, getSignupUser, getHomePage, profilePage } = require('../controllers/user/authController')
 
 
-// ROUTES
+// USER ROUTES
 router.get('/signup', getSignupUser)
 router.get('/login', getLoginUser)
+router.get('/forgotPassword', (req, res) => {
+    res.render('user/forgotPassword', { message: null })
+})
 
 
+// HOME ROUTES
 router.get('/profile', proctedAuth, profilePage)
-
-
-
-
-router.get('/', proctedAuth, resLocals,getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
+router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
 
 
 // GOOGLE AUTHENTICATION

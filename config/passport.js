@@ -48,6 +48,7 @@ passport.use('google', new GoogleStratergy({
                 name: profile.displayName || profile.givenName,
                 email: mail,
                 googleId: profile.id,
+                phone:'Null',
 
             })
             await newUser.save()

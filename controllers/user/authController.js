@@ -5,16 +5,15 @@ require('dotenv').config()
 
 
 const signupUser = async (req, res) => {
-   const { username, email, phone, password } = req.body
-   console.log('Req.body = ', req.body);
+   const { username, email, phone, password, confirmPassword } = req.body
    if (password !== confirmPassword) {
-      return res.render('user/signup')
+      return res.render('user/signup', { success: null, error: 'Password does not match' })
    }
 
    try {
       const existingUser = await userModel.findOne({ email })
       if (existingUser) {
-         return res.render('user/signup', { success: null, error: 'User already exists' })
+         return res.render('user/signup', { error: 'User already exists', success: null })
       }
 
       const hashedPassword = await bcrypt.hash(password, 10)
@@ -38,7 +37,7 @@ const signupUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
 
-   const { identifier, password } = req.body
+   const { identifier, password } = req.body  //IDENTIFIER IS FOR EMAIL OR PASSWORD
 
 
    try {
@@ -48,7 +47,6 @@ const loginUser = async (req, res) => {
 
       const User = userEmail || userPhone
 
-      console.log('Func from loginUser: User = ', User);
 
       if (!User) return res.render('user/login', { success: null, error: 'User not exists' })
 
@@ -103,6 +101,7 @@ const getSignupUser = async (req, res) => {
 const getHomePage = async (req, res) => {
 
    try {
+      // NEED TO RENDER PRODUCTS HERE
 
       return res.render('user/index', {
          products: null,
@@ -111,7 +110,7 @@ const getHomePage = async (req, res) => {
          user: res.locals
       })
    } catch (error) {
-      console.log(`Error from ${getHomePage}:`, error.stack, error.message);
+      console.log(`Error from getHomePage:`, error.stack, error.message);
    }
 
 }

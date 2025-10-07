@@ -1,0 +1,72 @@
+/* === ADD THIS CODE TO THE TOP OF YOUR CSS FILE === */
+body {
+    background-image: url(../img/hero/about_hero.png); /* Make sure this path is correct! */
+    background-size: cover; /* Stretches the image to cover the entire screen */
+    background-position: center center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-attachment: fixed; /* Keeps the background fixed during scroll */
+    height: 100vh; /* Ensures the body takes up the full viewport height */
+    margin: 0; /* Removes default browser margin */
+    font-family: sans-serif; /* A fallback font is good practice */
+}
+
+/* Forgot Password Modal Styling */
+.forgot-modal {
+  border-radius: 12px;
+  padding: 30px 25px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+  border: none;
+  /* Optional: Add a semi-transparent background to the modal */
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input field styling */
+.forgot-input {
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.forgot-input:focus {
+  border-color: #ff2020;
+  box-shadow: 0 0 5px rgba(255, 32, 32, 0.4);
+  outline: none;
+}
+
+/* Reset Password button */
+.btn-reset {
+  background-color: #ff2020;   /* Main red theme */
+  color: white;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+  background-color: #e01b1b;   /* Darker red on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 4px 10px rgba(255, 32, 32, 0.3);
+}
+
+/* Back link */
+.back-link {
+  font-size: 0.9rem;
+  color: #ff2020;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.back-link:hover {
+  color: #000; /* Turns black on hover */
+  text-decoration: underline;
+}

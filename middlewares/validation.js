@@ -36,7 +36,8 @@ const loginValidator = [
 
     async (req, res, next) => {
         const error = validationResult(req)
-        console.log('Func from loginValidator :', error);
+        
+        // console.log('Func from loginValidator :', error);
         
         if (!error.isEmpty()) {
             return res.status(404).render('user/login', { success: null, error: 'Validation error' })

@@ -5,9 +5,9 @@
 <!-- Toastify Notifications -->
 <% if (success) { %>
 
-  <script>    
-  console.log('Hey');
-  
+  <script>
+    console.log('Func from toastify ejs , success');
+
     Toastify({
       text: "<%= success %>",
       duration: 3000,
@@ -20,6 +20,8 @@
   <% } %>
     <% if (error) { %>
       <script>
+        console.log('Func from toastify ejs , error');
+
         Toastify({
           text: "<%= error %>",
           duration: 3000,
@@ -31,4 +33,4 @@
       </script>
       <% } %>
 
-      <script>console.log('Toastify partial loaded');</script>
+        <script>console.log('Toastify partial loaded');</script>
