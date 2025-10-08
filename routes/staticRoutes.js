@@ -7,15 +7,16 @@ const passport = require('passport')
 const { proctedAuth, resLocals } = require('../middlewares/auth')
 
 // IMPORT GET MODULES
-const {  profilePage } = require('../controllers/user/authController')
-const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp} = require('../controllers/user/getController')
+const { profilePage } = require('../controllers/user/authController')
+const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword } = require('../controllers/user/getController')
 
 
 // USER ROUTES
 router.get('/signup', getSignupUser)
 router.get('/login', getLoginUser)
 router.get('/forgotPassword', getforgotPassword)
-router.get('enterotp', getEnterOtp)
+// router.get('/enterotp', getEnterOtp)
+// router.get('/restpassword', getRestPassword)
 
 
 

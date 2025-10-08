@@ -132,20 +132,39 @@ const verifyOtp = async (req, res) => {
    const { otp, email } = req.body
 
    try {
-      const user = await userModel.findOne({ email }) 
+      const user = await userModel.findOne({ email })
       const otpJoin = otp.join('')
-      
 
-      if (!user || Number(otpJoin) !== user.resetOtp || user.otpExpires <  Date.now()) {
-         return res.render('user/forgotPassword', { message: 'Invalid otp or email' })
+
+      if (!user || Number(otpJoin) !== user.resetOtp || user.otpExpires < Date.now()) {
+         return res.render('user/forgotPassword', { message: 'Invalid otp or email', email })
       }
 
-      return res.send('Hello from restpassword')
+      return res.render('user/restPassword', { message: null, userId: user.id, email })
 
    } catch (error) {
       console.log('Error from verifyOtp', error.message, error.stack);
       return res.render('user/forgotPassword', { message: 'Error from verifyotp' })
 
+   }
+}
+
+const restPassword = async (req, res) => {
+   const { id, email, password, confirmPassword } = req.body
+   try {
+      if (password !== confirmPassword) {
+         return res.render('user/restPassword', { message: 'Password doesnot match', email, userId: id })
+      }
+      const hashedPassword = await bcrypt.hash(password, 10)
+
+      const user = await userModel.findByIdAndUpdate(id, { password: hashedPassword }, { new: true })
+      console.log('Func from restPassword - user =', user.email);
+
+
+      res.render('user/login', { success: 'Password updated successfully', error: null })
+   } catch (error) {
+      console.log('Error from restPassword', error.message, error.stack);
+      res.render('user/restPasswod', { message: null, userId: id, email })
    }
 }
 
@@ -179,4 +198,5 @@ module.exports = {
    profilePage,
    forgotPassword,
    verifyOtp,
+   restPassword,
 }

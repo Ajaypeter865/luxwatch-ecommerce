@@ -36,7 +36,11 @@ const getHomePage = async (req, res) => {
 }
 
 const getEnterOtp = async (req, res) => {
-    res.render('user/enterOtp', { message: null, email })
+    return res.render('user/enterOtp', { message: null, email })
+}
+
+const getRestPassword = async (req, res) => {
+    return res.render('user/restPassword', { message: null, userId: null, email: null })
 }
 
 module.exports = {
@@ -44,6 +48,6 @@ module.exports = {
     getSignupUser,
     getforgotPassword,
     getHomePage,
-    getEnterOtp
-
+    getEnterOtp,
+    getRestPassword,
 }
