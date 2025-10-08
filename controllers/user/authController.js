@@ -100,6 +100,7 @@ const forgotPassword = async (req, res) => {
       await user.save()
 
 
+
       const transporter = nodemailer.createTransport({
          host: process.env.EMAIL_HOST,
          port: process.env.EMAIL_PORT,
@@ -127,6 +128,26 @@ const forgotPassword = async (req, res) => {
    }
 }
 
+const verifyOtp = async (req, res) => {
+   const { otp, email } = req.body
+
+   try {
+      const user = await userModel.findOne({ email }) 
+      const otpJoin = otp.join('')
+      
+
+      if (!user || Number(otpJoin) !== user.resetOtp || user.otpExpires <  Date.now()) {
+         return res.render('user/forgotPassword', { message: 'Invalid otp or email' })
+      }
+
+      return res.send('Hello from restpassword')
+
+   } catch (error) {
+      console.log('Error from verifyOtp', error.message, error.stack);
+      return res.render('user/forgotPassword', { message: 'Error from verifyotp' })
+
+   }
+}
 
 const profilePage = async (req, res) => {
    try {
@@ -157,4 +178,5 @@ module.exports = {
    loginUser,
    profilePage,
    forgotPassword,
+   verifyOtp,
 }
