@@ -137,14 +137,16 @@ const verifyOtp = async (req, res) => {
 
 
       if (!user || Number(otpJoin) !== user.resetOtp || user.otpExpires < Date.now()) {
-         return res.render('user/forgotPassword', { message: 'Invalid otp or email', email })
+
+         return res.render('user/forgotPassword', { error: 'Invalid otp or email', email })
       }
 
-      return res.render('user/restPassword', { message: null, userId: user.id, email })
+
+      return res.render('user/restPassword', { userId: user.id, email })
 
    } catch (error) {
       console.log('Error from verifyOtp', error.message, error.stack);
-      return res.render('user/forgotPassword', { message: 'Error from verifyotp' })
+      return res.render('user/forgotPassword', { email })
 
    }
 }
@@ -153,7 +155,8 @@ const restPassword = async (req, res) => {
    const { id, email, password, confirmPassword } = req.body
    try {
       if (password !== confirmPassword) {
-         return res.render('user/restPassword', { message: 'Password doesnot match', email, userId: id })
+
+         return res.render('user/restPassword', { error: 'Password is not matching ', email, userId: id })
       }
       const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -161,17 +164,18 @@ const restPassword = async (req, res) => {
       console.log('Func from restPassword - user =', user.email);
 
 
-      res.render('user/login', { success: 'Password updated successfully', error: null })
+
+      res.render('user/login', { success: 'Password changed successfully' })
    } catch (error) {
       console.log('Error from restPassword', error.message, error.stack);
-      res.render('user/restPasswod', { message: null, userId: id, email })
+      res.render('user/resetPasswod', { userId: id, email })
    }
 }
 
 const profilePage = async (req, res) => {
    try {
 
-      console.log(`Fucntion from profilePage : ${req.user} = user .!!,${req.auth} = auth`);
+      // console.log(`Fucntion from profilePage : ${req.user} = user .!!,${req.auth} = auth`);
       if (req.user || req.auth) {
          // return res.render('user/profile', { success: null, error: 'error' , products: null})
 
@@ -189,6 +193,11 @@ const profilePage = async (req, res) => {
    }
 }
 
+const editProfile = async (req, res) => {
+   
+   
+}
+
 
 
 
@@ -199,4 +208,5 @@ module.exports = {
    forgotPassword,
    verifyOtp,
    restPassword,
+   editProfile,
 }

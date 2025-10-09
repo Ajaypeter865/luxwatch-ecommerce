@@ -7,11 +7,11 @@
     <title>My Profile | Watch Shop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
-    <!-- Bootstrap & Theme CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <link rel="stylesheet" href="/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/css/flaticon.css">
     <link rel="stylesheet" href="/css/slicknav.css">
@@ -22,100 +22,153 @@
     <link rel="stylesheet" href="/css/slick.css">
     <link rel="stylesheet" href="/css/nice-select.css">
     <link rel="stylesheet" href="/css/style.css">
-
-    <!-- Your Updated Profile CSS -->
+    <link rel="stylesheet" href="/css/navbar.css"> <!-- THIS LINE IS NEED FOR THE UNDERLINE GOING -->
     <link rel="stylesheet" href="/css/profile.css">
 </head>
 
 <body>
-    <!-- Navbar -->
     <%- include('../partials/user/navbar') %>
+        <%- include('../partials/user/_toastify', { success: success, error: error }) %>
 
-    <main class="profile-page section-padding30">
-        <div class="container">
-            <div class="row">
-                <!-- Sidebar -->
-                <div class="col-lg-4 col-md-5 mb-4">
-                    <div class="card profile-sidebar-card shadow-sm">
-                        <div class="card-body">
-                            <!-- Avatar and User Info (Centered) -->
-                            <div class="profile-avatar text-center mb-4">
-                                <div class="avatar-circle mx-auto">
-                                    <span><%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %></span>
+            <main class="profile-page section-padding30">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5 mb-4">
+                            <div class="card profile-sidebar-card shadow-sm">
+                                <div class="card-body">
+                                    <div class="profile-avatar text-center mb-4">
+                                        <div class="avatar-circle mx-auto">
+                                            <span>
+                                                <%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %>
+                                            </span>
+                                        </div>
+                                        <h3 class="user-name mt-3 mb-1">
+                                            <%= user?.name || "User Name" %>
+                                        </h3>
+                                        <p class="text-muted mb-1">
+                                            <%= user?.email || "user@example.com" %>
+                                        </p>
+                                        <p class="text-muted mb-3">
+                                            <%= user?.phone || "+91 XXXXX XXXXX" %>
+                                        </p>
+
+                                        <button type="button" class="btn edit-btn w-100" data-bs-toggle="modal"
+                                            data-bs-target="#editProfileModal">
+                                            Edit Profile
+                                        </button>
+                                    </div>
+
+                                    <hr>
+
+                                    <nav class="nav nav-pills flex-column profile-nav">
+                                        <a href="/orders" class="nav-link active">My Orders</a>
+                                        <a href="/address" class="nav-link">Address</a>
+                                        <a href="/payment" class="nav-link">Payment Methods</a>
+                                        <a href="/logout" class="nav-link logout-link">Logout</a>
+                                    </nav>
                                 </div>
-                                <h3 class="user-name mt-3 mb-1"><%= user?.name || "User Name" %></h3>
-                                <p class="text-muted mb-1"><%= user?.email || "user@example.com" %></p>
-                                <p class="text-muted mb-3"><%= user?.phone || "+91 XXXXX XXXXX" %></p>
-                                <button class="btn edit-btn w-100">Edit Profile</button>
                             </div>
+                        </div>
 
-                            <!-- Divider -->
-                            <hr>
- 
-                            <!-- Sidebar Navigation (Left-Aligned) -->
-                            <nav class="nav nav-pills flex-column profile-nav">
-                                <a href="/orders" class="nav-link active">My Orders</a>
-                                <a href="/address" class="nav-link">Address</a>
-                                <a href="/payment" class="nav-link">Payment Methods</a>
-                                <a href="/logout" class="nav-link logout-link">Logout</a>
-                            </nav>
+                        <div class="col-lg-8 col-md-7">
+                            <div class="card main-content-card shadow-sm">
+                                <div class="card-body p-4">
+                                    <h2 class="card-title mb-4">My Orders</h2>
+
+                                    <% if (orders && orders.length> 0) { %>
+                                        <div class="list-group">
+                                            <% orders.forEach(order=> { %>
+                                                <div class="list-group-item order-item mb-3 border rounded p-3">
+                                                    <div class="d-flex w-100 justify-content-between">
+                                                        <h5 class="mb-1">Order #<%= order._id %>
+                                                        </h5>
+                                                        <small class="text-muted">
+                                                            <%= new Date(order.createdAt).toLocaleDateString() %>
+                                                        </small>
+                                                    </div>
+                                                    <p class="mb-1"><strong>Status:</strong> <span
+                                                            class="badge bg-primary">
+                                                            <%= order.status %>
+                                                        </span></p>
+                                                    <p class="mb-2"><strong>Total:</strong> $<%= order.total.toFixed(2)
+                                                            %>
+                                                    </p>
+                                                    <a href="/orders/<%= order._id %>" class="btn btn-sm btn-dark">View
+                                                        Details</a>
+                                                </div>
+                                                <% }) %>
+                                        </div>
+                                        <% } else { %>
+                                            <div class="alert alert-light text-center p-4">
+                                                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                                <h5>No Orders Found</h5>
+                                                <p class="text-muted">You haven't placed any orders yet.</p>
+                                            </div>
+                                            <% } %>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </main>
 
-                <!-- Main Content: Orders Section -->
-                <div class="col-lg-8 col-md-7">
-                    <div class="card main-content-card shadow-sm">
-                        <div class="card-body p-4">
-                            <h2 class="card-title mb-4">My Orders</h2>
-
-                            <% if (orders && orders.length > 0) { %>
-                                <div class="list-group">
-                                    <% orders.forEach(order => { %>
-                                        <div class="list-group-item order-item mb-3 border rounded p-3">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-1">Order #<%= order._id %></h5>
-                                                <small class="text-muted"><%= new Date(order.createdAt).toLocaleDateString() %></small>
-                                            </div>
-                                            <p class="mb-1"><strong>Status:</strong> <span class="badge bg-primary"><%= order.status %></span></p>
-                                            <p class="mb-2"><strong>Total:</strong> $<%= order.total.toFixed(2) %></p>
-                                            <a href="/orders/<%= order._id %>" class="btn btn-sm btn-dark">View Details</a>
-                                        </div>
-                                    <% }) %>
-                                </div>
-                            <% } else { %>
-                                <div class="alert alert-light text-center p-4">
-                                    <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
-                                    <h5>No Orders Found</h5>
-                                    <p class="text-muted">You haven't placed any orders yet.</p>
-                                </div>
-                            <% } %>
+            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content edit-profile-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        <form action="/editProfile" method="POST">
+
+                            <div class="modal-body">
+                                <input type="hidden" name="id" value="<%= user.id %>">
+
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="fullName" name="name"
+                                        value="<%= user?.name || '' %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        value="<%= user?.email || '' %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone No</label>
+                                    <input type="text" class="form-control" id="phone" name="phone"
+                                        value="<%= user?.phone || '' %>" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-save w-100">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <!-- Footer -->
-    <%- include('../partials/user/footer') %>
+            <%- include('../partials/user/footer') %>
 
-    <!-- JS Scripts -->
-    <script src="/js/vendor/modernizr-3.5.0.min.js"></script>
-    <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-    <script src="/js/popper.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/jquery.slicknav.min.js"></script>
-    <script src="/js/owl.carousel.min.js"></script>
-    <script src="/js/slick.min.js"></script>
-    <script src="/js/wow.min.js"></script>
-    <script src="/js/animated.headline.js"></script>
-    <script src="/js/jquery.magnific-popup.js"></script>
-    <script src="/js/jquery.scrollUp.min.js"></script>
-    <script src="/js/jquery.nice-select.min.js"></script>
-    <script src="/js/jquery.sticky.js"></script>
-    <script src="/js/plugins.js"></script>
-    <script src="/js/main.js"></script>
+                <script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+                <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                    crossorigin="anonymous"></script>
+
+                <script src="/js/jquery.slicknav.min.js"></script>
+                <script src="/js/owl.carousel.min.js"></script>
+                <script src="/js/slick.min.js"></script>
+                <script src="/js/wow.min.js"></script>
+                <script src="/js/animated.headline.js"></script>
+                <script src="/js/jquery.magnific-popup.js"></script>
+                <script src="/js/jquery.scrollUp.min.js"></script>
+                <script src="/js/jquery.nice-select.min.js"></script>
+                <script src="/js/jquery.sticky.js"></script>
+                <script src="/js/plugins.js"></script>
+                <script src="/js/main.js"></script>
 </body>
 
 </html>

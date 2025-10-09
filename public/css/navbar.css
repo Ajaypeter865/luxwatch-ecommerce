@@ -25,7 +25,7 @@
     transition: all .3s ease-out 0s;
 }
 
-.main-menu ul li:hover>a {
+.main-menu ul li:hover > a {
     color: #ff2020;
 }
 
@@ -65,3 +65,27 @@ ul {
   padding-left: 0;
   margin: 0;
 }
+
+
+/*
+** ===================================================================
+** NAVBAR BOOTSTRAP 5 OVERRIDE
+** This rule restores the original theme's look for the navbar links
+** and prevents Bootstrap from changing the font, color, or underline.
+** ===================================================================
+*/
+.main-header .main-menu ul li a {
+    font-family: "Josefin Sans", sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: #141517 !important;
+    text-transform: capitalize !important;
+    text-decoration: none !important; /* This removes the underline */
+}
+
+/* This restores the hover color */
+.main-header .main-menu ul li a:hover {
+    color: #ff2020 !important;
+}
+
+

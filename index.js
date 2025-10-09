@@ -43,6 +43,14 @@ app.use(async (req, res, next) => {
     return next()
 })
 
+app.use((req, res, next) => {
+  res.locals.message = null;
+  res.locals.success = null;
+  res.locals.error = null;
+  next();
+});
+
+
 
 // SET EJS
 app.set('view engine', 'ejs')
