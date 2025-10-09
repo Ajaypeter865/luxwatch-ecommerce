@@ -47,6 +47,7 @@ app.use((req, res, next) => {
   res.locals.message = null;
   res.locals.success = null;
   res.locals.error = null;
+  res.locals.orders = null
   next();
 });
 

@@ -2,6 +2,7 @@ const userModel = require('../../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
+const { errorMonitor } = require('nodemailer/lib/xoauth2')
 require('dotenv').config()
 
 
@@ -183,7 +184,7 @@ const profilePage = async (req, res) => {
 
 
       } else {
-         return res.render('user/profile', { success: null, error: 'error', products: null })
+         return res.render('user/profile', { success: null, error: 'No user found', products: null })
          // return res.render('user/index', { orders: null, user:  req.user })
       }
    } catch (error) {
@@ -193,12 +194,92 @@ const profilePage = async (req, res) => {
    }
 }
 
+// const editProfile = async (req, res) => {
+//    const { id, email, phone, name, } = req.body
+//    try {
+
+//       const existingUser = await userModel.findOne({ email })
+//       if(existingUser){
+
+//          const compareDetails = existingUser.email && existingUser.phone
+//          console.log('editProfile - compareDetails = ', compareDetails );
+
+//          if (compareDetails) return res.render('user/profile', { user: id, error: 'User already exists', })
+//       }
+
+
+//       await userModel.findByIdAndUpdate(id, {
+//          email,
+//          phone,
+//          name,
+
+//       }, { new: true })
+
+//       const user = await userModel.findOne({ email })
+
+//       if (user.name && user.email && user.phone) {
+
+//          return res.render('user/profile', { user: user, success: 'Profile updates successfuly' })
+//       }
+
+//       console.log('editProfile - else func');
+
+//       return res.render('user/profile', { user: id, error: 'Profile updates failed' })
+
+//    } catch (error) {
+//       console.log('Error from editProfile', error.message, error.stack);
+//       res.render('user/profile', { user: id, error: 'Server error' })
+//    }
+// }
+
 const editProfile = async (req, res) => {
-   
-   
+   const { id, email, phone, name } = req.body
+
+   try {
+
+      const existingUser = await userModel.findOne({
+         $or: [email, phone]
+      })
+      
+      if (existingUser && existingUser.id !== id) {
+         return res.render('user/profile',
+            {
+               user: await userModel.findById(id),
+               error: 'User already exists'
+            }
+         )
+      }
+
+      const updateUser = await userModel.findByIdAndUpdate(id, {
+         email,
+         name,
+         phone
+      }, { new: true, runValidators: true })
+
+      
+      if(!updateUser) {
+         return res.render('user/profile', {
+            user: await userModel.findById(id),
+            error: 'Profile updation failed'
+         })
+      }
+
+         return res.render('user/profile', {
+            user: updateUser,
+            success: 'Profile updated successfully'
+         })
+   } catch (error) {
+      console.log('Error in editProfile', error.message, error.stack);
+      return res.render('user/profile', {
+         user: await userModel.findById(id),
+         error: 'Server error'
+      })
+      
+   }
+
+
+
 }
-
-
 
 
 module.exports = {
