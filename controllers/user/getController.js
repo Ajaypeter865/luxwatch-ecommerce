@@ -43,6 +43,18 @@ const getRestPassword = async (req, res) => {
     return res.render('user/restPassword', { message: null, userId: null, email: null })
 }
 
+const getLogout = async (req, res) => {
+    return res.render('user/logout')
+
+}
+
+const getAddress = async (req, res) => {
+    console.log('getAddress hits');
+
+    return res.render('user/address', { addresses: null })
+
+}
+
 module.exports = {
     getLoginUser,
     getSignupUser,
@@ -50,4 +62,6 @@ module.exports = {
     getHomePage,
     getEnterOtp,
     getRestPassword,
+    getLogout,
+    getAddress,
 }
