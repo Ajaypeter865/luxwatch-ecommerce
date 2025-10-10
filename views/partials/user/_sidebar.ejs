@@ -1,0 +1,33 @@
+<div class="card profile-sidebar-card shadow-sm">
+    <div class="card-body">
+        <div class="profile-avatar text-center mb-4">
+            <div class="avatar-circle mx-auto">
+                <span>
+                    <%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %>
+                </span>
+            </div>
+            <h3 class="user-name mt-3 mb-1">
+                <%= user?.name || "User Name" %>
+            </h3>
+            <p class="text-muted mb-1">
+                <%= user?.email || "user@example.com" %>
+            </p>
+            <p class="text-muted mb-3">
+                <%= user?.phone || "+91 XXXXX XXXXX" %>
+            </p>
+
+            <button type="button" class="btn edit-btn w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                Edit Profile
+            </button>
+        </div>
+
+        <hr>
+
+        <nav class="nav nav-pills flex-column profile-nav">
+            <a href="/orders" class="nav-link <%= activePage === 'orders' ? 'active' : '' %>"> My Orders</a>
+            <a href="/address" class="nav-link <%= activePage === 'address' ? 'active' : '' %>">Address</a>
+            <a href="/payment" class="nav-link <%= activePage === 'payment' ? 'active' : '' %>"> Payment Methods</a>
+            <a href="/logout" class="nav-link logout-link"> Logout</a>
+        </nav>
+    </div>
+</div>

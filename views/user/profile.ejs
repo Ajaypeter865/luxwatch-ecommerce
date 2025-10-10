@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="/css/slick.css">
     <link rel="stylesheet" href="/css/nice-select.css">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/navbar.css"> <!-- THIS LINE IS NEED FOR THE UNDERLINE GOING -->
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/profile.css">
 </head>
 
@@ -33,43 +33,12 @@
             <main class="profile-page section-padding30">
                 <div class="container">
                     <div class="row">
+                        <!-- Sidebar -->
                         <div class="col-lg-4 col-md-5 mb-4">
-                            <div class="card profile-sidebar-card shadow-sm">
-                                <div class="card-body">
-                                    <div class="profile-avatar text-center mb-4">
-                                        <div class="avatar-circle mx-auto">
-                                            <span>
-                                                <%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %>
-                                            </span>
-                                        </div>
-                                        <h3 class="user-name mt-3 mb-1">
-                                            <%= user?.name || "User Name" %>
-                                        </h3>
-                                        <p class="text-muted mb-1">
-                                            <%= user?.email || "user@example.com" %>
-                                        </p>
-                                        <p class="text-muted mb-3">
-                                            <%= user?.phone || "+91 XXXXX XXXXX" %>
-                                        </p>
-
-                                        <button type="button" class="btn edit-btn w-100" data-bs-toggle="modal"
-                                            data-bs-target="#editProfileModal">
-                                            Edit Profile
-                                        </button>
-                                    </div>
-
-                                    <hr>
-
-                                    <nav class="nav nav-pills flex-column profile-nav">
-                                        <a href="/orders" class="nav-link active">My Orders</a>
-                                        <a href="/address" class="nav-link">Address</a>
-                                        <a href="/payment" class="nav-link">Payment Methods</a>
-                                        <a href="/logout" class="nav-link logout-link">Logout</a>
-                                    </nav>
-                                </div>
-                            </div>
+                            <%- include('../partials/user/_sidebar', { user: user, activePage: 'orders' }) %>
                         </div>
 
+                        <!-- Main Content -->
                         <div class="col-lg-8 col-md-7">
                             <div class="card main-content-card shadow-sm">
                                 <div class="card-body p-4">
@@ -86,10 +55,11 @@
                                                             <%= new Date(order.createdAt).toLocaleDateString() %>
                                                         </small>
                                                     </div>
-                                                    <p class="mb-1"><strong>Status:</strong> <span
-                                                            class="badge bg-primary">
+                                                    <p class="mb-1"><strong>Status:</strong>
+                                                        <span class="badge bg-primary">
                                                             <%= order.status %>
-                                                        </span></p>
+                                                        </span>
+                                                    </p>
                                                     <p class="mb-2"><strong>Total:</strong> $<%= order.total.toFixed(2)
                                                             %>
                                                     </p>
@@ -112,6 +82,7 @@
                 </div>
             </main>
 
+            <!-- Edit Profile Modal -->
             <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -124,7 +95,6 @@
 
                             <div class="modal-body">
                                 <input type="hidden" name="id" value="<%= user.id%>">
-
                                 <div class="mb-3">
                                     <label for="fullName" class="form-label">Full Name</label>
                                     <input type="text" class="form-control" id="fullName" name="name"
@@ -149,15 +119,14 @@
                 </div>
             </div>
 
+
             <%- include('../partials/user/footer') %>
 
                 <script src="/js/vendor/modernizr-3.5.0.min.js"></script>
                 <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
                     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
                     crossorigin="anonymous"></script>
-
                 <script src="/js/jquery.slicknav.min.js"></script>
                 <script src="/js/owl.carousel.min.js"></script>
                 <script src="/js/slick.min.js"></script>
