@@ -6,6 +6,8 @@ const passport = require('passport')
 // IMPORT MODULES
 const { proctedAuth, resLocals } = require('../middlewares/auth')
 
+const {editProfile} = require('../controllers/user/authController')
+
 // IMPORT GET MODULES
 const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp,
     getRestPassword, getLogout, getProfilePage, getAddressPage

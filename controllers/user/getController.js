@@ -70,35 +70,43 @@ const getProfilePage = async (req, res) => {
     }
 }
 
-const getAddressPage = async (req, res) => {
+    const getAddressPage = async (req, res) => {
 
-    try {
+        try {
 
-        console.log(`getAddressPage : ${req.user} = user .!!,${req.auth} = auth`);
-        // const user = await userModel.findOne({ id: req.auth.id })
-        // console.log('getAddressPage - user =', user);
-        // return res.render('user/address', { addresses: null, user: user })
-
-        if (req.user || req.auth) {
-
-            // const user = await userModel.findOne({
-            //     $or: [{ user: req.auth.id }, { user: req.user.id }]
-            // })
-            // const user = await userModel.findById(req.user.id || req.auth.id) 
+            console.log(`getAddressPage : ${req.user} = user .!!,${req.auth} = auth`);
+            // const user = await userModel.findOne({ id: req.auth.id })
             // console.log('getAddressPage - user =', user);
+            // return res.render('user/address', { addresses: null, user: user })
 
-            //  return res.render('user/address', { addresses: null, user: req.auth || req.user || null })
-            return res.render('user/address', { addresses: null, user: req.user || req.auth })
+            if (req.user) {
+                // console.log('getAddressPage - req.auth =', req.auth   );
 
-        } else {
-            return res.render('user/address', { error: 'No user found', addresses: null })
+                // const user = await userModel.findOne({
+                //     $or: [{ user: req.auth.id }, { user: req.user.id }]
+                // })
+                const user = await userModel.findById( req.user.id) 
+                console.log('getAddressPage - user.user =', user);
+                
+                // console.log('getAddressPage - user =', user);
+                //  return res.render('user/address', { addresses: null, user: req.auth || req.user || null })
+                return res.render('user/address', { addresses: null, user: user || req.auth })
+
+            }
+            if(req.auth){
+                const user = await userModel.findById(req.auth.id)
+                console.log('getAddressPage - user.auth =',req.auth);
+                return res.render('user/address', { addresses: null, user: user})
+                
+            } else {
+                return res.render('user/address', { error: 'No user found', addresses: null })
+            }
+        } catch (error) {
+            console.log('Error from addressPage = ', error.stack, error.message);
+            return res.render('user/address', { addresses: null, })
+
         }
-    } catch (error) {
-        console.log('Error from addressPage = ', error.stack, error.message);
-        return res.render('user/address', { addresses: null, })
-
     }
-}
 
 
 module.exports = {

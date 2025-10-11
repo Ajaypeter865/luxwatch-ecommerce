@@ -183,7 +183,7 @@ const editProfile = async (req, res) => {
       const existingUser = await userModel.findOne({
          $or: [{ email }, { phone }]
       })
-      console.log('editProfile - existingUser =', existingUser);
+      // console.log('editProfile - existingUser =', existingUser);
 
       if (existingUser && existingUser.id.toString() !== id) {
          return res.render('user/profile',
@@ -201,7 +201,8 @@ const editProfile = async (req, res) => {
          phone
       }, { new: true, runValidators: true })
 
-
+      console.log('editProfile - updateUser =', updateUser);
+      
       if (!updateUser) {
          return res.render('user/profile', {
             user: await userModel.findById(id),
