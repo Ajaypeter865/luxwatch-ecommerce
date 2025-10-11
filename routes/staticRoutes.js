@@ -7,10 +7,9 @@ const passport = require('passport')
 const { proctedAuth, resLocals } = require('../middlewares/auth')
 
 // IMPORT GET MODULES
-const { profilePage ,address} = require('../controllers/user/authController')
-const { getLoginUser, getSignupUser, getHomePage, getforgotPassword,
-    getEnterOtp, getRestPassword, getLogout, getAddress } = require('../controllers/user/getController')
-
+const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp,
+    getRestPassword, getLogout, getProfilePage, getAddressPage
+} = require('../controllers/user/getController')
 
 // USER ROUTES
 router.get('/signup', getSignupUser)
@@ -23,9 +22,9 @@ router.get('/logout', proctedAuth, getLogout)
 
 
 // HOME ROUTES
-router.get('/profile', proctedAuth, profilePage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
+router.get('/profile', proctedAuth, getProfilePage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
 router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
-router.get('/address', address)
+router.get('/address', proctedAuth, getAddressPage)
 
 
 // GOOGLE AUTHENTICATION

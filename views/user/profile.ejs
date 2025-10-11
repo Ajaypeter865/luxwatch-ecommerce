@@ -82,42 +82,7 @@
                 </div>
             </main>
 
-            <!-- Edit Profile Modal -->
-            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content edit-profile-modal">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form action="/editProfile" method="POST">
-
-                            <div class="modal-body">
-                                <input type="hidden" name="id" value="<%= user.id%>">
-                                <div class="mb-3">
-                                    <label for="fullName" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="fullName" name="name"
-                                        value="<%= user?.name || '' %>" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="<%= user?.email || '' %>" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="phone" class="form-label">Phone No</label>
-                                    <input type="text" class="form-control" id="phone" name="phone"
-                                        value="<%= user?.phone || '' %>" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-save w-100">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+         
 
 
             <%- include('../partials/user/footer') %>

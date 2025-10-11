@@ -1,42 +1,78 @@
 <div class="card profile-sidebar-card shadow-sm">
-    <div class="card-body">
-        <!-- Profile Avatar -->
-        <div class="profile-avatar text-center mb-4">
-            <div class="avatar-circle mx-auto">
-                <span>
-                    <%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %>
-                </span>
-            </div>
-            <h3 class="user-name mt-3 mb-1">
-                <%= user?.name || "User Name" %>
-            </h3>
-            <p class="text-muted mb-1">
-                <%= user?.email || "user@example.com" %>
-            </p>
-            <p class="text-muted mb-3">
-                <%= user?.phone || "+91 XXXXX XXXXX" %>
-            </p>
+  <div class="card-body">
+    <!-- Profile Avatar -->
+    <div class="profile-avatar text-center mb-4">
+      <div class="avatar-circle mx-auto">
+        <span>
+          <%= user?.name ? user.name.charAt(0).toUpperCase() : "U" %>
+        </span>
+      </div>
+      <h3 class="user-name mt-3 mb-1">
+        <%= user?.name || "User Name" %>
+      </h3>
+      <p class="text-muted mb-1">
+        <%= user?.email || "user@example.com" %>
+      </p>
+      <p class="text-muted mb-3">
+        <%= user?.phone || "+91 XXXXX XXXXX" %>
+      </p>
 
-            <!-- Edit Profile Button -->
-            <button type="button" class="btn edit-btn w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                Edit Profile
-            </button>
-        </div>
-
-        <hr>
-
-        <!-- Sidebar Navigation -->
-        <nav class="nav nav-pills flex-column profile-nav">
-            <a href="/orders" class="nav-link <%= activePage === 'orders' ? 'active' : '' %>">My Orders</a>
-            <a href="/address" class="nav-link <%= activePage === 'address' ? 'active' : '' %>">Address</a>
-            <a href="/payment" class="nav-link <%= activePage === 'payment' ? 'active' : '' %>">Payment Methods</a>
-            
-            <!-- Logout Button triggers modal -->
-            <a href="#" class="nav-link text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                Logout
-            </a>
-        </nav>
+      <!-- Edit Profile Button -->
+      <button type="button" class="btn edit-btn w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+        Edit Profile
+      </button>
     </div>
+
+    <hr>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content edit-profile-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/editProfile" method="POST">
+
+            <div class="modal-body">
+              <input type="hidden" name="id" value="<%= user.id%>">     <!--ID ADDED HERE-->
+              <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" name="name" value="<%= user?.name || '' %>"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user?.email || '' %>"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone No</label>
+                <input type="text" class="form-control" id="phone" name="phone" value="<%= user?.phone || '' %>"
+                  required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-save w-100">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Sidebar Navigation -->
+    <nav class="nav nav-pills flex-column profile-nav">
+      <a href="/orders" class="nav-link <%= activePage === 'orders' ? 'active' : '' %>">My Orders</a>
+      <a href="/address" class="nav-link <%= activePage === 'address' ? 'active' : '' %>">Address</a>
+      <a href="/payment" class="nav-link <%= activePage === 'payment' ? 'active' : '' %>">Payment Methods</a>
+
+      <!-- Logout Button triggers modal -->
+      <a href="#" class="nav-link text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+        Logout
+      </a>
+    </nav>
+  </div>
 </div>
 
 <!-- ================= Logout Modal ================= -->

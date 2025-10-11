@@ -174,29 +174,6 @@ const restPassword = async (req, res) => {
 }
 
 
-const profilePage = async (req, res) => {
-   try {
-      console.log(`Fucntion from profilePage : ${req.user} = user .!!,${req.auth} = auth`);
-      if (req.user || req.auth) {
-         // return res.render('user/profile', { success: null, error: 'error' , products: null})
-
-         return res.render('user/profile', { orders: null, user: req.auth || req.user || null })
-
-         // return res.render('user/profile', { orders: null, user: await userModel.findByOne(id) })  //TRY FOR SIDEBAR USER
-
-
-      } else {
-         return res.render('user/profile', { success: null, error: 'No user found', products: null })
-         // return res.render('user/index', { orders: null, user:  req.user })
-      }
-   } catch (error) {
-      console.log('Error from profilePage = ', error.stack, error.message);
-      return res.render('user/index', { success: null, error: null, products: null })
-
-   }
-}
-
-
 
 const editProfile = async (req, res) => {
    const { id, email, phone, name } = req.body
@@ -232,9 +209,9 @@ const editProfile = async (req, res) => {
          })
       }
 
-      return res.render('user/profile', {
+      return res.render('user/profile', {          // NEED TO CHANGE USER/PROFILE FOR IF THE CHANGE IS ADDING FROM ANYOTHER BUTTON FROM SIDEBAR
          user: updateUser,
-         success: 'Profile updated successfully'
+         success: 'Profile updated successfully'    
       })
    } catch (error) {
       console.log('Error in editProfile', error.message, error.stack);
@@ -246,43 +223,26 @@ const editProfile = async (req, res) => {
    }
 }
 
+
+
+
 const logoutUser = async (req, res) => {
    res.clearCookie('userToken')
    res.render('user/login')
 
 }
 
-const address = async (req, res) => {
-   try {
-      console.log(`Fucntion from address : ${req.user} = user .!!,${req.auth} = auth`);
-      if (req.user || req.auth) {
-         // return res.render('user/profile', { success: null, error: 'error' , products: null})
-
-         return res.render('user/address', { addresses: null, user: req.auth || req.user || null })
-
-         // return res.render('user/profile', { orders: null, user: await userModel.findByOne(id) })  //TRY FOR SIDEBAR USER
-
-
-      } else {
-         return res.render('user/address', { error: 'No user found', addresses: null })
-         // return res.render('user/index', { orders: null, user:  req.user })
-      }
-   } catch (error) {
-      console.log('Error from address = ', error.stack, error.message);
-      return res.render('user/index', { addresses: null })
-
-   }
-}
-
 
 module.exports = {
    signupUser,
    loginUser,
-   profilePage,
    forgotPassword,
    verifyOtp,
    restPassword,
    editProfile,
    logoutUser,
-   address,
 }
+
+
+
+

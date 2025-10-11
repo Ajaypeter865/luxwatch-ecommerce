@@ -17,7 +17,6 @@ router.post('/enterOtp', verifyOtp)
 router.post('/resetpassword', restPassword)
 router.post('/editProfile', editProfile)
 router.post('/logout', logoutUser)
-router.post('/address', address)
 
 
 
