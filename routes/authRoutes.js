@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 // CONTROLLERS
-const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile, logout, logoutUser, address } = require('../controllers/user/authController')
+const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,  logoutUser,  addAdress } = require('../controllers/user/authController')
 
 // MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../middlewares/validation')
@@ -18,6 +18,10 @@ router.post('/resetpassword', restPassword)
 router.post('/editProfile', editProfile)
 router.post('/logout', logoutUser)
 
+
+// PROFILE FUCNTION
+
+router.post('/address/add', addAdress)
 
 
 module.exports = router

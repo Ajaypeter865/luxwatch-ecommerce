@@ -1,9 +1,11 @@
 const userModel = require('../../models/user')
+const addressModel = require('../../models/addresses')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 const { errorMonitor } = require('nodemailer/lib/xoauth2')
 require('dotenv').config()
+
 
 
 const signupUser = async (req, res) => {
@@ -36,6 +38,8 @@ const signupUser = async (req, res) => {
 
    }
 }
+
+
 
 const loginUser = async (req, res) => {
 
@@ -86,6 +90,8 @@ const loginUser = async (req, res) => {
 
 }
 
+
+
 const forgotPassword = async (req, res) => {
    const { email } = req.body
    try {
@@ -99,8 +105,6 @@ const forgotPassword = async (req, res) => {
       user.resetOtp = otp,
          user.otpExpires = otpExpires
       await user.save()
-
-
 
       const transporter = nodemailer.createTransport({
          host: process.env.EMAIL_HOST,
@@ -129,6 +133,8 @@ const forgotPassword = async (req, res) => {
    }
 }
 
+
+
 const verifyOtp = async (req, res) => {
    const { otp, email } = req.body
 
@@ -152,6 +158,8 @@ const verifyOtp = async (req, res) => {
    }
 }
 
+
+
 const restPassword = async (req, res) => {
    const { id, email, password, confirmPassword } = req.body
    try {
@@ -171,8 +179,11 @@ const restPassword = async (req, res) => {
       console.log('Error from restPassword', error.message, error.stack);
       res.render('user/resetPasswod', { userId: id, email })
    }
+
 }
 
+
+// PROFILE FUNCTIONS
 
 
 const editProfile = async (req, res) => {
@@ -202,7 +213,7 @@ const editProfile = async (req, res) => {
       }, { new: true, runValidators: true })
 
       console.log('editProfile - updateUser =', updateUser);
-      
+
       if (!updateUser) {
          return res.render('user/profile', {
             user: await userModel.findById(id),
@@ -212,7 +223,7 @@ const editProfile = async (req, res) => {
 
       return res.render('user/profile', {          // NEED TO CHANGE USER/PROFILE FOR IF THE CHANGE IS ADDING FROM ANYOTHER BUTTON FROM SIDEBAR
          user: updateUser,
-         success: 'Profile updated successfully'    
+         success: 'Profile updated successfully'
       })
    } catch (error) {
       console.log('Error in editProfile', error.message, error.stack);
@@ -225,6 +236,20 @@ const editProfile = async (req, res) => {
 }
 
 
+
+const addAdress = async (req, res) => {
+   const { label, name, phone, pincode, addressine, city, state } = req.body
+
+   try {
+      console.log('addAddress - req.body =', req.body);
+            
+   } catch (error) {
+      console.log('Error from addAddress', error.message, error.stack);
+      res.send('Error from add address')
+      
+   }
+   
+}
 
 
 const logoutUser = async (req, res) => {
@@ -242,6 +267,7 @@ module.exports = {
    restPassword,
    editProfile,
    logoutUser,
+   addAdress,
 }
 
 
