@@ -238,17 +238,39 @@ const editProfile = async (req, res) => {
 
 
 const addAdress = async (req, res) => {
-   const { label, name, phone, pincode, addressine, city, state } = req.body
+   const {label, name, phone, pincode, addressLine, city, state } = req.body
 
    try {
-      console.log('addAddress - req.body =', req.body);
-            
+      const userId = req.user?.id || req.auth?.id
+      // const user = await userModel.findById(userId)
+      console.log('addAddress - user =', userId);
+      
+      if( userId ){
+         const userId = req.user || req.auth
+         // const user = await userModel.findById(req.auth.id)
+         console.log('addAddress - userId =', userId);
+
+        const address = await addressModel.create({
+            label,
+            name, 
+            phone,
+            pincode,
+            addressLine,
+            city,
+            state, 
+         })
+         console.log('addAddress - address created successfully');
+         
+       return  res.render('user/address', {addresses: address, user: userId, success: 'Address added successfully'})
+      }
+
+      return res.render('user/address',{addresses: null, user: userId, error: 'Cannot add this address'} )
    } catch (error) {
       console.log('Error from addAddress', error.message, error.stack);
-      res.send('Error from add address')
-      
+      return res.send('Error from add address')
+
    }
-   
+
 }
 
 

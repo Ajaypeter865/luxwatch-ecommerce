@@ -8,6 +8,7 @@ const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProf
 
 // MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../middlewares/validation')
+const { proctedAuth } = require('../middlewares/auth')
 
 
 router.post('/signup', signUpValidator, signupUser)
@@ -21,7 +22,7 @@ router.post('/logout', logoutUser)
 
 // PROFILE FUCNTION
 
-router.post('/address/add', addAdress)
+router.post('/address/add',proctedAuth, addAdress)
 
 
 module.exports = router

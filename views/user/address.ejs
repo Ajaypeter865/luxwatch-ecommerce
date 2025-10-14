@@ -39,8 +39,8 @@
                         <div class="col-lg-4 col-md-5 mb-4">
                             <%- include('../partials/user/_sidebar', { user: user, activePage: 'address' }) %>
                         </div>
-                        
-              <!---ID ADDED HERE -->
+
+                        <!---ID ADDED HERE -->
 
                         <!-- Main Content -->
                         <div class="col-lg-8 col-md-7">
@@ -105,61 +105,64 @@
             </main>
 
             <!-- Add Address Modal -->
-       <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content edit-profile-modal">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content edit-profile-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form action="/address/add" method="POST">
+
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="label" class="form-label">Label (e.g., Home, Work)</label>
+                                    <input type="text" class="form-control" id="label" name="label" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="pincode" class="form-label">Pincode</label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="addressLine" class="form-label">Address Line</label>
+                                    <input type="text" class="form-control" id="addressLine" name="addressLine"
+                                        required>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="state" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="state" name="state" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-save w-100">Save Address</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <form action="/address/add" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="label" class="form-label">Label (e.g., Home, Work)</label>
-                        <input type="text" class="form-control" id="label" name="label" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="pincode" class="form-label">Pincode</label>
-                        <input type="text" class="form-control" id="pincode" name="pincode" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="addressLine" class="form-label">Address Line</label>
-                        <input type="text" class="form-control" id="addressLine" name="addressLine" required>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <input type="text" class="form-control" id="city" name="city" required>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="state" class="form-label">State</label>
-                            <input type="text" class="form-control" id="state" name="state" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-save w-100">Save Address</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
             <%- include('../partials/user/footer') %>
 
@@ -182,28 +185,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
