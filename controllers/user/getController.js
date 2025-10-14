@@ -1,4 +1,5 @@
 
+const addressModel = require('../../models/addresses')
 const userModel = require('../../models/user')
 
 
@@ -86,17 +87,20 @@ const getProfilePage = async (req, res) => {
                 //     $or: [{ user: req.auth.id }, { user: req.user.id }]
                 // })
                 const user = await userModel.findById( req.user.id) 
+                const address = await addressModel.find({user: req.user.id})
+
                 console.log('getAddressPage - user.user =', user);
                 
                 // console.log('getAddressPage - user =', user);
                 //  return res.render('user/address', { addresses: null, user: req.auth || req.user || null })
-                return res.render('user/address', { addresses: null, user: user || req.auth })
+                return res.render('user/address', { addresses: address, user: user || req.auth })
 
             }
             if(req.auth){
                 const user = await userModel.findById(req.auth.id)
+                const address = await addressModel.find({user: req.auth.id})
                 console.log('getAddressPage - user.auth =',req.auth);
-                return res.render('user/address', { addresses: null, user: user})
+                return res.render('user/address', { addresses: address, user: user})
                 
             } else {
                 return res.render('user/address', { error: 'No user found', addresses: null })

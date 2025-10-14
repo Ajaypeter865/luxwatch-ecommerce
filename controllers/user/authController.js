@@ -237,34 +237,37 @@ const editProfile = async (req, res) => {
 
 
 
-const addAdress = async (req, res) => {
-   const {label, name, phone, pincode, addressLine, city, state } = req.body
-
+const addAddress = async (req, res) => {
+   const { label, name, phone, pincode, addressLine, city, state } = req.body
    try {
-      const userId = req.user?.id || req.auth?.id
-      // const user = await userModel.findById(userId)
-      console.log('addAddress - user =', userId);
-      
-      if( userId ){
-         const userId = req.user || req.auth
-         // const user = await userModel.findById(req.auth.id)
-         console.log('addAddress - userId =', userId);
+      const userId = req.auth?.id || req.user?.id
+      // console.log('addAdress - userId =', userId);
 
-        const address = await addressModel.create({
-            label,
-            name, 
-            phone,
-            pincode,
-            addressLine,
-            city,
-            state, 
-         })
-         console.log('addAddress - address created successfully');
-         
-       return  res.render('user/address', {addresses: address, user: userId, success: 'Address added successfully'})
+
+      if (!userId) {
+         return res.render('user/address', { addresses: null, error: 'Cannt add this address ', user: req.auth || req.user })
       }
 
-      return res.render('user/address',{addresses: null, user: userId, error: 'Cannot add this address'} )
+      await addressModel.create({
+         user: userId,
+         label,
+         name,
+         phone,
+         addressLine,
+         state,
+         city,
+         pincode
+      })
+      console.log('addAddress - address created');
+
+      const userAddress = await addressModel.find({ user : userId })
+
+      return res.render('user/address', {
+         addresses: userAddress,
+         user: req.auth || req.user,
+         success: 'Address added successfully',
+      })
+
    } catch (error) {
       console.log('Error from addAddress', error.message, error.stack);
       return res.send('Error from add address')
@@ -272,7 +275,6 @@ const addAdress = async (req, res) => {
    }
 
 }
-
 
 const logoutUser = async (req, res) => {
    res.clearCookie('userToken')
@@ -289,7 +291,7 @@ module.exports = {
    restPassword,
    editProfile,
    logoutUser,
-   addAdress,
+   addAddress,
 }
 
 
