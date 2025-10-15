@@ -283,28 +283,17 @@ const addAddress = async (req, res) => {
 const setDefaultAddress = async (req, res) => {
    const userId = req.auth?.id || req.user?.id
    try {
-      const addressId = await addressModel.findById(req.params.id)
-       addressId.isDefault = !addressId.isDefault
-       await addressId.save()
-       
-       
-      const userAddress = await addressModel.find({user: userId})
-      console.log('setDefaultAddress - userAddrress = ', userAddress);
+      const selectedAddress = await addressModel.findById(req.params.id)
       
-      // if (userAddress.isDefault == false) {
-      //    console.log('setDefaultAddress - Enter if block');
+      await addressModel.updateMany({  user: userId, isDefault: true}, { $set: { isDefault: false } })
+      
 
-      //    userAddress.isDefault = !userAddress.isDefault
-      //    await userAddress?.save()
-      //    console.log('userAddress saved');
+      selectedAddress.isDefault = true
+      await selectedAddress.save()
+      
+      const userAddress = await addressModel.find({ user: userId })
+      console.log('setDefaultAddress - userAddrress = ', userAddress);
 
-      //    return res.render('user/address', {
-      //       addresses: await addressModel.findOne({ user: userId }),
-      //       user: req.auth || req.user,
-      //       success: 'Address added successfully',
-      //    })
-      // }
-      // console.log('setDefaultAddress - updateAddress =',updateAddress);
       return res.render('user/address', {
          addresses: userAddress,
          user: req.auth || req.user,
@@ -318,6 +307,7 @@ const setDefaultAddress = async (req, res) => {
       })
    }
 }
+
 
 
 
