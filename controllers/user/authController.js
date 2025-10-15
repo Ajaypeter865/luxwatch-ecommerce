@@ -242,8 +242,6 @@ const addAddress = async (req, res) => {
    try {
       const userId = req.auth?.id || req.user?.id
       // console.log('addAdress - userId =', userId);
-
-
       if (!userId) {
          return res.render('user/address', { addresses: null, error: 'Cannt add this address ', user: req.auth || req.user })
       }
@@ -260,7 +258,7 @@ const addAddress = async (req, res) => {
       })
       console.log('addAddress - address created');
 
-      const userAddress = await addressModel.find({ user : userId })
+      const userAddress = await addressModel.find({ user: userId })
 
       return res.render('user/address', {
          addresses: userAddress,
@@ -270,11 +268,58 @@ const addAddress = async (req, res) => {
 
    } catch (error) {
       console.log('Error from addAddress', error.message, error.stack);
-      return res.send('Error from add address')
+      // return res.send('Error from add address')
+      return res.render('user/address', {
+         addresses: null,
+         user: req.auth || req.user,
+         success: 'Address added successfully',
+      })
 
    }
 
 }
+
+
+const setDefaultAddress = async (req, res) => {
+   const userId = req.auth?.id || req.user?.id
+   try {
+      const addressId = await addressModel.findById(req.params.id)
+       addressId.isDefault = !addressId.isDefault
+       await addressId.save()
+       
+       
+      const userAddress = await addressModel.find({user: userId})
+      console.log('setDefaultAddress - userAddrress = ', userAddress);
+      
+      // if (userAddress.isDefault == false) {
+      //    console.log('setDefaultAddress - Enter if block');
+
+      //    userAddress.isDefault = !userAddress.isDefault
+      //    await userAddress?.save()
+      //    console.log('userAddress saved');
+
+      //    return res.render('user/address', {
+      //       addresses: await addressModel.findOne({ user: userId }),
+      //       user: req.auth || req.user,
+      //       success: 'Address added successfully',
+      //    })
+      // }
+      // console.log('setDefaultAddress - updateAddress =',updateAddress);
+      return res.render('user/address', {
+         addresses: userAddress,
+         user: req.auth || req.user,
+      })
+   } catch (error) {
+      console.log('Error from setDefaultAddress', error.message, error.stack);
+      return res.render('user/address', {
+         addresses: null,
+         user: req.auth || req.user,
+         success: 'Address added successfully',
+      })
+   }
+}
+
+
 
 const logoutUser = async (req, res) => {
    res.clearCookie('userToken')
@@ -292,6 +337,7 @@ module.exports = {
    editProfile,
    logoutUser,
    addAddress,
+   setDefaultAddress,
 }
 
 

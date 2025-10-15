@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 // CONTROLLERS
-const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,  logoutUser,  addAddress } = require('../controllers/user/authController')
+const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,  logoutUser,  addAddress,setDefaultAddress } = require('../controllers/user/authController')
 
 // MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../middlewares/validation')
@@ -23,6 +23,8 @@ router.post('/logout', logoutUser)
 // PROFILE FUCNTION
 
 router.post('/address/add',proctedAuth, addAddress)
+router.post('/address/set-default/:id',proctedAuth, setDefaultAddress)
+
 
 
 module.exports = router
