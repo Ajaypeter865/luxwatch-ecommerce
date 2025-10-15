@@ -68,6 +68,8 @@
                                                                     data-bs-toggle="modal"
                                                                     data-bs-target="#editAddressModal"
                                                                     data-id="<%= address._id %>">Edit</button>
+
+
                                                                 <form action="/address/delete/<%= address._id %>"
                                                                     method="POST" class="d-inline">
                                                                     <button type="submit"
@@ -163,6 +165,70 @@
                     </div>
                 </div>
             </div>
+
+
+            <!-- Edit Address Modal -->
+
+            <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content edit-profile-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form id="editAddressForm" method="POST">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editLabel" class="form-label">Label (e.g., Home, Work)</label>
+                                        <input type="text" class="form-control" id="editLabel" name="label" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="editName" name="name" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editPhone" class="form-label">Phone</label>
+                                        <input type="text" class="form-control" id="editPhone" name="phone" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editPincode" class="form-label">Pincode</label>
+                                        <input type="text" class="form-control" id="editPincode" name="pincode"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="editAddressLine" class="form-label">Address Line</label>
+                                    <textarea class="form-control" id="editAddressLine" name="addressLine" rows="2"
+                                        required></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editCity" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="editCity" name="city" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editState" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="editState" name="state" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-save w-100">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
 
             <%- include('../partials/user/footer') %>
 

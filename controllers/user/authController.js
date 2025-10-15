@@ -309,6 +309,11 @@ const setDefaultAddress = async (req, res) => {
 }
 
 
+const editAddress = async (req, res) => {
+   
+   
+}
+
 
 
 const logoutUser = async (req, res) => {
