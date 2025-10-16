@@ -12,8 +12,9 @@ const flash = require('connect-flash')
 
 // IMPORT MODULES
 const { connectMongoDB } = require('./connect');
-const staticRoutes = require('./routes/staticRoutes')
-const authRoutes = require('./routes/authRoutes')
+const staticRoutesUser = require('./routes/user/staticRoutes')
+const authRoutesUser = require('./routes/user/authRoutes')
+const staticRoutesAdmin = require('./routes/admin/staticRoutesAdmin')
 const passport = require('passport');
 const passportSetup = require('./config/passport');  // IMPORTANT 
 
@@ -78,8 +79,9 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/node_modules', express.static(__dirname + '/node_modules')) // FOR TOASTIFY EJS
 
 // ROUTES
-app.use('/', staticRoutes)
-app.use('/', authRoutes)
+app.use('/', staticRoutesUser)
+app.use('/', authRoutesUser)
+app.use('/', staticRoutesAdmin)
 
 
 

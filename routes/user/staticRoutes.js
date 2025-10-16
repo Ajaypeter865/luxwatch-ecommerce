@@ -4,15 +4,15 @@ const router = express.Router()
 const passport = require('passport')
 
 // IMPORT MODULES
-const { proctedAuth, resLocals } = require('../middlewares/auth')
+const { proctedAuth, resLocals } = require('../../middlewares/auth')
 
-const {editProfile} = require('../controllers/user/authController')
+const {editProfile} = require('../../controllers/user/authController')
 
 // IMPORT GET MODULES
 const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp,
     getRestPassword, getLogout, getProfilePage, getAddressPage
-} = require('../controllers/user/getController')
-const userModel = require('../models/user')
+} = require('../../controllers/user/getController')
+const userModel = require('../../models/user')
 
 // USER ROUTES
 router.get('/signup', getSignupUser)

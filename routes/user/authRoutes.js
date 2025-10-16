@@ -4,11 +4,11 @@ const router = express.Router()
 
 
 // CONTROLLERS
-const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile, logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress } = require('../controllers/user/authController')
+const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile, logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress } = require('../../controllers/user/authController')
 
 // MIDDLEWARES
-const { signUpValidator, loginValidator } = require('../middlewares/validation')
-const { proctedAuth } = require('../middlewares/auth')
+const { signUpValidator, loginValidator } = require('../../middlewares/validation')
+const { proctedAuth } = require('../../middlewares/auth')
 
 
 router.post('/signup', signUpValidator, signupUser)
