@@ -44,14 +44,31 @@ app.use(async (req, res, next) => {
 })
 
 app.use((req, res, next) => {
-  res.locals.message = null;
-  res.locals.success = null;
-  res.locals.error = null;
-  res.locals.orders = null,
-  res.locals.products = null
-  next();
+    res.locals.message = null;
+    res.locals.success = null;
+    res.locals.error = null;
+    res.locals.orders = null,
+        res.locals.products = null
+    next();
 });
 
+
+
+// ERROR HANDLER (ASYNC HANDLER)
+app.use((err, req, res, next) => {
+    console.error('--- Global Error Handler ---')
+    console.error('Route:', req.originalUrl)
+    console.error('Method:', req.method)
+    console.error('Message:', err.message)
+    console.error('Stack:', err.stack)
+    console.error('-----------------------------')
+
+    const statusCode = res.statusCode === 200 ? 500 : res.statusCode
+    res.status(statusCode).json({
+        message: err.message,
+        stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+    })
+})
 
 
 // SET EJS
@@ -64,7 +81,7 @@ app.use('/node_modules', express.static(__dirname + '/node_modules')) // FOR TOA
 app.use('/', staticRoutes)
 app.use('/', authRoutes)
 
-    
+
 
 // CONNECT 
 connectMongoDB();

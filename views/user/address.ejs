@@ -69,6 +69,14 @@
                                                                     data-bs-target="#editAddressModal"
                                                                     data-id="<%= address._id %>">Edit</button>
 
+                                                                <!-- 
+                                                                <form action="/address/edit"
+                                                                    method="POST" class="d-inline">
+                                                                    <button class="btn btn-secondary btn-sm"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editAddressModal"
+                                                                        class="btn btn-danger btn-sm">Edit</button>
+                                                                </form> -->
 
                                                                 <form action="/address/delete/<%= address._id %>"
                                                                     method="POST" class="d-inline">
@@ -169,6 +177,7 @@
 
             <!-- Edit Address Modal -->
 
+            <!-- Edit Address Modal -->
             <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -178,8 +187,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <form id="editAddressForm" method="POST">
+                        <form action="/address/edit" method="POST">
                             <div class="modal-body">
+                                <!-- If needed, store the address ID in a hidden field -->
+                                <input type="hidden" name="addressId" id="editAddressId">
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="editLabel" class="form-label">Label (e.g., Home, Work)</label>

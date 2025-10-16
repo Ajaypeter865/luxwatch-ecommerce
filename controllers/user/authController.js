@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 const { errorMonitor } = require('nodemailer/lib/xoauth2')
+const asyncHandler = require('express-async-handler')
 require('dotenv').config()
 
 
@@ -243,7 +244,7 @@ const addAddress = async (req, res) => {
       const userId = req.auth?.id || req.user?.id
       // console.log('addAdress - userId =', userId);
       if (!userId) {
-         return res.render('user/address', { addresses: null, error: 'Cannt add this address ', user: req.auth || req.user })
+         return res.render('user/address', { addresses: null, error: 'No user found', user: req.auth || req.user })
       }
 
       await addressModel.create({
@@ -284,15 +285,15 @@ const setDefaultAddress = async (req, res) => {
    const userId = req.auth?.id || req.user?.id
    try {
       const selectedAddress = await addressModel.findById(req.params.id)
-      
-      await addressModel.updateMany({  user: userId, isDefault: true}, { $set: { isDefault: false } })
-      
+
+      await addressModel.updateMany({ user: userId, isDefault: true }, { $set: { isDefault: false } })
+
 
       selectedAddress.isDefault = true
       await selectedAddress.save()
-      
+
       const userAddress = await addressModel.find({ user: userId })
-      console.log('setDefaultAddress - userAddrress = ', userAddress);
+      // console.log('setDefaultAddress - userAddrress = ', userAddress);
 
       return res.render('user/address', {
          addresses: userAddress,
@@ -309,11 +310,59 @@ const setDefaultAddress = async (req, res) => {
 }
 
 
-const editAddress = async (req, res) => {
-   
-   
-}
+// const editAddress = asyncHandler(async (req, res) => {
+//    const { addressId, label, name, phone, pincode, addressLine, city, state } = req.body;
 
+//    const userId = req.auth?.id || req.user?.id;
+
+//    // 1️⃣ Make sure the address belongs to this user
+//    const address = await addressModel.findOne({ _id: addressId, user: userId });
+//    if (!address) {
+//       return res.render('user/address', {
+//          addresses: null,
+//          user: req.auth || req.user,
+//          error: 'Address not found or not yours',
+//       });
+//    }
+
+//    // 2️⃣ Update fields safely
+//    address.label = label;
+//    address.name = name;
+//    address.phone = phone;
+//    address.pincode = pincode;
+//    address.addressLine = addressLine;
+//    address.city = city;
+//    address.state = state;
+
+//    await address.save();
+
+//    // 3️⃣ Fetch updated list of addresses to show on UI
+//    const addresses = await addressModel.find({ user: userId });
+
+//    // 4️⃣ Render the page with updated data
+//    return res.render('user/address', {
+//       addresses,
+//       user: req.auth || req.user,
+//       success: 'Address updated successfully!',
+//    });
+// });
+
+
+const deleteAddress = asyncHandler(async (req, res) => {
+   const userId = req.auth?.id || req.user?.id
+
+   const selectedAddress = await addressModel.findById(req.params.id)
+   console.log('deleteAddress - selectedAddress = ', selectedAddress);
+   await addressModel.findByIdAndDelete(selectedAddress)
+
+   const updateAddress = await addressModel.find({ user: userId })
+   return res.render('user/address', {
+      addresses: updateAddress,
+      user: req.auth || req.user,
+      success: 'Address deleted successfully',
+   })
+
+})
 
 
 const logoutUser = async (req, res) => {
@@ -333,8 +382,6 @@ module.exports = {
    logoutUser,
    addAddress,
    setDefaultAddress,
+   // editAddress,
+   deleteAddress,
 }
-
-
-
-
