@@ -15,6 +15,7 @@ const { connectMongoDB } = require('./connect');
 const staticRoutesUser = require('./routes/user/staticRoutes')
 const authRoutesUser = require('./routes/user/authRoutes')
 const staticRoutesAdmin = require('./routes/admin/staticRoutesAdmin')
+const authRoutesAdmin = require('./routes/admin/authRoutesAdmin')
 const passport = require('passport');
 const passportSetup = require('./config/passport');  // IMPORTANT 
 
@@ -82,6 +83,7 @@ app.use('/node_modules', express.static(__dirname + '/node_modules')) // FOR TOA
 app.use('/', staticRoutesUser)
 app.use('/', authRoutesUser)
 app.use('/', staticRoutesAdmin)
+app.use('/', authRoutesAdmin)
 
 
 

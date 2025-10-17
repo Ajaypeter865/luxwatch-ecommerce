@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style-admin.css">
+</head>
+
+<body class="">
+    <div class="d-flex">
+        <aside class="sidebar border-end">
+            <h5 class="p-3 border-bottom">My Admin</h5>
+            <nav class="list-group list-group-flush">
+                <a href="index .html" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="orders.html" class="list-group-item list-group-item-action">Orders</a>
+                <a href="products.html" class="list-group-item list-group-item-action">Products</a>
+                <a href="customers.html" class="list-group-item list-group-item-action">Customers</a>
+                <a href="coupons.html" class="list-group-item list-group-item-action">Coupons</a>
+                <a href="support.html" class="list-group-item list-group-item-action">Support</a>
+                <a href="settings.html" class="list-group-item list-group-item-action">Settings</a>
+                <a href="profile.html" class="list-group-item list-group-item-action">Profile</a>
+                <!-- Add extra items to test scrolling -->
+
+            </nav>
+        </aside>
+
+
+
+
+        <div class="container mt-4">
+
+            <!-- Top Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card p-3">
+                    <h5>Total Sales</h5>
+                    <h3>₹45,200</h3>
+                    <small>This Month</small>
+                </div>
+                <div class="card p-3">
+                    <h5>Orders</h5>
+                    <h3>320</h3>
+                    <small>Pending: 12</small>
+                </div>
+                <div class="card p-3">
+                    <h5>Products</h5>
+                    <h3>68</h3>
+                    <small>In Stock</small>
+                </div>
+                <div class="card p-3">
+                    <h5>Customers</h5>
+                    <h3>1,245</h3>
+                    <small>New: 24</small>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+                <h4>Recent Orders</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>101</td>
+                            <td>Aarav</td>
+                            <td>Luxury Watch</td>
+                            <td>1</td>
+                            <td><span class="status-delivered">Delivered</span></td>
+                            <td>₹15,000</td>
+                        </tr>
+                        <tr>
+                            <td>102</td>
+                            <td>Sneha</td>
+                            <td>Classic Watch</td>
+                            <td>2</td>
+                            <td><span class="status-pending">Pending</span></td>
+                            <td>₹8,000</td>
+                        </tr>
+                        <tr>
+                            <td>103</td>
+                            <td>Rahul</td>
+                            <td>Analog Watch</td>
+                            <td>1</td>
+                            <td><span class="status-cancelled">Cancelled</span></td>
+                            <td>₹5,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+</body>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

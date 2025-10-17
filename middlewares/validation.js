@@ -1,6 +1,5 @@
 
 const { body, validationResult } = require('express-validator')
-
 const signUpValidator = [
     body('email').isEmail(),
     body('password').isLength({ min: 5 }),
@@ -18,7 +17,6 @@ const signUpValidator = [
 ]
 
 const loginValidator = [
-
    
     body('identifier').notEmpty().withMessage('Email or phone is required')
     .custom(async value => {

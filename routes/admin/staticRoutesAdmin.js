@@ -5,9 +5,11 @@ const router = express.Router()
 
 // IMPORT MODULES
 
-const {gethomePageAdmin} = require('../../controllers/admin/getControllersAdmin')
+const { gethomePageAdmin, getloginPageAdmin } = require('../../controllers/admin/getControllersAdmin')
 
 // ROUTES
-router.get('/admin' ,gethomePageAdmin)
+router.get('/admin', gethomePageAdmin)
+router.get('/admin/login', getloginPageAdmin)
+
 
 module.exports = router

@@ -3,9 +3,14 @@ const asyncHandler = require('express-async-handler')
 
 
 const gethomePageAdmin = asyncHandler(async (req,res) => {
-    return res.send('Hello from Admin Home')    
+    return res.render('admin/adminIndex')    
+})
+
+const getloginPageAdmin = asyncHandler(async (req,res) => {
+    return res.render('admin/adminLogin')    
 })
 
 module.exports = {
-    gethomePageAdmin
+    gethomePageAdmin,
+    getloginPageAdmin
 }
