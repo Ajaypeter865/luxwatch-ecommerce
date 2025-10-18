@@ -1,16 +1,29 @@
+// IMPORT DEPENDENCY
 const jwt = require('jsonwebtoken')
+const asyncHandler = require('express-async-handler')
+
+// IMPORT MODULES
 const userModel = require('../models/user')
 
-const getToken = async (req) => {
+
+const getTokenUser = async (req) => {
     return req.cookies?.userToken
 }
 
+const getTokenadmin = async (req) => {
+    return req.cookies?.adminToken
+}
+
+
+
+
 const resLocals = async (req, res, next) => {
-    res.locals.user =  req.user || req.auth || null
+    res.locals.user = req.user || req.auth || null
     console.log('Function from resLocals: req.user', req.user, 'auth ', req.auth);
 
     return next()
 }
+
 
 const proctedAuth = async (req, res, next) => {
     // GOOGLE AUTHENTICATION
@@ -21,11 +34,11 @@ const proctedAuth = async (req, res, next) => {
         }
 
         // JWT AUTHENTICATION
-        const token = await getToken(req)
+        const token = await getTokenUser(req)
         if (token) {
-           const payload = jwt.verify(token, process.env.secretKey)
+            const payload = jwt.verify(token, process.env.secretKey)
 
-            req.auth = payload                
+            req.auth = payload
             return next()
         }
 
@@ -35,10 +48,25 @@ const proctedAuth = async (req, res, next) => {
         res.redirect('/login?error=Servererror')
 
     }
-
 }
 
 
 
+const proctedAuthAdmin = asyncHandler(async (req, res, next) => {
 
-module.exports = { proctedAuth, resLocals }
+    const token = await getTokenadmin(req)
+    
+    if(token) {
+
+        const payload = jwt.verify(token, process.env.secretKey)
+        req.admin = payload
+        return next()
+    }
+
+   return res.redirect('/admin/login')
+    
+})
+
+
+
+module.exports = { proctedAuth, resLocals ,proctedAuthAdmin }

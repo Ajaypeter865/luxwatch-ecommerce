@@ -1,0 +1,42 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-header text-center">
+    <a href="/admin/dashboard">
+      <img src="/img/logo/logo.png" alt="Logo" class="sidebar-logo">
+    </a>
+  </div>
+
+  <nav class="sidebar-nav mt-4">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a href="/admin/dashboard" class="nav-link <%= activePage === 'dashboard' ? 'active' : '' %>">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/orders" class="nav-link <%= activePage === 'orders' ? 'active' : '' %>">
+          <i class="fas fa-box me-2"></i> Orders
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/products" class="nav-link <%= activePage === 'products' ? 'active' : '' %>">
+          <i class="fas fa-tags me-2"></i> Products
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/customers" class="nav-link <%= activePage === 'customers' ? 'active' : '' %>">
+          <i class="fas fa-users me-2"></i> Customers
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/coupons" class="nav-link <%= activePage === 'coupons' ? 'active' : '' %>">
+          <i class="fas fa-ticket-alt me-2"></i> Coupons
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/admin/settings" class="nav-link <%= activePage === 'settings' ? 'active' : '' %>">
+          <i class="fas fa-cog me-2"></i> Settings
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

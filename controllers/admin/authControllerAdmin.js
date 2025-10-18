@@ -1,5 +1,6 @@
 // IMPORT DEPENDENCY
 const asyncHandler = require('express-async-handler')
+const jwt = require('jsonwebtoken')
 
 // IMPORT MODULES
 const adminModel = require('../../models/admin')
@@ -22,10 +23,24 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
     if (admin.password !== password) {
 
-           return res.render('admin/adminLogin', {
+        return res.render('admin/adminLogin', {
             error: 'Password is incorrect',
         })
     }
+
+    const token = jwt.sign({
+        id: admin.id,
+        email: admin.email,
+    }, process.env.secretKey,
+        { expiresIn: "7d" })
+
+    res.cookie('adminToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV = 'production',
+        sameSite: 'strict',
+        maxage: 7 * 24 * 60 * 60 * 10000
+    })
+
 
     return res.redirect('/admin')
 

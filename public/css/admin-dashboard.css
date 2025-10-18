@@ -1,0 +1,66 @@
+body {
+  font-family: "Josefin Sans", sans-serif;
+  background-color: #f8f9fa;
+}
+
+.admin-main {
+  margin-left: 240px;
+  padding: 30px;
+  min-height: 100vh;
+  background-color: #f4f5f7;
+}
+
+/* Summary Cards */
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  text-align: left;
+  border-top: 4px solid #ff2020;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h5 {
+  color: #0b1c39;
+  font-weight: 600;
+}
+
+.summary-card h2 {
+  font-weight: 700;
+  color: #ff2020;
+  margin-top: 5px;
+}
+
+.summary-card p {
+  color: #6c757d;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Recent Orders */
+.recent-orders-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-header {
+  background-color: #0b1c39;
+  color: #fff;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
