@@ -7,7 +7,7 @@ const router = express.Router()
 const { gethomePageAdmin, getloginPageAdmin, getOrdersAdmin, getProductsAdmin } = require('../../controllers/admin/getControllersAdmin')
 
 // IMPORT MIDDLEWARE
-const { proctedAuth, proctedAuthAdmin } = require('../../middlewares/auth')
+const {  proctedAuthAdmin } = require('../../middlewares/auth')
 
 
 // ROUTES
