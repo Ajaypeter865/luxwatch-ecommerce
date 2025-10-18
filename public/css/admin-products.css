@@ -1,0 +1,67 @@
+.btn-add {
+  background-color: #ff2020;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+.btn-add:hover {
+  background-color: #e01c1c;
+}
+
+.table-header {
+  background-color: #0b1c39;
+  color: #fff;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  padding: 14px 12px;
+}
+
+.product-thumb {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.btn-edit, .btn-delete {
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #0b1c39;
+  transition: 0.3s;
+}
+.btn-edit:hover { color: #ff2020; }
+.btn-delete:hover { color: #e01c1c; }
+
+.btn-add-image {
+  background-color: #0b1c39;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+}
+.btn-add-image:hover {
+  background-color: #ff2020;
+}
+
+.btn-save {
+  background-color: #ff2020;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-weight: 600;
+}
+.btn-save:hover {
+  background-color: #e01c1c;
+}
+
+.modal-content {
+  border-radius: 12px;
+}

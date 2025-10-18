@@ -1,0 +1,44 @@
+.table-header {
+  background-color: #0b1c39;
+  color: #fff;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  padding: 14px 12px;
+}
+
+.btn-update {
+  background-color: #ff2020;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.btn-update:hover {
+  background-color: #e01c1c;
+}
+
+.form-select {
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-main {
+  background-color: #f4f5f7;
+  padding: 30px;
+  margin-left: 240px;
+  min-height: 100vh;
+}
+
+h2 {
+  font-family: "Josefin Sans", sans-serif;
+}
