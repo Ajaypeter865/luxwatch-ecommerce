@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 // IMPORT MODULES
 const adminModel = require('../../models/admin')
-
+const productModel = require('../../models/products')
 
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
@@ -40,13 +40,30 @@ const loginAdmin = asyncHandler(async (req, res) => {
         sameSite: 'strict',
         maxage: 7 * 24 * 60 * 60 * 10000
     })
-
-
     return res.redirect('/admin')
-
 })
 
+const addProducts = asyncHandler(async (req, res) => {
+    // return res.send('Hy from addProducts')
+    const { name, category, brand, price, stock, status, images } = req.body 
+    console.log('addProducts - req.body =', req.body);
+
+    await productModel.create({
+        name: name,
+        category,
+        brand,
+        price,
+        stock,
+        status,
+        image: images,
+
+    })
+    console.log('addProducts - products created');
+    return res.send('Hy from addProducts')
+})
 
 module.exports = {
     loginAdmin,
+    addProducts
+    
 }
