@@ -1,7 +1,7 @@
-
+// IMPORT MODULES
 const addressModel = require('../../models/addresses')
 const userModel = require('../../models/user')
-
+const productModel = require('../../models/products')
 
 
 const getLoginUser = async (req, res) => {
@@ -23,9 +23,10 @@ const getHomePage = async (req, res) => {
 
     try {
         // NEED TO RENDER PRODUCTS HERE
+      products =  await productModel.find()
 
         return res.render('user/index', {
-            products: null,
+            products,
             success: null,
             error: null,
             user: res.locals

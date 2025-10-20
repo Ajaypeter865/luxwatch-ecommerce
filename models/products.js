@@ -28,17 +28,17 @@ const productSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'inactive'],
+        enum: ['Active', 'Inactive'],
         default: 'active',
     },
     category: {
         type: String,
-        enum: ['automatic', 'manual', 'limited Edition'],
+        enum: ['Automatic', 'Manual', 'Limited-Edition'],
         require: true
     },
     image: {
         type: String,
-        require: true
+        // require: true
     },
     reviews: {
         type: String,
@@ -49,4 +49,4 @@ const productSchema = new mongoose.Schema({
 
 const productModel = mongoose.model('product', productSchema)
 
-module.exports = { productModel }
+module.exports =  productModel 

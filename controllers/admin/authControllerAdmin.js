@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken')
 const adminModel = require('../../models/admin')
 const productModel = require('../../models/products')
 
+
+
+// FUCTIONS
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     console.log('loginAdmin - req.body =', req.body);
@@ -44,9 +47,13 @@ const loginAdmin = asyncHandler(async (req, res) => {
 })
 
 const addProducts = asyncHandler(async (req, res) => {
-    // return res.send('Hy from addProducts')
-    const { name, category, brand, price, stock, status, images } = req.body 
+    const { name, category, brand, price, stock, status} = req.body
+    
     console.log('addProducts - req.body =', req.body);
+    console.log('addProducts - req.file', req.file);
+    const imagePath = req.file.filename ? `/img/uploads/${req.file.filename}` : null
+    // console.log('addProducts - imagePath =', imagePath);
+    
 
     await productModel.create({
         name: name,
@@ -54,16 +61,17 @@ const addProducts = asyncHandler(async (req, res) => {
         brand,
         price,
         stock,
+        image : imagePath,
         status,
-        image: images,
 
     })
     console.log('addProducts - products created');
-    return res.send('Hy from addProducts')
+    const products = await productModel.find().sort({ createdAt: -1 })
+    res.render('admin/products', { products })
 })
 
 module.exports = {
     loginAdmin,
     addProducts
-    
+
 }
