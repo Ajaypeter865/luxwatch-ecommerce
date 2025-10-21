@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
+    // const errorMessage = req.flash('error')
     return res.render('admin/adminLogin')
 })
 

@@ -10,9 +10,9 @@ const productModel = require('../../models/products')
 
 
 
-// FUCTIONS
+// -----------------------------------------------------------FUCTIONS
 
-// LOGIN CONTROLLER
+//------------------------------------------------------- LOGIN CONTROLLER
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     console.log('loginAdmin - req.body =', req.body);
@@ -30,10 +30,14 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
     if (admin.password !== password) {
 
-        return res.render('admin/adminLogin', {
-            error: 'Password is incorrect',
-        })
+        // return res.render('admin/adminLogin', {
+        //     error: 'Password is incorrect',
+        // })
+        req.flash('error', 'Password is incorrect')
+        console.log('loginAdmin - flag 1');
+        return res.redirect('/admin/login')
     }
+
 
     const token = jwt.sign({
         id: admin.id,
@@ -50,7 +54,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     return res.redirect('/admin')
 })
 
-// PRODUCTS CONTROLLER
+//------------------------------------------------------- PRODUCTS CONTROLLER
 
 const addProducts = asyncHandler(async (req, res) => {
     const { name, category, brand, price, stock, status } = req.body
@@ -88,10 +92,10 @@ const editProducts = asyncHandler(async (req, res) => {
         const newImagePath = `/img/uploads/${req.file.filename}`
         const oldImagePath = path.join(__dirname, '...', 'public', selectedProduct.image)
 
-        if(fs.existsSync(oldImagePath)){
+        if (fs.existsSync(oldImagePath)) {
             fs.unlinkSync(oldImagePath)
             console.log('editProducts - oldImagedelted');
-            
+
         }
         selectedProduct.image = newImagePath
     }
@@ -112,9 +116,19 @@ const editProducts = asyncHandler(async (req, res) => {
 })
 
 
+const deleteProduct = asyncHandler(async (req, res) => {
+    const productId = req.params.id
+
+    await productModel.findByIdAndDelete(productId)
+    return res.redirect('/admin/products')
+
+})
+
+
 module.exports = {
     loginAdmin,
     addProducts,
     editProducts,
+    deleteProduct,
 
 }

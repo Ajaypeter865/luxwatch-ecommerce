@@ -1,5 +1,9 @@
+
+// IMPORT MODULES
 const userModel = require('../../models/user')
 const addressModel = require('../../models/addresses')
+
+// IMPORT DEPENDENCY
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
@@ -8,7 +12,8 @@ const asyncHandler = require('express-async-handler')
 require('dotenv').config()
 
 
-
+// -------------------------------------------------------FUNCTIONS
+// ---------------------------------------------------REGISTER FUNCTIONS
 const signupUser = async (req, res) => {
    const { username, email, phone, password, confirmPassword } = req.body
    if (password !== confirmPassword) {
@@ -184,7 +189,7 @@ const restPassword = async (req, res) => {
 }
 
 
-// PROFILE FUNCTIONS
+//------------------------------------------------------- PROFILE FUNCTIONS
 
 
 const editProfile = async (req, res) => {
@@ -260,12 +265,9 @@ const addAddress = async (req, res) => {
       console.log('addAddress - address created');
 
       const userAddress = await addressModel.find({ user: userId })
-
-      return res.render('user/address', {
-         addresses: userAddress,
-         user: req.auth || req.user,
-         success: 'Address added successfully',
-      })
+      req.flash('success', 'Address added successfully')
+      return res.redirect('/address')
+    
 
    } catch (error) {
       console.log('Error from addAddress', error.message, error.stack);
@@ -273,7 +275,7 @@ const addAddress = async (req, res) => {
       return res.render('user/address', {
          addresses: null,
          user: req.auth || req.user,
-         success: 'Address added successfully',
+         success: 'Cant Add Address',
       })
 
    }

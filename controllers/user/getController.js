@@ -88,7 +88,7 @@ const getAddressPage = async (req, res) => {
             //     $or: [{ user: req.auth.id }, { user: req.user.id }]
             // })
             const user = await userModel.findById(req.user.id)
-            const address = await addressModel.find({ user: req.user.id })
+            const address = await addressModel.find({ user: req.user.id }).sort({createdAt: -1})
 
             console.log('getAddressPage - user.user =', user);
 
@@ -99,7 +99,7 @@ const getAddressPage = async (req, res) => {
         }
         if (req.auth) {
             const user = await userModel.findById(req.auth.id)
-            const address = await addressModel.find({ user: req.auth.id })
+            const address = await addressModel.find({ user: req.auth.id }).sort({createdAt: -1})
             console.log('getAddressPage - user.auth =', req.auth);
             return res.render('user/address', { addresses: address, user: user })
 

@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 8000;
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const flash = require('connect-flash')
+const connectFlash = require('./middlewares/connect-flash')
 
 
 
@@ -38,21 +39,26 @@ app.use(passport.session());
 
 // FLASH JS
 app.use(flash())
+app.use(connectFlash)
+
+
+// REMOVED RES.LOCALS USER FROM HERE AND ADDED TO THE DOWN 
 
 // RES.LOCALS 
-app.use(async (req, res, next) => {
-    res.locals.user = null
-    return next()
-})
-
 app.use((req, res, next) => {
+    // console.log('req.flash =', req.session.flash);
+    // res.locals.success = null;
+    // res.locals.error = null
+    res.locals.user = null
     res.locals.message = null;
-    res.locals.success = null;
-    res.locals.error = null;
     res.locals.orders = null,
         res.locals.products = null
     next();
 });
+
+
+
+
 
 
 
