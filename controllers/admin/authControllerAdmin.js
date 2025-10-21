@@ -1,6 +1,8 @@
 // IMPORT DEPENDENCY
 const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
+const path = require('path')
 
 // IMPORT MODULES
 const adminModel = require('../../models/admin')
@@ -9,6 +11,8 @@ const productModel = require('../../models/products')
 
 
 // FUCTIONS
+
+// LOGIN CONTROLLER
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     console.log('loginAdmin - req.body =', req.body);
@@ -46,14 +50,16 @@ const loginAdmin = asyncHandler(async (req, res) => {
     return res.redirect('/admin')
 })
 
+// PRODUCTS CONTROLLER
+
 const addProducts = asyncHandler(async (req, res) => {
-    const { name, category, brand, price, stock, status} = req.body
-    
+    const { name, category, brand, price, stock, status } = req.body
+
     console.log('addProducts - req.body =', req.body);
     console.log('addProducts - req.file', req.file);
     const imagePath = req.file.filename ? `/img/uploads/${req.file.filename}` : null
     // console.log('addProducts - imagePath =', imagePath);
-    
+
 
     await productModel.create({
         name: name,
@@ -61,17 +67,54 @@ const addProducts = asyncHandler(async (req, res) => {
         brand,
         price,
         stock,
-        image : imagePath,
+        image: imagePath,
         status,
 
     })
     console.log('addProducts - products created');
-    const products = await productModel.find().sort({ createdAt: -1 })
-    res.render('admin/products', { products })
+    // const products = await productModel.find().sort({ createdAt: -1 })
+    return res.redirect('/admin/products')
 })
+
+
+
+const editProducts = asyncHandler(async (req, res) => {
+    const { name, category, brand, price, stock, status } = req.body
+
+    const productId = req.params.id
+    const selectedProduct = await productModel.findById(productId)
+
+    if (req.file) {
+        const newImagePath = `/img/uploads/${req.file.filename}`
+        const oldImagePath = path.join(__dirname, '...', 'public', selectedProduct.image)
+
+        if(fs.existsSync(oldImagePath)){
+            fs.unlinkSync(oldImagePath)
+            console.log('editProducts - oldImagedelted');
+            
+        }
+        selectedProduct.image = newImagePath
+    }
+    console.log('editProducts - flage 1');
+
+    // await imageUpdate.save()
+    selectedProduct.name = name,
+        selectedProduct.category = category,
+        selectedProduct.brand = brand,
+        selectedProduct.price = price,
+        selectedProduct.stock = stock,
+        selectedProduct.status = status,
+        await selectedProduct.save()
+
+    console.log('editProducts - flage 2');
+    // const products = await productModel.find()
+    return res.redirect('/admin/products')
+})
+
 
 module.exports = {
     loginAdmin,
-    addProducts
+    addProducts,
+    editProducts,
 
 }
