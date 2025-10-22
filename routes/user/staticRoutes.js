@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 
-// IMPORT MODULES
+// IMPORT MIDDLEWARES
 const { proctedAuth, resLocals } = require('../../middlewares/auth')
 
 const {editProfile} = require('../../controllers/user/authController')

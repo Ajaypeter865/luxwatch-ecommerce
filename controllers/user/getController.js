@@ -3,7 +3,7 @@ const addressModel = require('../../models/addresses')
 const userModel = require('../../models/user')
 const productModel = require('../../models/products')
 
-
+//------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
     return res.render('user/login', {
         success: null, error: null,
@@ -50,6 +50,8 @@ const getLogout = async (req, res) => {
 
 }
 
+
+// -----------------------------------------------------PROFILE FUNCTIONS
 const getProfilePage = async (req, res) => {
     try {
         console.log(`Fucntion from profilePage : ${req.user} = user .!!,${req.auth} = auth`);

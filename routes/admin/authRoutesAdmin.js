@@ -5,8 +5,6 @@ const router = express.Router()
 
 // IMPORT MIDDLEWARE
 
-// const upload = require('../middlewares/multer ')
-
 const { upload } = require('../../middlewares/multer')
 
 // IMPORT MODULES
