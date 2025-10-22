@@ -1,6 +1,8 @@
 // IMPORT DEPENDENCY
 const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
+const userModel = require('../../models/user')
+const addressesModel = require('../../models/addresses')
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
     return res.render('admin/adminLogin')
@@ -58,39 +60,29 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 })
 
 const getCustomers = asyncHandler(async (req, res) => {
-    const customers = [
-        {
-            id: 201,
-            name: "Midhun P",
-            email: "midhun@example.com",
-            phone: "6889234567",
-            address: "Kannur, Kerala",
-            status: "Verified",
-            totalOrders: 12,
-            lastOrder: "2025-09-10"
-        },
-        {
-            id: 202,
-            name: "Sneha R",
-            email: "sneha@example.com",
-            phone: "9876543210",
-            address: "Payyanur, Kerala",
-            status: "Active",
-            totalOrders: 5,
-            lastOrder: "2025-09-12"
-        },
-        {
-            id: 203,
-            name: "Arjun K",
-            email: "arjun@example.com",
-            phone: "9447788990",
-            address: "Taliparamba, Kerala",
-            status: "Blocked",
-            totalOrders: 2,
-            lastOrder: "2025-08-30"
-        }
-    ];
+    // const userId =  await userModel.find({})
+    const userId =  await userModel.find({}, {_id: 1})
+    console.log('getCustomer - userId =', userId);
+    const address = await addressesModel.find({isDefault : true}, { _id : 0,city: 1, state: 1 })
+    console.log('getCustomers - address =', address);
+    // const listedCustomers = await userModel.find().sort({ createdAt: -1 })
+    
+    // const address = await addressesModel.find()
+    // const customers= await addressesModel.find()
+    
+    const isDef =  await addressesModel.find({user: userId,isDefault : true}, { user: 1, })
+    console.log('getCustomers - isDef =', isDef);
+    const [{user}] = isDef
+    console.log('getCustomers - user =', user);
+    
+    const  addingAddress = await userModel.updateMany({ _id: user}, {$set : {address : address}})
+    console.log('getCustomers - addingAddress =', addingAddress);
+    const customers = await userModel.find().sort({ createdAt: -1 })
     return res.render('admin/customers', { customers })
+
+    
+    // console.log('getCustomers - customers =', customers);
+
 
 })
 

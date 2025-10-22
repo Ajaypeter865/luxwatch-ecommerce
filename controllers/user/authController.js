@@ -40,7 +40,7 @@ const signupUser = async (req, res) => {
       return res.render('user/login', { success: null, error: null })
    } catch (error) {
       console.error('Error from signupUser', error.message, error.stack);
-      return res.render('user/signup', { success: null, error: null })
+      return res.render('user/signup', { success: null, error: 'Server error' })
 
    }
 }

@@ -7,7 +7,7 @@ const router = express.Router()
 const { gethomePageAdmin, getloginPageAdmin, getOrdersAdmin, getProductsAdmin , getCustomers} = require('../../controllers/admin/getControllersAdmin')
 
 // IMPORT MIDDLEWARE
-const { proctedAuthAdmin } = require('../../middlewares/auth')
+const { proctedAuthAdmin, proctedAuth } = require('../../middlewares/auth')
 
 
 // ROUTES
@@ -15,7 +15,7 @@ router.get('/admin/login', getloginPageAdmin)
 router.get('/admin', proctedAuthAdmin, gethomePageAdmin)
 router.get('/admin/orders', proctedAuthAdmin, getOrdersAdmin)
 router.get('/admin/products', proctedAuthAdmin, getProductsAdmin)
-router.get('/admin/customers', getCustomers)
+router.get('/admin/customers',proctedAuth, getCustomers)
 
 
 module.exports = router

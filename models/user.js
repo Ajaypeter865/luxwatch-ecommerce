@@ -31,9 +31,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         unique: true,
         sparse: true,
-        
+
 
     },
+    status: {
+        type: String,
+        enum: ['Active', 'Blocked'],
+        default: 'Active',
+
+    },
+    address : {
+        // type : String,
+        default : [],
+    },
+
     resetOtp: Number,
     otpExpires: Date,
 },
