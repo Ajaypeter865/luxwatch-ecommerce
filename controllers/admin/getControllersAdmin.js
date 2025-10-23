@@ -60,30 +60,46 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 })
 
 const getCustomers = asyncHandler(async (req, res) => {
-    // const userId =  await userModel.find({})
-    const userId =  await userModel.find({}, {_id: 1})
+    const userId = await userModel.find({}, { _id: 1 })
     console.log('getCustomer - userId =', userId);
-    const address = await addressesModel.find({isDefault : true}, { _id : 0,city: 1, state: 1 })
-    console.log('getCustomers - address =', address);
-    // const listedCustomers = await userModel.find().sort({ createdAt: -1 })
     
-    // const address = await addressesModel.find()
-    // const customers= await addressesModel.find()
+    const customerss = await addressesModel.find({ user: userId, isDefault: true }, { _id: 1, city: 1, state: 1, user: 1 }).populate('user', 'email name phone')
+    const flatend = customerss.map(customer => ({
+        _id : customer.user?.id,
+        // email: customer.user?.email,
+        address : [customer.city, customer.state],
+        // name: customer.user?.name,
+        // phone : customer.user?.phone
+        
+    }))
+    const ids = flatend.map(customer => customer._id)
+    console.log('getCustomer - ids =', ids);
+
+    console.log('getCustomer - flatend =', flatend);
     
-    const isDef =  await addressesModel.find({user: userId,isDefault : true}, { user: 1, })
-    console.log('getCustomers - isDef =', isDef);
-    const [{user}] = isDef
-    console.log('getCustomers - user =', user);
     
-    const  addingAddress = await userModel.updateMany({ _id: user}, {$set : {address : address}})
-    console.log('getCustomers - addingAddress =', addingAddress);
+    
+    const custo = await userModel.updateMany({_id : ids} , {address: flatend})
+    console.log('getCustomer - custo =', custo);
+
+    
+    // const customers = custo
+    // console.log('getCustomers - address =', address);
+    
+    
+    // const populate =  await addressesModel.find().populate('user')
+    // console.log('getCustomers - populate =', populate);
+    
+    
+    
+    // const addingAddress = await userModel.updateMany({ _id: userId, }, { $set: { address: address} })
+    // console.log('getCustomers - addingAddress =', addingAddress);
     const customers = await userModel.find().sort({ createdAt: -1 })
+    console.log('getCustomers - customers =', customers);
+    
     return res.render('admin/customers', { customers })
 
-    
     // console.log('getCustomers - customers =', customers);
-
-
 })
 
 module.exports = {
