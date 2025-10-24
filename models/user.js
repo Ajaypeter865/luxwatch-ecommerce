@@ -40,12 +40,7 @@ const userSchema = new mongoose.Schema({
         default: 'Active',
 
     },
-    address : {
-        // type : String,
-        default : [],
-    },
-
-    resetOtp: Number,
+       resetOtp: Number,
     otpExpires: Date,
 },
     {

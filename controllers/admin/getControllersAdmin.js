@@ -59,48 +59,35 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 
 })
 
+
 const getCustomers = asyncHandler(async (req, res) => {
-    const userId = await userModel.find({}, { _id: 1 })
-    console.log('getCustomer - userId =', userId);
-    
-    const customerss = await addressesModel.find({ user: userId, isDefault: true }, { _id: 1, city: 1, state: 1, user: 1 }).populate('user', 'email name phone')
-    const flatend = customerss.map(customer => ({
-        _id : customer.user?.id,
-        // email: customer.user?.email,
-        address : [customer.city, customer.state],
-        // name: customer.user?.name,
-        // phone : customer.user?.phone
-        
+    const allUser = await userModel.find()
+
+    const defaultAddress = await addressesModel.find({isDefault: true}).populate('user', '_id').select('city state user')
+
+    const addAddress = new Map()
+
+    defaultAddress.forEach(address => {
+        addAddress.set(address.user._id.toString(),`${address.city} ${address.state}`)
+        console.log('getCustomers - addAddress =', addAddress);
+            
+    })
+    const customers = allUser.map(user => ({
+        name : user.name,
+        phone : user.phone,
+        email : user.email,
+        status: user.status,
+        address : addAddress.get(user._id.toString()) || 'No Default Address',
     }))
-    const ids = flatend.map(customer => customer._id)
-    console.log('getCustomer - ids =', ids);
-
-    console.log('getCustomer - flatend =', flatend);
-    
-    
-    
-    const custo = await userModel.updateMany({_id : ids} , {address: flatend})
-    console.log('getCustomer - custo =', custo);
-
-    
-    // const customers = custo
-    // console.log('getCustomers - address =', address);
-    
-    
-    // const populate =  await addressesModel.find().populate('user')
-    // console.log('getCustomers - populate =', populate);
-    
-    
-    
-    // const addingAddress = await userModel.updateMany({ _id: userId, }, { $set: { address: address} })
-    // console.log('getCustomers - addingAddress =', addingAddress);
-    const customers = await userModel.find().sort({ createdAt: -1 })
-    console.log('getCustomers - customers =', customers);
-    
-    return res.render('admin/customers', { customers })
-
-    // console.log('getCustomers - customers =', customers);
+    res.render('admin/customers', {customers})
 })
+
+
+
+
+
+
+
 
 module.exports = {
     gethomePageAdmin,
