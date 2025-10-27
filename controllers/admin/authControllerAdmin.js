@@ -7,6 +7,8 @@ const path = require('path')
 // IMPORT MODULES
 const adminModel = require('../../models/admin')
 const productModel = require('../../models/products')
+const addressesModel = require('../../models/addresses')
+const { emitWarning } = require('process')
 
 
 
@@ -125,14 +127,36 @@ const deleteProduct = asyncHandler(async (req, res) => {
 })
 
 
-// --------------------------------------------------CUSTOMER CONTROLLER
+// -------------------------------------------------------CUSTOMER CONTROLLER
 
+const addCustomers = asyncHandler(async (req, res) => {
+    const { name, phone, email, status, address } = req.body
+    console.log('addCustomers - req.body = ', req.body);
+    if (name.trim() === '' || phone.trim() === '' || email.trim() === '' || address.trim() === '') {
+        req.flash('error', 'Cant add empty feilds')
+        return res.redirect('/admin/customers')
+    }
 
+    await addressesModel.create({
+        name,
+        phone,
+        email,
+        address,
+        state : 'null',
+        pincode: '67009',
+        addressLine: 'Kerala',
+        city : 'null',
+
+    })
+    console.log('addCustomers - addresss created');
+    return res.redirect('/admin/customers')
+})
 
 module.exports = {
     loginAdmin,
     addProducts,
     editProducts,
     deleteProduct,
+    addCustomers,
 
 }
