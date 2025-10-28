@@ -51,7 +51,7 @@
                         <nav>
                             <ul id="navigation">
                                 <li><a href="/">Home</a></li>
-                                <li><a href="shop.html">shop</a></li>
+                                <li><a href="/shop">shop</a></li>
                                 <li><a href="about.html">about</a></li>
                                 <li><a href="contact.html">Contact</a></li>
                             </ul>
@@ -68,7 +68,7 @@
                             <%# This logic now works for both Passport and JWT %>
                                 <% if (user) { %>
                                     <%# If currentUser exists (logged in via Passport or JWT), link to profile %>
-                                        <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
+                                        <li> <a href="/profile"><span class="flaticon-user"></span></a></li> 
                                         <% } else { %>
                                             <%# If currentUser does NOT exist (logged out), link to login %>
                                                 <li> <a href="/login"><span class="flaticon-user"></span></a></li>

@@ -2,6 +2,7 @@
 const addressModel = require('../../models/addresses')
 const userModel = require('../../models/user')
 const productModel = require('../../models/products')
+const asyncHandler = require('express-async-handler')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -23,7 +24,7 @@ const getHomePage = async (req, res) => {
 
     try {
         // NEED TO RENDER PRODUCTS HERE
-      products =  await productModel.find()
+        products = await productModel.find()
 
         return res.render('user/index', {
             products,
@@ -90,7 +91,7 @@ const getAddressPage = async (req, res) => {
             //     $or: [{ user: req.auth.id }, { user: req.user.id }]
             // })
             const user = await userModel.findById(req.user.id)
-            const address = await addressModel.find({ user: req.user.id }).sort({createdAt: -1})
+            const address = await addressModel.find({ user: req.user.id }).sort({ createdAt: -1 })
 
             console.log('getAddressPage - user.user =', user);
 
@@ -101,7 +102,7 @@ const getAddressPage = async (req, res) => {
         }
         if (req.auth) {
             const user = await userModel.findById(req.auth.id)
-            const address = await addressModel.find({ user: req.auth.id }).sort({createdAt: -1})
+            const address = await addressModel.find({ user: req.auth.id }).sort({ createdAt: -1 })
             console.log('getAddressPage - user.auth =', req.auth);
             return res.render('user/address', { addresses: address, user: user })
 
@@ -116,7 +117,11 @@ const getAddressPage = async (req, res) => {
 }
 
 
-
+const getShopPage = asyncHandler(async (req, res) => {
+    const products = await productModel.find()
+    const categories = [1,2,3]
+    return res.render('user/shop', { products, categories })
+})
 
 
 
@@ -130,4 +135,5 @@ module.exports = {
     getLogout,
     getProfilePage,
     getAddressPage,
+    getShopPage,
 }

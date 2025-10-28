@@ -102,7 +102,7 @@ const editProducts = asyncHandler(async (req, res) => {
         }
         selectedProduct.image = newImagePath
     }
-    console.log('editProducts - flage 1');
+    // console.log('editProducts - flage 1');
 
     // await imageUpdate.save()
     selectedProduct.name = name,
@@ -113,7 +113,7 @@ const editProducts = asyncHandler(async (req, res) => {
         selectedProduct.status = status,
         await selectedProduct.save()
 
-    console.log('editProducts - flage 2');
+    // console.log('editProducts - flage 2');
     // const products = await productModel.find()
     return res.redirect('/admin/products')
 })

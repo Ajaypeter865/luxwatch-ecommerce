@@ -6,11 +6,11 @@ const passport = require('passport')
 // IMPORT MIDDLEWARES
 const { proctedAuth, resLocals } = require('../../middlewares/auth')
 
-const {editProfile} = require('../../controllers/user/authController')
+const { editProfile } = require('../../controllers/user/authController')
 
 // IMPORT GET MODULES
 const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp,
-    getRestPassword, getLogout, getProfilePage, getAddressPage
+    getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage
 } = require('../../controllers/user/getController')
 const userModel = require('../../models/user')
 
@@ -30,7 +30,9 @@ router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE H
 router.get('/address', proctedAuth, getAddressPage)
 
 
+// SHOP ROUTES
 
+router.get('/shop', proctedAuth, getShopPage)
 
 // GOOGLE AUTHENTICATION
 router.get('/google', passport.authenticate('google', {
