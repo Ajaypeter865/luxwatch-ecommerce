@@ -62,6 +62,12 @@ const loginUser = async (req, res) => {
 
       if (!User) return res.render('user/login', { success: null, error: 'User not exists' })
 
+      if (User.status === "Blocked") {
+         console.log('loginUser - Blocked');
+         
+         return res.render('user/login', { error: 'You are blocked by admin' })
+      }
+
 
       const isMatch = await bcrypt.compare(password, User.password)
 
@@ -267,7 +273,7 @@ const addAddress = async (req, res) => {
       const userAddress = await addressModel.find({ user: userId })
       req.flash('success', 'Address added successfully')
       return res.redirect('/address')
-    
+
 
    } catch (error) {
       console.log('Error from addAddress', error.message, error.stack);

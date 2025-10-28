@@ -1,21 +1,6 @@
 /* Admin Customers - theme-matched with Products/Dashboard */
 
 /* Base */
-.btn.btn-add {
-    background-color: #ff2020 !important;
-    color: #fff;
-    border: none;
-    font-weight: 600;
-    border-radius: 8px;
-    padding: 10px 18px;
-    transition: all 0.25s ease;
-}
-
-.btn.btn-add:hover {
-    background-color: #e01b1b;
-    transform: translateY(-2px);
-}
-
 body {
     font-family: "Josefin Sans", sans-serif;
     background-color: #f8f9fa;
@@ -25,36 +10,15 @@ body {
 /* Keep same admin-main margin-left as products page */
 .admin-main {
     margin-left: 250px;
-    /* match your sidebar width */
     background: #fff;
     min-height: 100vh;
     padding-bottom: 50px;
     padding-top: 20px;
 }
 
-/* Header + Add button */
+/* Header */
 .d-flex h2 {
     font-weight: 700;
-}
-
-/* Primary Button Style: Used for Add New Customer */
-/* Update the button selector for higher specificity */
-
-/* ... other CSS ... */
-
-/* Ensure Save buttons are also red */
-.btn-save {
-    background-color: #ff2020 !important;
-    /* already correctly using !important */
-    color: #fff;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
-}
-
-.btn-save:hover {
-    background-color: #e01b1b;
 }
 
 /* Top controls: Search and status filter */
@@ -82,8 +46,7 @@ body {
 
 /* Table header uses theme */
 .table-header {
-    background-color: #fdfdfd;
-    /* keep consistent with earlier tables */
+    background-color: #0b1c39;
     color: #fff;
     text-transform: uppercase;
     font-weight: 600;
@@ -94,7 +57,7 @@ body {
 .table th,
 .table td {
     vertical-align: middle;
-    padding: 14px 12px;
+    padding: 10px 8px;
     text-align: center;
     font-size: 14px;
     color: #202124;
@@ -130,82 +93,64 @@ body {
     background-color: #ff2020 !important;
 }
 
-/* Action buttons */
-.btn-edit,
-.btn-delete {
+/* Action buttons Container */
+.action-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+}
+
+/* Base style for all icon action buttons */
+.action-buttons-container .btn {
     border: none;
     border-radius: 6px;
-    padding: 6px 10px;
+    padding: 6px 8px;
     font-size: 14px;
-    margin-right: 6px;
     cursor: pointer;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* edit = neutral amber-ish (keeps consistency with product style earlier) */
-.btn-edit {
-    background-color:transparent;
-    color: #000000;
-}
-
-/* .btn-edit:hover {
-    background-color: #e0a800;
-} */
-
-/* delete uses theme red */
-.btn-delete {
-    background-color: transparent;
-    color: #000000;
-}
-
-/* .btn-delete:hover {
-    background-color: #d91c1c;
-} */
-
-/* Modal styling - match theme */
-.modal-content {
-    border-radius: 12px;
-    border: none;
-}
-
-.modal-header {
-    background-color: #fff;
-    color: #090909;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
-
-.modal-title {
-    font-weight: 600;
-}
-
-/* Inputs in modal */
-.form-label {
-    font-weight: 500;
-    color: #333;
-}
-
-.form-control,
-.form-select {
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-/* Save buttons use main theme color (applied to Save Customer & Save Changes) */
-.btn-save {
-    background-color: #ff2020 !important;
-    /* Added !important for reliability */
+/* BLOCK Button (Red) - Uses theme color */
+.btn-block {
+    background-color: #ff2020;
     color: #fff;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
+    transition: all 0.2s;
 }
 
-.btn-save:hover {
-    background-color: #e01b1b;
+.btn-block:hover {
+    background-color: #d91c1c;
 }
 
-/* Responsive small screens: keep similiar pattern to products */
+/* UNBLOCK Button (Green) - Uses success color */
+.btn-unblock {
+    background-color: #28a745;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.btn-unblock:hover {
+    background-color: #1e7e34;
+}
+
+/* DELETE Button */
+.btn-delete {
+    background-color: #ff2020;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #d91c1c;
+}
+
+
+/* Responsive small screens */
 @media (max-width: 992px) {
     .admin-main {
         margin-left: 0;
@@ -241,5 +186,9 @@ body {
     .table tbody tr {
         display: block;
         margin-bottom: 12px;
+    }
+    
+    .table tbody td[data-label="Actions"] .action-buttons-container {
+        justify-content: flex-end;
     }
 }

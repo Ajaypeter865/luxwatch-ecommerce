@@ -2,297 +2,239 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Customers Management | Watch Shop</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Customers Management | Watch Shop</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/admin-sidebar.css">
-  <link rel="stylesheet" href="/css/admin-dashboard.css">
-  <link rel="stylesheet" href="/css/admin-customers.css">
+    <link rel="stylesheet" href="/css/admin-sidebar.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/admin-customers.css">
 </head>
 
 <body>
-  <%- include('../partials/user/_toastify', { success: success, error: error }) %>
-
+    <%- include('../partials/user/_toastify', { success: success, error: error }) %>
     <%- include('../partials/admin/_sidebar', { activePage: 'customers' }) %>
 
-      <main class="admin-main">
+    <main class="admin-main">
         <div class="container-fluid py-4">
-          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <h2 class="fw-bold text-dark mb-0">Customer Management</h2>
-
-            <!-- Right: Add button -->
-            <div>
-              <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
-                <i class="fas fa-plus me-2"></i> Add New Customer
-              </button>
-            </div>
-          </div>
-
-          <!-- Top controls: left = search + status filter, right = (kept earlier) -->
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-2">
-              <input id="customerSearch" type="text" class="form-control search-input"
-                placeholder="Search by name, email or phone">
-              <select id="statusFilter" class="form-select status-filter">
-                <option value="All">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Blocked">Blocked</option>
-                <option value="Verified">Verified</option>
-              </select>
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <h2 class="fw-bold text-dark mb-0">Customer Management</h2>
+                <div></div>
             </div>
 
-            <!-- Optional right controls (kept empty for now) -->
-            <div></div>
-          </div>
-
-          <div class="card shadow-sm">
-            <div class="card-body p-0">
-              <table class="table table-hover align-middle mb-0">
-                <thead class="table-header">
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Status</th>
-                    <th>Total Orders</th>
-                    <th>Last Order</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <% if (customers && customers.length> 0) { %>
-                    <% customers.forEach((customer, i)=> { %>
-                      <tr>
-                        <td>
-                          <%= i + 1 %>
-                        </td>
-                        <td>
-                          <%= customer.name %>
-                        </td>
-                        <td>
-                          <%= customer.email %>
-                        </td>
-                        <td>
-                          <%= customer.phone %>
-                        </td>
-                        <td>
-                          <%= customer.address %>
-                        </td>
-                        <td>
-                          <span
-                            class="badge <%= customer.status === 'Active' ? 'bg-success' : (customer.status === 'Verified' ? 'bg-primary' : 'bg-danger') %>">
-                            <%= customer.status %>
-                          </span>
-                        </td>
-
-                        <!-- derived values (if you don't have values in dummy data, render dash) -->
-                        <td>
-                          <%= customer.totalOrders ?? '—' %>
-                        </td>
-                        <td>
-                          <%= customer.lastOrder ?? '—' %>
-                        </td>
-
-                        <td>
-                          <!-- Edit button includes all fields via data-* so edit modal can be prefilled -->
-                          <button class="btn btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#editCustomerModal"
-                            data-id="<%= customer._id || '' %>" data-name="<%= customer.name %>"
-                            data-email="<%= customer.email %>" data-phone="<%= customer.phone %>"
-                            data-address="<%= customer.address %>" data-status="<%= customer.status %>">
-                            <i class="fas fa-pen"></i>
-                          </button>
-
-                          <form action="/admin/customers/delete/<%= customer._id %>" method="POST" class="d-inline">
-                            <button class="btn btn-sm btn-delete" type="submit">
-                              <i class="fas fa-trash"></i>
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                      <% }) %>
-                        <% } else { %>
-                          <tr>
-                            <td colspan="9" class="text-center text-muted py-4">No customers found</td>
-                          </tr>
-                          <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <!-- Add Customer Modal -->
-      <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title fw-bold" id="addCustomerModalLabel">Add New Customer</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <form action="/admin/customers/add" method="POST">
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="name" class="form-control" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" required>
-                  </div>
-
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Phone</label>
-                    <input type="text" name="phone" class="form-control" required>
-                  </div>
-
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select" required>
-                      <option value="Active">Active</option>
-                      <option value="Verified">Verified</option>
-                      <option value="Blocked">Blocked</option>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <input id="customerSearch" type="text" class="form-control search-input"
+                        placeholder="Search by name, email or phone">
+                    <select id="statusFilter" class="form-select status-filter">
+                        <option value="All">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Blocked">Blocked</option>
+                        <option value="Verified">Verified</option>
                     </select>
-                  </div>
-
-                  <div class="col-12 mb-3">
-                    <label class="form-label">Address</label>
-                    <textarea name="address" class="form-control" rows="2" required></textarea>
-                  </div>
                 </div>
-              </div>
-
-              <div class="modal-footer">
-                <button class="btn btn-save w-100" type="submit">Save Customer</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Edit Customer Modal -->
-      <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title fw-bold" id="editCustomerModalLabel">Edit Customer</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div></div>
             </div>
 
-            <form id="editCustomerForm" action="/admin/customers/edit" method="POST">
-              <div class="modal-body">
-                <input type="hidden" name="id" id="editCustomerId">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-header">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Total Orders</th>
+                                <th>Last Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="name" id="editName" class="form-control" required>
-                  </div>
+                        <tbody id="customerTableBody">
+                            <% if (customers && customers.length > 0) { %>
+                                <% customers.forEach((customer, i)=> { 
+                                    const isBlocked = customer.status === 'Blocked';
+                                    const newStatus = isBlocked ? 'Active' : 'Blocked';
+                                    const btnClass = isBlocked ? 'btn-unblock' : 'btn-block';
+                                %>
+                                <tr class="customer-row">
+                                    <td data-label="ID"><%= i + 1 %></td>
+                                    <td data-label="Name"><%= customer.name %></td>
+                                    <td data-label="Email"><%= customer.email %></td>
+                                    <td data-label="Phone"><%= customer.phone %></td>
+                                    <td data-label="Address"><%= customer.address %></td>
+                                    <td data-label="Status" data-status="<%= customer.status %>">
+                                        <span
+                                            class="badge <%= customer.status === 'Active' ? 'bg-success' : (customer.status === 'Verified' ? 'bg-primary' : 'bg-danger') %>">
+                                            <%= customer.status %>
+                                        </span>
+                                    </td>
 
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" id="editEmail" class="form-control" required>
-                  </div>
+                                    <td data-label="Total Orders"><%= customer.totalOrders ?? '—' %></td>
+                                    <td data-label="Last Order"><%= customer.lastOrder ?? '—' %></td>
 
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Phone</label>
-                    <input type="text" name="phone" id="editPhone" class="form-control" required>
-                  </div>
-
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" id="editStatus" class="form-select" required>
-                      <option value="Active">Active</option>
-                      <option value="Verified">Verified</option>
-                      <option value="Blocked">Blocked</option>
-                    </select>
-                  </div>
-
-                  <div class="col-12 mb-3">
-                    <label class="form-label">Address</label>
-                    <textarea name="address" id="editAddress" class="form-control" rows="2" required></textarea>
-                  </div>
+                                    <td data-label="Actions">
+                                        <div class="action-buttons-container">
+                                            <form action="/admin/customers/toggle-status/<%= customer._id %>" method="POST" class="d-inline">
+                                                <input type="hidden" name="status" value="<%= newStatus %>">
+                                                
+                                                <button class="btn btn-sm <%= btnClass %>" type="submit" title="<%= isBlocked ? 'Set Active' : 'Block Customer' %>">
+                                                    <i class="fas <%= isBlocked ? 'fa-check' : 'fa-ban' %>"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form action="/admin/customers/delete/<%= customer._id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                                <button class="btn btn-sm btn-delete" type="submit" title="Delete Customer">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr id="noResultsRow">
+                                    <td colspan="9" class="text-center text-muted py-4">No customers found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
-              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="paginationControls">
+                        </ul>
+                </nav>
+            </div>
+            </div>
+    </main>
 
-              <div class="modal-footer">
-                <button class="btn btn-save w-100" type="submit">Save Changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- small script: prefill edit modal and set action -->
-      <script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
-          const editModal = document.getElementById('editCustomerModal');
-          if (!editModal) return;
+            const searchInput = document.getElementById('customerSearch');
+            const statusFilter = document.getElementById('statusFilter');
+            const tableBody = document.getElementById('customerTableBody');
+            const paginationControls = document.getElementById('paginationControls');
+            const rows = Array.from(document.querySelectorAll('.customer-row'));
+            const rowsPerPage = 5;
+            let currentPage = 1;
+            let filteredRows = rows;
+            
+            function applyClientFilterAndPaginate() {
+                const q = searchInput.value.trim().toLowerCase();
+                const st = statusFilter.value;
 
-          editModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            if (!button) return;
+                filteredRows = rows.filter(row => {
+                    // Skip placeholder "no results" row
+                    if (row.querySelectorAll('td').length === 1) return false;
+                    
+                    // Filter based on search query
+                    const cells = row.querySelectorAll('td:not(:last-child)');
+                    let rowText = Array.from(cells).map(td => td.textContent).join(' ').toLowerCase();
+                    const matchSearch = q === '' || rowText.includes(q);
 
-            const id = button.getAttribute('data-id') || '';
-            const name = button.getAttribute('data-name') || '';
-            const email = button.getAttribute('data-email') || '';
-            const phone = button.getAttribute('data-phone') || '';
-            const address = button.getAttribute('data-address') || '';
-            const status = button.getAttribute('data-status') || 'Active';
+                    // Filter based on status
+                    const statusCell = row.querySelector('td[data-status]');
+                    const statusText = statusCell ? statusCell.getAttribute('data-status') : '';
+                    const matchStatus = st === 'All' || statusText.toLowerCase() === st.toLowerCase();
 
-            // fill fields
-            document.getElementById('editCustomerId').value = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editPhone').value = phone;
-            document.getElementById('editAddress').value = address;
-            document.getElementById('editStatus').value = status;
+                    return matchSearch && matchStatus;
+                });
+                
+                // Reset to first page after filtering
+                currentPage = 1;
+                renderTableAndPagination();
+            }
 
-            // update form action to include id (if you prefer URL param)
-            const form = document.getElementById('editCustomerForm');
-            form.action = `/admin/customers/edit/${id}`;
-          });
+            function renderTableAndPagination() {
+                const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+                
+                // Hide all rows initially
+                rows.forEach(row => row.style.display = 'none');
+                
+                // Show "No customers found" if there are no results
+                const noResultsRow = document.getElementById('noResultsRow');
+                if (filteredRows.length === 0) {
+                     if (!noResultsRow) {
+                        // Create a "No Results" row if it doesn't exist
+                        const newRow = tableBody.insertRow();
+                        newRow.id = 'noResultsRow';
+                        const cell = newRow.insertCell();
+                        cell.setAttribute('colspan', '9');
+                        cell.classList.add('text-center', 'text-muted', 'py-4');
+                        cell.textContent = 'No customers found matching your criteria.';
+                    } else {
+                        noResultsRow.style.display = '';
+                    }
+                    paginationControls.innerHTML = '';
+                    return;
+                } else if (noResultsRow) {
+                    noResultsRow.style.display = 'none';
+                }
 
-          // Optional: client-side filtering (search + status). Not required, but helpful on big lists.
-          const searchInput = document.getElementById('customerSearch');
-          const statusFilter = document.getElementById('statusFilter');
+                // Calculate which rows to display for the current page
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                
+                filteredRows.slice(start, end).forEach(row => {
+                    row.style.display = '';
+                });
+                
+                // Build Pagination HTML
+                paginationControls.innerHTML = '';
+                
+                if (totalPages > 1) {
+                    const createPageItem = (page, text, disabled = false, active = false) => {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+                        
+                        const a = document.createElement('a');
+                        a.className = 'page-link';
+                        a.href = '#';
+                        a.textContent = text;
+                        if (!disabled && !active) {
+                            a.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                currentPage = page;
+                                renderTableAndPagination();
+                            });
+                        }
+                        li.appendChild(a);
+                        return li;
+                    };
+                    
+                    // Previous button
+                    paginationControls.appendChild(createPageItem(currentPage - 1, '«', currentPage === 1));
+                    
+                    // Page numbers
+                    for (let i = 1; i <= totalPages; i++) {
+                        paginationControls.appendChild(createPageItem(i, i.toString(), false, i === currentPage));
+                    }
+                    
+                    // Next button
+                    paginationControls.appendChild(createPageItem(currentPage + 1, '»', currentPage === totalPages));
+                }
+            }
 
-          function applyClientFilter() {
-            const q = searchInput.value.trim().toLowerCase();
-            const st = statusFilter.value;
-            const rows = document.querySelectorAll('table tbody tr');
+            // Initial render
+            applyClientFilterAndPaginate();
 
-            rows.forEach(row => {
-              // skip placeholder "no results" row
-              if (row.querySelectorAll('td').length === 1) return;
-              const text = row.textContent.toLowerCase();
-              const statusText = row.querySelector('td:nth-child(6)').innerText.trim();
-
-              const matchSearch = q === '' || text.includes(q);
-              const matchStatus = st === 'All' || statusText.toLowerCase() === st.toLowerCase();
-
-              row.style.display = (matchSearch && matchStatus) ? '' : 'none';
-            });
-          }
-
-          if (searchInput) searchInput.addEventListener('input', applyClientFilter);
-          if (statusFilter) statusFilter.addEventListener('change', applyClientFilter);
+            // Attach event listeners
+            if (searchInput) searchInput.addEventListener('input', applyClientFilterAndPaginate);
+            if (statusFilter) statusFilter.addEventListener('change', applyClientFilterAndPaginate);
         });
-      </script>
+    </script>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

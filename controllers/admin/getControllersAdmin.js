@@ -63,23 +63,27 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 const getCustomers = asyncHandler(async (req, res) => {
     const allUser = await userModel.find()
 
-    const defaultAddress = await addressesModel.find({isDefault: true}).populate('user', '_id').select('city state user')
+    const defaultAddress = await addressesModel.find({ isDefault: true }).populate('user', '_id').select('city state user')
+    console.log('getCustomers - defaultAddress =', defaultAddress);
+
 
     const addAddress = new Map()
 
     defaultAddress.forEach(address => {
-        addAddress.set(address.user._id.toString(),`${address.city} ${address.state}`)
+        console.log('getCustomers - addAddress =', addAddress);
+        addAddress.set(address.user._id.toString(), `${address.city} ${address.state}`)
         // console.log('getCustomers - addAddress =', addAddress);
-            
+
     })
     const customers = allUser.map(user => ({
-        name : user.name,
-        phone : user.phone,
-        email : user.email,
+        _id: user._id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
         status: user.status,
-        address : addAddress.get(user._id.toString()) || 'No Default Address',
+        address: addAddress.get(user._id.toString()) || 'No Default Address',
     }))
-    res.render('admin/customers', {customers})
+    return res.render('admin/customers', { customers })
 })
 
 
