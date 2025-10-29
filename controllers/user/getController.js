@@ -119,9 +119,41 @@ const getAddressPage = async (req, res) => {
 
 const getShopPage = asyncHandler(async (req, res) => {
     const products = await productModel.find()
-    const categories = [1,2,3]
+    const categories = [1, 2, 3]
     return res.render('user/shop', { products, categories })
 })
+
+
+const getCartPage = asyncHandler(async (req, res) => {
+    const cartItems = [
+        {
+            _id: 1,
+            name: "Classic Watch",
+            image: "/img/gallery/popular1.png",
+            price: 120,
+            quantity: 2,
+            total: 240,
+        },
+        {
+            _id: 2,
+            name: "Luxury Watch",
+            image: "/img/gallery/popular2.png",
+            price: 180,
+            quantity: 1,
+            total: 180,
+        },
+    ];
+
+    const totals = {
+        subtotal: 420,
+        shipping: 10,
+        total: 430,
+    };
+
+    return res.render("user/cart", { cartItems, totals });
+});
+
+// export default getCartPage;
 
 
 
@@ -136,4 +168,5 @@ module.exports = {
     getProfilePage,
     getAddressPage,
     getShopPage,
+    getCartPage,
 }

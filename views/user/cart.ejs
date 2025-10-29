@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>My Cart | Watch Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="/css/flaticon.css">
+  <link rel="stylesheet" href="/css/slicknav.css">
+  <link rel="stylesheet" href="/css/animate.min.css">
+  <link rel="stylesheet" href="/css/magnific-popup.css">
+  <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+  <link rel="stylesheet" href="/css/themify-icons.css">
+  <link rel="stylesheet" href="/css/slick.css">
+  <link rel="stylesheet" href="/css/nice-select.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/cart.css">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <%- include('../partials/user/navbar') %>
+  <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
+  <main>
+    <!-- Hero Section -->
+    <div class="slider-area">
+      <div class="single-slider slider-height2 d-flex align-items-center">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-12">
+              <div class="hero-cap text-center">
+                <h2>Your Cart</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Section -->
+    <section class="cart-section py-5">
+      <div class="container">
+        <div class="row">
+          <!-- Left: Cart Items -->
+          <div class="col-lg-8">
+            <div class="cart-table table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (cartItems && cartItems.length > 0) { %>
+                    <% cartItems.forEach(item => { %>
+                      <tr>
+                        <td class="cart-product d-flex align-items-center">
+                          <img src="<%= item.image %>" alt="<%= item.name %>" class="cart-img">
+                          <div class="cart-info">
+                            <h6><%= item.name %></h6>
+                          </div>
+                        </td>
+
+                        <td>₹<%= item.price.toFixed(2) %></td>
+
+                        <td>
+                          <div class="quantity-control">
+                            <button class="qty-btn minus" data-id="<%= item._id %>"><i class="ti-minus"></i></button>
+                            <input type="text" value="<%= item.quantity %>" class="qty-input" readonly>
+                            <button class="qty-btn plus" data-id="<%= item._id %>"><i class="ti-plus"></i></button>
+                          </div>
+                        </td>
+
+                        <td>₹<%= item.total.toFixed(2) %></td>
+
+                        <td>
+                          <!-- ✅ Form-based delete setup -->
+                          <form action="/cart/delete/<%= item._id %>" method="POST" class="d-inline">
+                            <button class="btn btn-sm delete-btn" type="submit" title="Remove Item">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="5" class="text-center">Your cart is empty.</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="cart-buttons d-flex justify-content-between">
+              <a href="/shop" class="btn-theme-outline">Continue Shopping</a>
+              <button class="btn-theme">Update Cart</button>
+            </div>
+          </div>
+
+          <!-- Right: Summary -->
+          <div class="col-lg-4">
+            <div class="cart-summary">
+              <h5>Cart Summary</h5>
+
+              <div class="summary-item d-flex justify-content-between">
+                <span>Subtotal:</span>
+                <span>₹<%= totals.subtotal.toFixed(2) %></span>
+              </div>
+
+              <div class="summary-item d-flex justify-content-between">
+                <span>Shipping:</span>
+                <span>₹<%= totals.shipping.toFixed(2) %></span>
+              </div>
+
+              <hr>
+
+              <div class="summary-total d-flex justify-content-between">
+                <strong>Total:</strong>
+                <strong>₹<%= totals.total.toFixed(2) %></strong>
+              </div>
+
+              <!-- ✅ Coupon Apply Form -->
+              <form action="/cart/apply-coupon" method="POST" class="coupon-box mt-4">
+                <input 
+                  type="text" 
+                  name="couponCode" 
+                  class="form-control coupon-input" 
+                  placeholder="Enter coupon code" 
+                  required
+                >
+                <button type="submit" class="btn-theme-outline mt-2 w-100">Apply Coupon</button>
+              </form>
+
+              <div class="checkout-section">
+                <button class="checkout-btn w-100 mt-4" onclick="location.href='/checkout'">
+                  Proceed to Checkout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <%- include('../partials/user/footer') %>
+
+  <!-- JS -->
+  <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+
+  <script>
+    // Quantity Increment/Decrement Logic
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const input = this.parentElement.querySelector('.qty-input');
+        let value = parseInt(input.value);
+
+        if (this.classList.contains('plus')) {
+          value++;
+        } else if (this.classList.contains('minus') && value > 1) {
+          value--;
+        }
+
+        input.value = value;
+        console.log(`Product ID: ${this.dataset.id}, New Quantity: ${value}`);
+      });
+    });
+  </script>
+</body>
+</html>
