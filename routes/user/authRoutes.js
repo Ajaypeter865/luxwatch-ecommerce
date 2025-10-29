@@ -3,10 +3,11 @@ const express = require('express')
 const router = express.Router()
 
 
-// CONTROLLERS
-const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile, logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress } = require('../../controllers/user/authController')
+// -----------------------------------------------------------CONTROLLERS
+const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
+    logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart } = require('../../controllers/user/authController')
 
-// MIDDLEWARES
+//----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
 const { proctedAuth } = require('../../middlewares/auth')
 
@@ -20,13 +21,17 @@ router.post('/editProfile', editProfile)
 router.post('/logout', logoutUser)
 
 
-// PROFILE FUCNTION
+// ---------------------------------------------------------PROFILE FUCNTION
 
 router.post('/address/add', proctedAuth, addAddress)
 router.post('/address/set-default/:id', proctedAuth, setDefaultAddress)
 router.post('/address/delete/:id', proctedAuth, deleteAddress)
 // router.post('/address/edit', proctedAuth, editAddress)
 
+
+//----------------------------------------------------- ADD TO CART FUCNTION
+
+router.post('/shop/addtocart/:id', proctedAuth, addToCart)
 
 
 module.exports = router

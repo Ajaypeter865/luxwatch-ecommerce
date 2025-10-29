@@ -117,6 +117,7 @@ const getAddressPage = async (req, res) => {
 }
 
 
+
 const getShopPage = asyncHandler(async (req, res) => {
     const products = await productModel.find()
     const categories = [1, 2, 3]

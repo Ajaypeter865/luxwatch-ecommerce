@@ -2,6 +2,7 @@
 // IMPORT MODULES
 const userModel = require('../../models/user')
 const addressModel = require('../../models/addresses')
+const cartModel = require('../../models/cart')
 
 // IMPORT DEPENDENCY
 const bcrypt = require('bcrypt')
@@ -9,6 +10,7 @@ const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 const { errorMonitor } = require('nodemailer/lib/xoauth2')
 const asyncHandler = require('express-async-handler')
+const productModel = require('../../models/products')
 require('dotenv').config()
 
 
@@ -64,7 +66,7 @@ const loginUser = async (req, res) => {
 
       if (User.status === "Blocked") {
          console.log('loginUser - Blocked');
-         
+
          return res.render('user/login', { error: 'You are blocked by admin' })
       }
 
@@ -373,6 +375,41 @@ const deleteAddress = asyncHandler(async (req, res) => {
 })
 
 
+
+//------------------------------------------------------- CART FUNCTIONS
+
+const addToCart = asyncHandler(async (req, res) => {
+
+   const userId = req.auth?.id || req.user?.id
+   console.log('addToCart - userId =', userId);
+   const productId = req.params.id
+   console.log('addToCart - productId =', productId);
+
+   if (!userId) {
+      req.flash('error', 'You Need To Login To Add Products')
+      return res.redirect('/shop')
+   }
+
+   if (!productId) {
+      req.flash('error', 'No Such Product')
+      return res.redirect('/shop')
+   }
+
+  
+
+
+   const cart = await cartModel.create({
+      user: userId,
+      product: productId,
+      price: productId.price
+   })
+   req.flash('success', 'Product Added To Cart')
+   res.redirect('/shop')
+
+})
+
+//------------------------------------------------------- LOGOUT FUNCTIONS
+
 const logoutUser = async (req, res) => {
    res.clearCookie('userToken')
    res.render('user/login')
@@ -392,4 +429,5 @@ module.exports = {
    setDefaultAddress,
    // editAddress,
    deleteAddress,
+   addToCart,
 }
