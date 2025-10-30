@@ -383,22 +383,27 @@ const addToCart = async (req, res) => {
 
    const productId = req.params.id
 
-   const product = await productModel.findOne({ productId })
+   const product = await productModel.findOne({ _id: productId })
+   console.log('addToCart - product =', product);
+
+   // const user = await userModel.findOne({userId})
 
    let newCart = await cartModel.findOne({ user: userId })
-   console.log('addToCart - ');
-   
+   // console.log('addToCart - newCart =', newCart);
+
 
    if (!newCart) {
-      await new cartModel({
+      newCart = new cartModel({
          user: userId,
          products: [],
          subTotal: 0,
          shipping: 0,
          grandTotal: 0,
       })
+      // console.log('addToCart - cartModel =', cartModel);
+      // console.log('addToCart - Type - cartModel =', typeof cartModel);
 
-      await newCart.save()
+      await newCart.save();
       console.log('addToCart - newCart Saved');
 
    }
@@ -406,20 +411,30 @@ const addToCart = async (req, res) => {
    const existingProduct = await newCart.products.find(item => item.product.equals(productId))
    if (existingProduct) {
 
-      await newCart.findByIdAndUpdate({ _id: newCart._id }, { $inc: { "products.$.quantity": 1 } })
+      await cartModel.findOneAndUpdate(
+         { _id: newCart.id, "products.product": productId },
+         { $inc: { "products.$.quantity": 1 } }
+      )
+
       req.flash('success', 'Product Incrimented')
       return res.redirect('/shop')
    }
 
    newCart.products.push({
       product: productId,
-      quantity,
+      quantity: 1,
       price: product.price,
       totalPrice: product.price,
    })
 
-   console.log('addToCart - New cart push Saved');
+   newCart.subTotal = newCart.products.reduce((sum, item) => sum + item.totalPrice, 0)
+   newCart.shipping = 10,
+      newCart.grandTotal = newCart.subTotal + newCart.shipping
 
+   await newCart.save()
+
+   console.log('addToCart - New cart push Saved');
+   req.flash('success', 'Product Added Successfully')
    return res.redirect('/shop')
 
 }
