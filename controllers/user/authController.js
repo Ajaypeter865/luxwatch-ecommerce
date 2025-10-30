@@ -378,35 +378,51 @@ const deleteAddress = asyncHandler(async (req, res) => {
 
 //------------------------------------------------------- CART FUNCTIONS
 
-const addToCart = asyncHandler(async (req, res) => {
+const addToCart = async (req, res) => {
+   const userId = req.user?.id || req.auth?.id
 
-   const userId = req.auth?.id || req.user?.id
-   console.log('addToCart - userId =', userId);
    const productId = req.params.id
-   console.log('addToCart - productId =', productId);
 
-   if (!userId) {
-      req.flash('error', 'You Need To Login To Add Products')
+   const product = await productModel.findOne({ productId })
+
+   let newCart = await cartModel.findOne({ user: userId })
+   console.log('addToCart - ');
+   
+
+   if (!newCart) {
+      await new cartModel({
+         user: userId,
+         products: [],
+         subTotal: 0,
+         shipping: 0,
+         grandTotal: 0,
+      })
+
+      await newCart.save()
+      console.log('addToCart - newCart Saved');
+
+   }
+
+   const existingProduct = await newCart.products.find(item => item.product.equals(productId))
+   if (existingProduct) {
+
+      await newCart.findByIdAndUpdate({ _id: newCart._id }, { $inc: { "products.$.quantity": 1 } })
+      req.flash('success', 'Product Incrimented')
       return res.redirect('/shop')
    }
 
-   if (!productId) {
-      req.flash('error', 'No Such Product')
-      return res.redirect('/shop')
-   }
-
-  
-
-
-   const cart = await cartModel.create({
-      user: userId,
+   newCart.products.push({
       product: productId,
-      price: productId.price
+      quantity,
+      price: product.price,
+      totalPrice: product.price,
    })
-   req.flash('success', 'Product Added To Cart')
-   res.redirect('/shop')
 
-})
+   console.log('addToCart - New cart push Saved');
+
+   return res.redirect('/shop')
+
+}
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
 

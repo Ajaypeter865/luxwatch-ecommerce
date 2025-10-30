@@ -11,7 +11,7 @@ const cartSchema = new mongoose.Schema({
     products: [
         {
             product: {
-                type: mongoose.Schema.Types.ObjectId,  
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'product',
                 required: true,
             },
@@ -43,10 +43,14 @@ const cartSchema = new mongoose.Schema({
         default: 0,
     },
 
-    total: {
+    grandTotal: {
         type: String,
         required: true,
     },
-}, 
-{ timestamps: true }
+},
+    { timestamps: true }
 )
+
+const cartModel = mongoose.model('cart', cartSchema)
+
+module.exports = cartModel
