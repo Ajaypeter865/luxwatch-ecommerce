@@ -37,7 +37,7 @@ router.get('/shop', proctedAuth, getShopPage)
 
 // CART ROUTES
 
-router.get('/cart', getCartPage)
+router.get('/cart', proctedAuth, getCartPage)
 
 // GOOGLE AUTHENTICATION
 router.get('/google', passport.authenticate('google', {

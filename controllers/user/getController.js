@@ -3,6 +3,7 @@ const addressModel = require('../../models/addresses')
 const userModel = require('../../models/user')
 const productModel = require('../../models/products')
 const asyncHandler = require('express-async-handler')
+const cartModel = require('../../models/cart')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -126,35 +127,27 @@ const getShopPage = asyncHandler(async (req, res) => {
 
 
 const getCartPage = asyncHandler(async (req, res) => {
-    const cartItems = [
-        {
-            _id: 1,
-            name: "Classic Watch",
-            image: "/img/gallery/popular1.png",
-            price: 120,
-            quantity: 2,
-            total: 240,
-        },
-        {
-            _id: 2,
-            name: "Luxury Watch",
-            image: "/img/gallery/popular2.png",
-            price: 180,
-            quantity: 1,
-            total: 180,
-        },
-    ];
 
-    const totals = {
-        subtotal: 420,
-        shipping: 10,
-        total: 430,
-    };
+    const userId = req.auth?.id || req.user?.id
+    console.log('getCartPage - userId =', userId);
+
+    const cartItems = await cartModel.find({ user: userId }).populate('products.product', 'name image quantity price totalPrice')
+
+
+    // console.log('getCartPage - cart =', cartItems);
+    console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
+
+
+
+    const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
+    console.log('getCartPage - totals =', totals);
 
     return res.render("user/cart", { cartItems, totals });
+    // return res.send('Hey')
+
+
 });
 
-// export default getCartPage;
 
 
 

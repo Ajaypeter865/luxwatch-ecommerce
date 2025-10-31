@@ -71,7 +71,7 @@
                           </div>
                         </td>
 
-                        <td>₹<%= item.price.toFixed(2) %></td>
+                        <td>  ₹<%= item.price ? item.price.toFixed(2) : "0.00" %></td>
 
                         <td>
                           <div class="quantity-control">
@@ -81,7 +81,7 @@
                           </div>
                         </td>
 
-                        <td>₹<%= item.total.toFixed(2) %></td>
+                        <td>  ₹<%= item.total ? item.total.toFixed(2) : "0.00" %></td>
 
                         <td>
                           <!-- ✅ Form-based delete setup -->
@@ -115,7 +115,7 @@
 
               <div class="summary-item d-flex justify-content-between">
                 <span>Subtotal:</span>
-                <span>₹<%= totals.subtotal.toFixed(2) %></span>
+                <span>₹<%= totals.subTotal.toFixed(2) %></span>
               </div>
 
               <div class="summary-item d-flex justify-content-between">
@@ -126,8 +126,8 @@
               <hr>
 
               <div class="summary-total d-flex justify-content-between">
-                <strong>Total:</strong>
-                <strong>₹<%= totals.total.toFixed(2) %></strong>
+                <strong>Grand Total:</strong>
+                <strong>₹<%= totals.grandTotal.toFixed(2) %></strong>
               </div>
 
               <!-- ✅ Coupon Apply Form -->
