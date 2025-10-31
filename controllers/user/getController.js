@@ -76,6 +76,9 @@ const getProfilePage = async (req, res) => {
     }
 }
 
+
+
+
 const getAddressPage = async (req, res) => {
 
     try {
@@ -126,16 +129,35 @@ const getShopPage = asyncHandler(async (req, res) => {
 })
 
 
+
+
 const getCartPage = asyncHandler(async (req, res) => {
 
     const userId = req.auth?.id || req.user?.id
     console.log('getCartPage - userId =', userId);
 
-    const cartItems = await cartModel.find({ user: userId }).populate('products.product', 'name image quantity price totalPrice')
+    const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
+    console.log('getCartPage - cart =', cart);
 
+    if (!cart || !cart.products || cart.products.length === 0) {
+        console.log('Enter if Block');
 
-    // console.log('getCartPage - cart =', cartItems);
-    console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
+        return res.render('user/cart', {
+            cartItems: [],
+            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }
+        })
+    }
+
+    const cartItems = cart.products.map(item => ({
+        _id: item.product._id,
+        name: item.product.name,
+        image: item.product.image,
+        price: Number(item.product.price),
+        quantity: item.quantity,
+        total: item.product.price * item.quantity,
+    }));
+    console.log('getCartPage - cartItems =', cartItems);
+    // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
 
 
 
@@ -144,7 +166,6 @@ const getCartPage = asyncHandler(async (req, res) => {
 
     return res.render("user/cart", { cartItems, totals });
     // return res.send('Hey')
-
 
 });
 
