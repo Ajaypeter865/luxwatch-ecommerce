@@ -134,7 +134,7 @@ const getShopPage = asyncHandler(async (req, res) => {
 const getCartPage = asyncHandler(async (req, res) => {
 
     const userId = req.auth?.id || req.user?.id
-    console.log('getCartPage - userId =', userId);
+    // console.log('getCartPage - userId =', userId);
 
     const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
     console.log('getCartPage - cart =', cart);
@@ -156,16 +156,15 @@ const getCartPage = asyncHandler(async (req, res) => {
         quantity: item.quantity,
         total: item.product.price * item.quantity,
     }));
-    console.log('getCartPage - cartItems =', cartItems);
+    // console.log('getCartPage - cartItems =', cartItems);
     // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
 
 
 
     const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
-    console.log('getCartPage - totals =', totals);
+    // console.log('getCartPage - totals =', totals);
 
     return res.render("user/cart", { cartItems, totals });
-    // return res.send('Hey')
 
 });
 

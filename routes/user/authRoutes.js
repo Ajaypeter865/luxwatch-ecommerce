@@ -5,7 +5,7 @@ const router = express.Router()
 
 // -----------------------------------------------------------CONTROLLERS
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
-    logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart } = require('../../controllers/user/authController')
+    logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart, deleteCartProducts } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -32,6 +32,7 @@ router.post('/address/delete/:id', proctedAuth, deleteAddress)
 //----------------------------------------------------- ADD TO CART FUCNTION
 
 router.post('/shop/addtocart/:id', proctedAuth, addToCart)
+router.post('/cart/delete/:id', proctedAuth, deleteCartProducts)
 
 
 module.exports = router

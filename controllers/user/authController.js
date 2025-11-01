@@ -439,6 +439,45 @@ const addToCart = async (req, res) => {
 
 }
 
+const deleteCartProducts = asyncHandler(async (req, res) => {
+   const userId = req.auth?.id || req.user?.id
+
+   const productId = req.params.id
+   console.log('deteleCartProduct - productId =', productId);
+
+
+   // const cartId = await cartModel.findOne({ user: userId }).select('_id')
+   const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
+   console.log('deteleCartProduct - cart with populate =', cart);
+
+
+   const cartItems = cart.products.filter(item => {
+      return item.product._id.toString() !== productId
+   })
+
+   const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
+
+   const itemsUpdated = cartItems.map(item => ({
+      _id : item._id,
+      name : item.name,
+      image: item.image,
+      price : item.price,
+      quantity : item.quantity,
+      totalPrice : item.totalPrice
+   }))
+   console.log('deteleCartProduct - cartItems =', cartItems);
+
+   console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
+
+   return res.send('HI')
+   
+
+   // console.log('deteleCartProduct - products.forEach =', product);
+   return res.render('user/cart', { cartItems, totals })
+   return res.redirect('/cart')
+
+})
+
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
 const logoutUser = async (req, res) => {
@@ -461,4 +500,6 @@ module.exports = {
    // editAddress,
    deleteAddress,
    addToCart,
+   deleteCartProducts,
+
 }
