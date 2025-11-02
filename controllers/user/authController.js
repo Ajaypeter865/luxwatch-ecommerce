@@ -454,27 +454,32 @@ const deleteCartProducts = asyncHandler(async (req, res) => {
    const cartItems = cart.products.filter(item => {
       return item.product._id.toString() !== productId
    })
+   console.log('deteleCartProduct - cartItems =', cartItems);
 
    const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
 
-   const itemsUpdated = cartItems.map(item => ({
-      _id : item._id,
-      name : item.name,
-      image: item.image,
-      price : item.price,
-      quantity : item.quantity,
-      totalPrice : item.totalPrice
-   }))
-   console.log('deteleCartProduct - cartItems =', cartItems);
+   await cartModel.updateOne({ user: userId },
+      {
+         $set: {
+            products: cartItems,
+            subTotal: cart.products.reduce((sum, item) => sum + item.totalPrice, 0),
+            // grandTotal: cart.grandTotal.reduce((sum, item) => sum + item.totalPrice, 0) + cart.shipping
 
-   console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
+         },
+
+      }
+   )
+
+
+   return res.redirect('/cart')
+
+   // console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
 
    return res.send('HI')
-   
+
 
    // console.log('deteleCartProduct - products.forEach =', product);
    return res.render('user/cart', { cartItems, totals })
-   return res.redirect('/cart')
 
 })
 

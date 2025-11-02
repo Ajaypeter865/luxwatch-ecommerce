@@ -136,7 +136,7 @@ const getCartPage = asyncHandler(async (req, res) => {
     const userId = req.auth?.id || req.user?.id
     // console.log('getCartPage - userId =', userId);
 
-    const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
+    let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
     console.log('getCartPage - cart =', cart);
 
     if (!cart || !cart.products || cart.products.length === 0) {
@@ -161,8 +161,18 @@ const getCartPage = asyncHandler(async (req, res) => {
 
 
 
-    const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
-    // console.log('getCartPage - totals =', totals);
+    // const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
+
+    cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
+    cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
+
+    const totals = {
+        shipping: cart.shipping,
+        grandTotal: cart.grandTotal,
+        subTotal: cart.subTotal,
+    }
+
+    console.log('getCartPage - totals =', totals);
 
     return res.render("user/cart", { cartItems, totals });
 
