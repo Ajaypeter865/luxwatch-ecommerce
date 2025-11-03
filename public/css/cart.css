@@ -31,7 +31,7 @@
 .quantity-control {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 0px solid #ccc;
   border-radius: 4px;
   overflow: hidden;
 }

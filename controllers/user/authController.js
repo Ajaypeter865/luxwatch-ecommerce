@@ -445,6 +445,20 @@ const addToCart = async (req, res) => {
 
 }
 
+const updateCart = asyncHandler(async (req, res) => {
+  const { quantities } = req.body; // e.g. { "6789abc": "2", "6789def": "3" }
+
+  for (const [productId, qty] of Object.entries(quantities)) {
+    await cartModel.updateOne(
+      { "items.product": productId },
+      { $set: { "items.$.quantity": parseInt(qty) } }
+    );
+  }
+
+  req.flash("success", "Cart updated successfully!");
+  res.redirect("/cart");
+   
+})
 
 const deleteCartProducts = async (req, res) => {
 
@@ -457,28 +471,30 @@ const deleteCartProducts = async (req, res) => {
       console.log('deleteCartProducts - cart 1 =', cart);
 
 
-      const cartItems = cart.products.filter(item => {
+      const updatedProducts = cart.products.filter(item => {
          return item.product._id.toString() !== productId
       })
 
-      console.log('deleteCartProducts - cartItems =', cartItems);
+      console.log('deleteCartProducts - cartItems =', updatedProducts);
 
       await cartModel.updateOne({ user: userId },
          {
             $set: {
-               products: cartItems
+               products: updatedProducts
             }
          }
       )
 
       const updatedCart = await cartModel.findOne({ user: userId })
-      
-      updatedCart.totalPrice = updatedCart.products.reduce((sum, item) => {
+
+      updatedCart.subTotal = updatedCart.products.reduce((sum, item) => {
          return sum + item.totalPrice
       }, 0)
-      cart.shipping = 10,
+      updatedCart.shipping = 10,
 
-         cart.grandTotal = cart.subTotal + cart.shipping
+         updatedCart.grandTotal = updatedCart.subTotal + updatedCart.shipping
+
+         await updatedCart.save()
 
       req.flash('error', 'Item deleted')
       return res.redirect('/cart')
@@ -492,48 +508,6 @@ const deleteCartProducts = async (req, res) => {
 
 
 
-
-
-// const deleteCartProducts = asyncHandler(async (req, res) => {
-//    const userId = req.auth?.id || req.user?.id
-
-//    const productId = req.params.id
-//    console.log('deteleCartProduct - productId =', productId);
-
-
-//    // const cartId = await cartModel.findOne({ user: userId }).select('_id')
-//    const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
-//    console.log('deteleCartProduct - cart with populate =', cart);
-
-
-//    const cartItems = cart.products.filter(item => {
-//       return item.product._id.toString() !== productId
-//    })
-//    console.log('deteleCartProduct - cartItems =', cartItems);
-
-//    const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
-
-//    await cartModel.updateOne({ user: userId },
-//       {
-//          $set: {
-//             products: cartItems,
-//             // subTotal: cart.products.reduce((sum, item) => sum + item.totalPrice, 0),
-//             // grandTotal: cart.grandTotal.reduce((sum, item) => sum + item.totalPrice, 0) + cart.shipping
-
-//          },
-
-//       }
-//    )
-
-
-//    return res.redirect('/cart')
-
-//    // console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
-//    return res.send('HI')
-//    // console.log('deteleCartProduct - products.forEach =', product);
-//    return res.render('user/cart', { cartItems, totals })
-
-// })
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
@@ -558,5 +532,6 @@ module.exports = {
    deleteAddress,
    addToCart,
    deleteCartProducts,
+   updateCart,
 
 }

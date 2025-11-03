@@ -49,63 +49,74 @@
         <div class="row">
           <!-- Left: Cart Items -->
           <div class="col-lg-8">
-            <div class="cart-table table-responsive">
-              <table class="table align-middle">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (cartItems && cartItems.length > 0) { %>
-                    <% cartItems.forEach(item => { %>
-                      <tr>
-                        <td class="cart-product d-flex align-items-center">
-                          <img src="<%= item.image %>" alt="<%= item.name %>" class="cart-img">
-                          <div class="cart-info">
-                            <h6><%= item.name %></h6>
-                          </div>
-                        </td>
 
-                        <td>  ₹<%= item.price ? item.price.toFixed(2) : "0.00" %></td>
-
-                        <td>
-                          <div class="quantity-control">
-                            <button class="qty-btn minus" data-id="<%= item._id %>"><i class="ti-minus"></i></button>
-                            <input type="text" value="<%= item.quantity %>" class="qty-input" readonly>
-                            <button class="qty-btn plus" data-id="<%= item._id %>"><i class="ti-plus"></i></button>
-                          </div>
-                        </td>
-
-                        <td>  ₹<%= item.total ? item.total.toFixed(2) : "0.00" %></td>
-
-                        <td>
-                          <!-- ✅ Form-based delete setup -->
-                          <form action="/cart/delete/<%= item._id %>" method="POST" class="d-inline">
-                            <button class="btn btn-sm delete-btn" type="submit" title="Remove Item">
-                              <i class="fas fa-trash"></i>
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                    <% }) %>
-                  <% } else { %>
+            <!-- ✅ Wrap entire cart table + Update Cart button inside one form -->
+            <form action="/cart/update" method="POST" id="updateCartForm">
+              <div class="cart-table table-responsive">
+                <table class="table align-middle">
+                  <thead>
                     <tr>
-                      <td colspan="5" class="text-center">Your cart is empty.</td>
+                      <th>Product</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
+                      <th></th>
                     </tr>
-                  <% } %>
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    <% if (cartItems && cartItems.length > 0) { %>
+                      <% cartItems.forEach(item => { %>
+                        <tr>
+                          <td class="cart-product d-flex align-items-center">
+                            <img src="<%= item.image %>" alt="<%= item.name %>" class="cart-img">
+                            <div class="cart-info">
+                              <h6><%= item.name %></h6>
+                            </div>
+                          </td>
 
-            <div class="cart-buttons d-flex justify-content-between">
-              <a href="/shop" class="btn-theme-outline">Continue Shopping</a>
-              <button class="btn-theme">Update Cart</button>
-            </div>
+                          <td>₹<%= item.price ? item.price.toFixed(2) : "0.00" %></td>
+
+                          <td>
+                            <div class="quantity-control">
+                              <button class="qty-btn minus" type="button"><i class="ti-minus"></i></button>
+                              <input 
+                                type="text" 
+                                name="quantities[<%= item._id %>]" 
+                                value="<%= item.quantity %>" 
+                                class="qty-input" 
+                                readonly
+                              >
+                              <button class="qty-btn plus" type="button"><i class="ti-plus"></i></button>
+                            </div>
+                          </td>
+
+                          <td>₹<%= item.total ? item.total.toFixed(2) : "0.00" %></td>
+
+                          <td>
+                            <form action="/cart/delete/<%= item._id %>" method="POST" class="d-inline">
+                              <button class="btn btn-sm delete-btn" type="submit" title="Remove Item">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="5" class="text-center">Your cart is empty.</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="cart-buttons d-flex justify-content-between">
+                <a href="/shop" class="btn-theme-outline">Continue Shopping</a>
+                <button type="submit" class="btn-theme">Update Cart</button>
+              </div>
+            </form>
+            <!-- ✅ End of update cart form -->
+
           </div>
 
           <!-- Right: Summary -->
@@ -132,13 +143,8 @@
 
               <!-- ✅ Coupon Apply Form -->
               <form action="/cart/apply-coupon" method="POST" class="coupon-box mt-4">
-                <input 
-                  type="text" 
-                  name="couponCode" 
-                  class="form-control coupon-input" 
-                  placeholder="Enter coupon code" 
-                  required
-                >
+                <input type="text" name="couponCode" class="form-control coupon-input"
+                  placeholder="Enter coupon code" required>
                 <button type="submit" class="btn-theme-outline mt-2 w-100">Apply Coupon</button>
               </form>
 
@@ -175,7 +181,6 @@
         }
 
         input.value = value;
-        console.log(`Product ID: ${this.dataset.id}, New Quantity: ${value}`);
       });
     });
   </script>
