@@ -379,109 +379,161 @@ const deleteAddress = asyncHandler(async (req, res) => {
 //------------------------------------------------------- CART FUNCTIONS
 
 const addToCart = async (req, res) => {
-   const userId = req.user?.id || req.auth?.id
 
-   const productId = req.params.id
-
-   const product = await productModel.findOne({ _id: productId })
-   console.log('addToCart - product =', product);
-
-   // const user = await userModel.findOne({userId})
-
-   let newCart = await cartModel.findOne({ user: userId })
-   // console.log('addToCart - newCart =', newCart);
-
-
-   if (!newCart) {
-      newCart = new cartModel({
-         user: userId,
-         products: [],
-         subTotal: 0,
-         shipping: 0,
-         grandTotal: 0,
-      })
-      // console.log('addToCart - cartModel =', cartModel);
-      // console.log('addToCart - Type - cartModel =', typeof cartModel);
-
-      await newCart.save();
-      console.log('addToCart - newCart Saved');
-
-   }
-
-   const existingProduct = await newCart.products.find(item => item.product.equals(productId))
-   if (existingProduct) {
-
-      await cartModel.findOneAndUpdate(
-         { _id: newCart.id, "products.product": productId },
-         { $inc: { "products.$.quantity": 1 } }
-      )
-
-      req.flash('success', 'Product Incrimented')
-      return res.redirect('/shop')
-   }
-
-   newCart.products.push({
-      product: productId,
-      quantity: 1,
-      price: product.price,
-      totalPrice: product.price,
-   })
-
-   newCart.subTotal = newCart.products.reduce((sum, item) => sum + item.totalPrice, 0)
-   newCart.shipping = 10,
-      newCart.grandTotal = newCart.subTotal + newCart.shipping
-
-   await newCart.save()
-
-   console.log('addToCart - New cart push Saved');
-   req.flash('success', 'Product Added Successfully')
-   return res.redirect('/shop')
-
-}
-
-const deleteCartProducts = asyncHandler(async (req, res) => {
    const userId = req.auth?.id || req.user?.id
 
    const productId = req.params.id
-   console.log('deteleCartProduct - productId =', productId);
-
-
-   // const cartId = await cartModel.findOne({ user: userId }).select('_id')
-   const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
-   console.log('deteleCartProduct - cart with populate =', cart);
-
-
-   const cartItems = cart.products.filter(item => {
-      return item.product._id.toString() !== productId
-   })
-   console.log('deteleCartProduct - cartItems =', cartItems);
-
-   const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
-
-   await cartModel.updateOne({ user: userId },
-      {
-         $set: {
-            products: cartItems,
-            subTotal: cart.products.reduce((sum, item) => sum + item.totalPrice, 0),
-            // grandTotal: cart.grandTotal.reduce((sum, item) => sum + item.totalPrice, 0) + cart.shipping
-
-         },
-
+   try {
+      const product = await productModel.findOne({ _id: productId })
+      if (!product) {
+         req.flash('error', 'No product found')
+         return res.redirect('/shop')
       }
-   )
 
 
-   return res.redirect('/cart')
+      let cart = await cartModel.findOne({ user: userId })
+      if (!cart) {
+         cart = new cartModel({
+            product: [],
+            user: userId,
+            subTotal: 0,
+            shipping: 0,
+            grandTotal: 0
+         })
+      }
 
-   // console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
+      const existingProductIndex = cart.products.findIndex(item => item.product.equals(productId))
 
-   return res.send('HI')
+      if (existingProductIndex > -1) {
+         const productInCart = cart.products[existingProductIndex]
+         productInCart.quantity += 1,
+
+            productInCart.totalPrice = productInCart.quantity * productInCart.price
+         req.flash('success', 'Product Incrimented')
+
+         // return res.redirect('/shop')
+
+      } else {
+         cart.products.push({
+            product: productId,
+            price: product.price,
+            quantity: 1,
+            totalPrice: product.price,
+
+         })
+         req.flash('success', 'Product Added Successfully')
+      }
+
+      cart.subTotal = cart.products.reduce((sum, item) => {
+         return sum + item.totalPrice;
+      }, 0)
+
+      cart.shipping = 10,
+
+         cart.grandTotal = cart.subTotal + cart.shipping
+
+      await cart.save()
+      return res.redirect('/shop')
 
 
-   // console.log('deteleCartProduct - products.forEach =', product);
-   return res.render('user/cart', { cartItems, totals })
+   } catch (error) {
+      console.log('Error from addToCart', error.message, error.stack);
+      req.flash('error', 'Server error')
+      return res.redirect('/shop')
 
-})
+   }
+
+}
+
+
+const deleteCartProducts = async (req, res) => {
+
+   try {
+      const userId = req.auth?.id || req.user?.id
+
+      const productId = req.params.id
+
+      const cart = await cartModel.findOne({ user: userId })
+      console.log('deleteCartProducts - cart 1 =', cart);
+
+
+      const cartItems = cart.products.filter(item => {
+         return item.product._id.toString() !== productId
+      })
+
+      console.log('deleteCartProducts - cartItems =', cartItems);
+
+      await cartModel.updateOne({ user: userId },
+         {
+            $set: {
+               products: cartItems
+            }
+         }
+      )
+
+      const updatedCart = await cartModel.findOne({ user: userId })
+      
+      updatedCart.totalPrice = updatedCart.products.reduce((sum, item) => {
+         return sum + item.totalPrice
+      }, 0)
+      cart.shipping = 10,
+
+         cart.grandTotal = cart.subTotal + cart.shipping
+
+      req.flash('error', 'Item deleted')
+      return res.redirect('/cart')
+
+   } catch (error) {
+      console.log('Error from deleteCartProducts', error.message, error.stack);
+      return res.redirect('/cart')
+
+   }
+}
+
+
+
+
+
+// const deleteCartProducts = asyncHandler(async (req, res) => {
+//    const userId = req.auth?.id || req.user?.id
+
+//    const productId = req.params.id
+//    console.log('deteleCartProduct - productId =', productId);
+
+
+//    // const cartId = await cartModel.findOne({ user: userId }).select('_id')
+//    const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
+//    console.log('deteleCartProduct - cart with populate =', cart);
+
+
+//    const cartItems = cart.products.filter(item => {
+//       return item.product._id.toString() !== productId
+//    })
+//    console.log('deteleCartProduct - cartItems =', cartItems);
+
+//    const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
+
+//    await cartModel.updateOne({ user: userId },
+//       {
+//          $set: {
+//             products: cartItems,
+//             // subTotal: cart.products.reduce((sum, item) => sum + item.totalPrice, 0),
+//             // grandTotal: cart.grandTotal.reduce((sum, item) => sum + item.totalPrice, 0) + cart.shipping
+
+//          },
+
+//       }
+//    )
+
+
+//    return res.redirect('/cart')
+
+//    // console.log('deteleCartProduct - itemsUpdated', itemsUpdated);
+//    return res.send('HI')
+//    // console.log('deteleCartProduct - products.forEach =', product);
+//    return res.render('user/cart', { cartItems, totals })
+
+// })
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
 

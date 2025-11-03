@@ -156,7 +156,6 @@ const getCartPage = asyncHandler(async (req, res) => {
         quantity: item.quantity,
         total: item.product.price * item.quantity,
     }));
-    // console.log('getCartPage - cartItems =', cartItems);
     // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
 
 
@@ -165,6 +164,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
     cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
     cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
+    console.log('getCartPage - cart.subTotal =', cart.subTotal);
 
     const totals = {
         shipping: cart.shipping,
