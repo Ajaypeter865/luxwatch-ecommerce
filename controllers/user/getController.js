@@ -179,7 +179,31 @@ const getCartPage = asyncHandler(async (req, res) => {
 });
 
 
+const getWishList = async (req, res) => {
 
+    const wishlistItems = [
+        {
+            _id: '1',
+            name: 'Rolex Ocean',
+            image: '/img/uploads/1761117208869_Rolex2.png',
+            price: 100700,
+        },
+        {
+            _id: '2',
+            name: 'Rolex Black',
+            image: 'img/uploads/1762007361344_Rolex3.png',
+            price: 98500,
+        },
+        {
+            _id: '3',
+            name: 'Rolex Silver',
+            image: '/img/uploads/1761117208869_Rolex3.png',
+            price: 91000,
+        },
+    ];
+    return res.render('user/wishlist', { wishlistItems })
+
+}
 
 module.exports = {
     getLoginUser,
@@ -193,4 +217,5 @@ module.exports = {
     getAddressPage,
     getShopPage,
     getCartPage,
+    getWishList
 }

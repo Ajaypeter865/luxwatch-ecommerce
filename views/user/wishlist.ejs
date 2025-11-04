@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>My Wishlist | Watch Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/wishlist.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <%- include('../partials/user/navbar') %>
+        <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
+            <main>
+                <!-- Hero Section -->
+                <div class="slider-area">
+                    <div class="single-slider slider-height2 d-flex align-items-center">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="hero-cap text-center">
+                                        <h2>Your Wishlist</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Section -->
+                <section class="wishlist-section py-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <% if (wishlistItems && wishlistItems.length> 0) { %>
+                                <% wishlistItems.forEach(item=> { %>
+                                    <div class="col-md-4 col-sm-6 mb-4">
+                                        <div class="wishlist-card text-center">
+                                            <div class="wishlist-img">
+                                                <img src="<%= item.image %>" alt="<%= item.name %>">
+                                            </div>
+                                            <div class="wishlist-info mt-3">
+                                                <h5>
+                                                    <%= item.name %>
+                                                </h5>
+                                                <p class="wishlist-price">₹<%= item.price.toFixed(2) %>
+                                                </p>
+                                                <p class="wishlist-stock text-success">In Stock</p>
+
+                                                <div class="wishlist-actions mt-3">
+                                                    <form action="/user/shop/addtocart/<%= item._id %>" method="POST"
+                                                        class="d-inline">
+                                                        <button class="btn btn-add-cart" type="submit">
+                                                            <i class="ti-shopping-cart"></i> Add to Cart
+                                                        </button>
+                                                    </form>
+
+                                                    <form action="/wishlist/delete/<%= item._id %>" method="POST"
+                                                        class="d-inline">
+                                                        <button class="btn btn-remove" type="submit">
+                                                            <i class="ti-trash"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="col-12 text-center">
+                                                <p class="empty-msg">Your wishlist is empty.</p>
+                                            </div>
+                                            <% } %>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Footer -->
+            <%- include('../partials/user/footer') %>
+
+                <!-- JS -->
+                <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+                <script src="/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -11,8 +11,11 @@ const { editProfile } = require('../../controllers/user/authController')
 // IMPORT GET MODULES
 const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp,
     getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage,
-    getCartPage
+    getCartPage, getWishList,
+
 } = require('../../controllers/user/getController')
+
+// IMPORT MODELS
 const userModel = require('../../models/user')
 
 // USER ROUTES
@@ -38,6 +41,11 @@ router.get('/shop', proctedAuth, getShopPage)
 // CART ROUTES
 
 router.get('/cart', proctedAuth, getCartPage)
+
+
+// WISHLIST ROUTES
+router.get('/wishlist', getWishList)
+
 
 // GOOGLE AUTHENTICATION
 router.get('/google', passport.authenticate('google', {

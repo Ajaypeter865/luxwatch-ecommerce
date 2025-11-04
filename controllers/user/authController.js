@@ -533,7 +533,7 @@ const deleteCartProducts = async (req, res) => {
          return item.product._id.toString() !== productId
       })
 
-      console.log('deleteCartProducts - cartItems =', updatedProducts);
+      console.log('deleteCartProducts - updatedProducts =', updatedProducts);
 
       await cartModel.updateOne({ user: userId },
          {
@@ -554,7 +554,7 @@ const deleteCartProducts = async (req, res) => {
 
          await updatedCart.save()
 
-      req.flash('error', 'Item deleted')
+      req.flash('error', 'Item deleted') // THIS MESSAGE IS NOT RENDERING DONT KNOW WHY
       return res.redirect('/cart')
 
    } catch (error) {
