@@ -68,14 +68,19 @@
                             <%# This logic now works for both Passport and JWT %>
                                 <% if (user) { %>
                                     <%# If currentUser exists (logged in via Passport or JWT), link to profile %>
-                                        <li> <a href="/profile"><span class="flaticon-user"></span></a></li> 
+                                        <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
                                         <% } else { %>
                                             <%# If currentUser does NOT exist (logged out), link to login %>
                                                 <li> <a href="/login"><span class="flaticon-user"></span></a></li>
                                                 <% } %>
 
+                                                    <li><a href="/wishlist"><span class="flaticon-heart"></span></a>
+                                                    </li>
+
                                                     <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a>
                                                     </li>
+                                                
+
                         </ul>
                     </div>
                 </div>

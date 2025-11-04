@@ -97,18 +97,28 @@
                                                         <img src="<%= product.image %>" alt="<%= product.name %>">
                                                         <div class="img-cap">
                                                             <span>
+                                                                <!-- Current Add to Cart Form (Left as is) -->
                                                                 <form action="/shop/addtocart/<%= product._id %>"
                                                                     method="POST">
                                                                     <button type="submit" class="add-to-cart-btn">
                                                                         Add to cart
                                                                     </button>
                                                                 </form>
-
                                                             </span>
                                                         </div>
+
+                                                        <!-- 🛑 CRUCIAL CHANGE: Wishlist icon is now a submit button in a form -->
                                                         <div class="favorit-items">
-                                                            <span class="flaticon-heart"></span>
+                                                            <form action="/wishlist/add/<%= product._id %>"
+                                                                method="POST" class="d-inline">
+                                                                <button type="submit" class="wishlist-btn"
+                                                                    title="Add to Wishlist">
+                                                                    <!-- The actual heart icon -->
+                                                                    <span class="flaticon-heart"></span>
+                                                                </button>
+                                                            </form>
                                                         </div>
+                                                        <!-- 🛑 END CHANGE -->
                                                     </div>
                                                     <div class="popular-caption">
                                                         <h3><a href="/product/<%= product._id %>">

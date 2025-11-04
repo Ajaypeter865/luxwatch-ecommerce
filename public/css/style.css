@@ -11469,3 +11469,37 @@ input:focus {
     font-family: "Josefin Sans", sans-serif;
     transition: all 0.3s ease-in-out;
 }
+
+
+/* -------------------------------------- */
+
+/* The button container, set to be transparent and clickable */
+.favorit-items .wishlist-btn {
+    /* Remove default button appearance */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1; /* Helps vertically align the icon */
+    
+    /* Add smooth transition for color change */
+    transition: color 0.3s ease; 
+}
+
+/* Targeting the heart icon inside the button */
+.favorit-items .wishlist-btn .flaticon-heart {
+    /* Set the initial default color (e.g., grey or black) */
+    color: #444444; 
+    font-size: 24px; /* Ensure visibility */
+    transition: color 0.3s ease; 
+}
+
+/* The hover effect on the button or icon */
+.favorit-items .wishlist-btn:hover .flaticon-heart,
+.favorit-items .wishlist-btn:focus .flaticon-heart {
+    /* Set the desired hover color (Bright Red) */
+    color: #ff0000 !important; 
+}
+
+/* Optional: If the entire 'favorit-items' div has its own background, 
+   you might need to ensure the button is positioned correctly. */
