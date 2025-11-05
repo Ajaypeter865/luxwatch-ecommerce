@@ -4,6 +4,7 @@ const userModel = require('../../models/user')
 const productModel = require('../../models/products')
 const asyncHandler = require('express-async-handler')
 const cartModel = require('../../models/cart')
+const wishlistModel = require('../../models/wishlist')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -120,6 +121,7 @@ const getAddressPage = async (req, res) => {
     }
 }
 
+// -----------------------------------------------------SHOP FUNCTIONS
 
 
 const getShopPage = asyncHandler(async (req, res) => {
@@ -129,6 +131,8 @@ const getShopPage = asyncHandler(async (req, res) => {
 })
 
 
+
+// -----------------------------------------------------CART FUNCTIONS
 
 
 const getCartPage = asyncHandler(async (req, res) => {
@@ -179,28 +183,30 @@ const getCartPage = asyncHandler(async (req, res) => {
 });
 
 
-const getWishList = async (req, res) => {
+// -----------------------------------------------------WISHLIST FUNCTIONS
 
-    const wishlistItems = [
-        {
-            _id: '1',
-            name: 'Rolex Ocean',
-            image: '/img/uploads/1761117208869_Rolex2.png',
-            price: 100700,
-        },
-        {
-            _id: '2',
-            name: 'Rolex Black',
-            image: 'img/uploads/1762007361344_Rolex3.png',
-            price: 98500,
-        },
-        {
-            _id: '3',
-            name: 'Rolex Silver',
-            image: '/img/uploads/1761117208869_Rolex3.png',
-            price: 91000,
-        },
-    ];
+const getWishList = async (req, res) => {
+    const userId = req.auth?.id || req.user?.id
+    let wishlistProducts = await wishlistModel.find({ user: userId }).populate('products', 'image name price')
+    console.log('getWishList - wishlistProducts 1  =', JSON.stringify(wishlistProducts[0].products, null, 2))   // METHORD TO DESTRUCTURE OBJECT IN AN ARRAY
+
+
+
+    if (!wishlistProducts) {
+
+        return res.render('user/wishlist', { wishlistItems: [] })
+    }
+    console.log('getWishlist - wishlistItems 2 =', wishlistProducts);
+
+    const wishlistItems = wishlistProducts.map(item => ({
+        _id: item._id,
+        name: item.name,
+        price: Number(item.price),
+        image: item.image
+    }))
+
+
+
     return res.render('user/wishlist', { wishlistItems })
 
 }

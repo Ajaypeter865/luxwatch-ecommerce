@@ -11,6 +11,7 @@ const nodemailer = require('nodemailer')
 const { errorMonitor } = require('nodemailer/lib/xoauth2')
 const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
+const wishlistModel = require('../../models/wishlist')
 require('dotenv').config()
 
 
@@ -445,75 +446,76 @@ const addToCart = async (req, res) => {
 
 }
 
+// GEMINI
 const updateCart = asyncHandler(async (req, res) => {
-    // Assuming you have middleware to get userId (e.g., req.user.id or req.auth.id)
-    const userId = req.user?.id || req.auth?.id;
-    // req.body.quantities is an object: { productId_1: quantity_1, productId_2: quantity_2, ... }
-    const { quantities } = req.body; 
+   // Assuming you have middleware to get userId (e.g., req.user.id or req.auth.id)
+   const userId = req.user?.id || req.auth?.id;
+   // req.body.quantities is an object: { productId_1: quantity_1, productId_2: quantity_2, ... }
+   const { quantities } = req.body;
 
-    if (!userId || !quantities) {
-        req.flash("error", "Invalid request data.");
-        return res.redirect("/cart");
-    }
+   if (!userId || !quantities) {
+      req.flash("error", "Invalid request data.");
+      return res.redirect("/cart");
+   }
 
-    try {
-        // 1. Fetch the user's cart
-        const cart = await cartModel.findOne({ user: userId });
+   try {
+      // 1. Fetch the user's cart
+      const cart = await cartModel.findOne({ user: userId });
 
-        if (!cart) {
-            req.flash("error", "Cart not found.");
-            return res.redirect("/cart");
-        }
+      if (!cart) {
+         req.flash("error", "Cart not found.");
+         return res.redirect("/cart");
+      }
 
-        // 2. Iterate through the submitted quantities and update the cart object in memory
-        for (const [productId, qtyString] of Object.entries(quantities)) {
-            const newQuantity = parseInt(qtyString);
+      // 2. Iterate through the submitted quantities and update the cart object in memory
+      for (const [productId, qtyString] of Object.entries(quantities)) {
+         const newQuantity = parseInt(qtyString);
 
-            // Find the index of the product in the cart's array
-            const productIndex = cart.products.findIndex(
-                // Use .toString() to safely compare the ObjectId with the string ID from the form
-                item => item.product.toString() === productId
-            );
+         // Find the index of the product in the cart's array
+         const productIndex = cart.products.findIndex(
+            // Use .toString() to safely compare the ObjectId with the string ID from the form
+            item => item.product.toString() === productId
+         );
 
-            if (productIndex > -1) {
-                const item = cart.products[productIndex];
+         if (productIndex > -1) {
+            const item = cart.products[productIndex];
 
-                // Ensure quantity is positive
-                if (newQuantity > 0) {
-                    item.quantity = newQuantity;
-                    // Recalculate the line item's totalPrice immediately
-                    item.totalPrice = item.quantity * item.price;
-                } else {
-                    // OPTIONAL: If the quantity is zero or less, you may want to remove the item
-                    // For now, we will just set it to 1 to prevent issues, or you can use filter later.
-                    item.quantity = 1; 
-                }
+            // Ensure quantity is positive
+            if (newQuantity > 0) {
+               item.quantity = newQuantity;
+               // Recalculate the line item's totalPrice immediately
+               item.totalPrice = item.quantity * item.price;
+            } else {
+               // OPTIONAL: If the quantity is zero or less, you may want to remove the item
+               // For now, we will just set it to 1 to prevent issues, or you can use filter later.
+               item.quantity = 1;
             }
-        }
+         }
+      }
 
-        // 3. Recalculate the entire cart's totals
+      // 3. Recalculate the entire cart's totals
 
-        // Calculate new subTotal (sum of all line item totalPrices)
-        cart.subTotal = cart.products.reduce((sum, item) => {
-            return sum + item.totalPrice;
-        }, 0);
+      // Calculate new subTotal (sum of all line item totalPrices)
+      cart.subTotal = cart.products.reduce((sum, item) => {
+         return sum + item.totalPrice;
+      }, 0);
 
-        // Calculate grandTotal
-        // Assuming shipping is a fixed value you manage elsewhere (e.g., cart.shipping = 10)
-        cart.shipping = 10; 
-        cart.grandTotal = cart.subTotal + cart.shipping;
+      // Calculate grandTotal
+      // Assuming shipping is a fixed value you manage elsewhere (e.g., cart.shipping = 10)
+      cart.shipping = 10;
+      cart.grandTotal = cart.subTotal + cart.shipping;
 
-        // 4. Save the fully updated cart object back to the database
-        await cart.save();
+      // 4. Save the fully updated cart object back to the database
+      await cart.save();
 
-        req.flash("success", "Cart updated successfully!");
-        return res.redirect("/cart");
+      req.flash("success", "Cart updated successfully!");
+      return res.redirect("/cart");
 
-    } catch (error) {
-        console.error("Error updating cart:", error.message);
-        req.flash("error", "Failed to update cart. Please try again.");
-        return res.redirect("/cart");
-    }
+   } catch (error) {
+      console.error("Error updating cart:", error.message);
+      req.flash("error", "Failed to update cart. Please try again.");
+      return res.redirect("/cart");
+   }
 });
 
 
@@ -552,7 +554,7 @@ const deleteCartProducts = async (req, res) => {
 
          updatedCart.grandTotal = updatedCart.subTotal + updatedCart.shipping
 
-         await updatedCart.save()
+      await updatedCart.save()
 
       req.flash('error', 'Item deleted') // THIS MESSAGE IS NOT RENDERING DONT KNOW WHY
       return res.redirect('/cart')
@@ -562,6 +564,55 @@ const deleteCartProducts = async (req, res) => {
       return res.redirect('/cart')
 
    }
+}
+
+
+//------------------------------------------------------- WISHLIST FUNCTIONS
+
+const addProductsToWishlist = async (req, res) => {
+   // console.log('addProductsToWishlist - wishlist =', wishlist);
+   // console.log('addProductsToWishlist - userId =', userId);
+   
+   const userId = req.auth?.id || req.user?.id
+   
+   const productId = req.params.id
+   
+   const product = await productModel.findOne({ _id: productId })
+   // console.log('addProductsToWishlist - product =', product);
+   
+   let wishlist = await wishlistModel.findOne({ user: userId })
+   
+   
+   if (!wishlist) {
+      wishlist = new wishlistModel({
+         user: userId,
+         products: [],
+      })
+      
+   }
+   
+   
+   const existingProductIndex = wishlist.products.findIndex(id => id.toString()  === productId)
+   console.log('addProductsToWishlist - existingProductIndex =', existingProductIndex);
+   
+   if (existingProductIndex > -1) {
+      const checkIsProductExist = wishlist.products[existingProductIndex]
+      req.flash('error', 'This Product Is Already In Wishlist')
+      
+   } else {
+      wishlist.products.push( productId )
+      console.log('addProductsToWishlist - else');
+      
+      req.flash('success', 'Product Added To Wishlist')
+   }
+
+      await wishlist.save()
+
+
+
+   return res.redirect('/wishlist')
+
+
 }
 
 
@@ -591,5 +642,6 @@ module.exports = {
    addToCart,
    deleteCartProducts,
    updateCart,
+   addProductsToWishlist
 
 }

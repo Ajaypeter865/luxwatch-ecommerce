@@ -44,7 +44,7 @@ router.get('/cart', proctedAuth, getCartPage)
 
 
 // WISHLIST ROUTES
-router.get('/wishlist', getWishList)
+router.get('/wishlist', proctedAuth, getWishList)
 
 
 // GOOGLE AUTHENTICATION
