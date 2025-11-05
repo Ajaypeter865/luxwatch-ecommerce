@@ -64,13 +64,13 @@ const getCustomers = asyncHandler(async (req, res) => {
     const allUser = await userModel.find()
 
     const defaultAddress = await addressesModel.find({ isDefault: true }).populate('user', '_id').select('city state user')
-    console.log('getCustomers - defaultAddress =', defaultAddress);
+    // console.log('getCustomers - defaultAddress =', defaultAddress);
 
 
     const addAddress = new Map()
 
     defaultAddress.forEach(address => {
-        console.log('getCustomers - addAddress =', addAddress);
+        // console.log('getCustomers - addAddress =', addAddress);
         addAddress.set(address.user._id.toString(), `${address.city} ${address.state}`)
         // console.log('getCustomers - addAddress =', addAddress);
 

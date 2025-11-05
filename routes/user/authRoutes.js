@@ -5,8 +5,8 @@ const router = express.Router()
 
 // -----------------------------------------------------------CONTROLLERS
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
-    logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart, deleteCartProducts, updateCart,
-    addProductsToWishlist } = require('../../controllers/user/authController')
+    logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
+    deleteCartProducts, updateCart, addToWishlist, removeFromWishlist } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -38,6 +38,8 @@ router.post('/cart/update', proctedAuth, updateCart)
 
 //----------------------------------------------------- WISHLIST FUCNTION
 
-router.post('/wishlist/add/:id', proctedAuth, addProductsToWishlist)
+router.post('/wishlist/add/:id', proctedAuth, addToWishlist)
+router.post('/wishlist/addtocart/:id', proctedAuth, addToCart)
+router.post('/wishlist/delete/:id', proctedAuth, removeFromWishlist)
 
 module.exports = router

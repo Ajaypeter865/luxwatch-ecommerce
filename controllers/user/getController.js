@@ -186,30 +186,36 @@ const getCartPage = asyncHandler(async (req, res) => {
 // -----------------------------------------------------WISHLIST FUNCTIONS
 
 const getWishList = async (req, res) => {
-    const userId = req.auth?.id || req.user?.id
-    let wishlistProducts = await wishlistModel.find({ user: userId }).populate('products', 'image name price')
-    console.log('getWishList - wishlistProducts 1  =', JSON.stringify(wishlistProducts[0].products, null, 2))   // METHORD TO DESTRUCTURE OBJECT IN AN ARRAY
+    try {
+        const userId = req.auth?.id || req.user?.id
 
+        const wishlistProducts = await wishlistModel.findOne({ user: userId }).populate('products', 'image name price')
+        // console.log('getWishList - wishlistProducts 1  =', JSON.stringify(wishlistProducts[0].products, null, 2))   // METHORD TO DESTRUCTURE OBJECT IN AN ARRAY
 
+        if (!wishlistProducts) {
 
-    if (!wishlistProducts) {
+            return res.render('user/wishlist', { wishlistItems: [] })
+        }
+        // console.log('getWishlist - wishlistItems 2 =', wishlistProducts);
 
+        const wishlistItems = wishlistProducts.products.map(item => ({
+            _id: item._id,
+            name: item.name,
+            price: Number(item.price),
+            image: item.image
+        }))
+
+        // console.log('getWishlist - wishlistItems', wishlistItems);
+        return res.render('user/wishlist', { wishlistItems })
+
+    } catch (error) {
+        console.log('Error from getWishList =', error.message, error.stack);
         return res.render('user/wishlist', { wishlistItems: [] })
     }
-    console.log('getWishlist - wishlistItems 2 =', wishlistProducts);
-
-    const wishlistItems = wishlistProducts.map(item => ({
-        _id: item._id,
-        name: item.name,
-        price: Number(item.price),
-        image: item.image
-    }))
-
-
-
-    return res.render('user/wishlist', { wishlistItems })
 
 }
+
+
 
 module.exports = {
     getLoginUser,
