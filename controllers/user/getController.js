@@ -125,10 +125,48 @@ const getAddressPage = async (req, res) => {
 
 
 const getShopPage = asyncHandler(async (req, res) => {
-    const products = await productModel.find()
-    const categories = [1, 2, 3]
-    return res.render('user/shop', { products, categories })
-})
+    try {
+        // 🧭 Get query params
+        const { category, sort } = req.query;
+
+        // 🗂️ Define your fixed categories (for dropdown)
+        const categories = [
+            { name: "Automatic", slug: "Automatic" },
+            { name: "Manual", slug: "Manual" },
+            { name: "Limited Edition", slug: "Limited-Edition" },
+        ];
+
+        // 🧩 Step 1: Filter by category if selected
+        let filter = {};
+        if (category) filter.category = category;
+
+        // 🧩 Step 2: Fetch filtered products
+        let products = await productModel.find(filter);
+
+        // 🧩 Step 3: Apply sorting based on query
+        if (sort === "low-high") {
+            products.sort((a, b) => a.price - b.price);
+        } else if (sort === "high-low") {
+            products.sort((a, b) => b.price - a.price);
+        } else if (sort === "newest") {
+            products.sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        // 🧩 Step 4: Render page
+        return res.render("user/shop", {
+            products,
+            categories,
+            category: category || "",
+            sort: sort || "",
+            success: req.flash("success"),
+            error: req.flash("error"),
+        });
+    } catch (error) {
+        console.error("Error loading shop page:", error.message);
+        req.flash("error", "Server error loading shop page");
+        return res.redirect("/");
+    }
+});
 
 
 
