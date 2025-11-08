@@ -1,14 +1,10 @@
-<!-- Toastify CSS & JS -->
- 
-<link rel="stylesheet" href="/node_modules/toastify-js/src/toastify.css">
-<script src="/node_modules/toastify-js/src/toastify.js"></script>
+<!-- Toastify CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <!-- Toastify Notifications -->
 <% if (success) { %>
-
   <script>
-    console.log('Func from toastify ejs , success');
-
     Toastify({
       text: "<%= success %>",
       duration: 3000,
@@ -18,20 +14,17 @@
       close: true
     }).showToast();
   </script>
-  <% } %>
-    <% if (error) { %>
-      <script>
-        console.log('Func from toastify ejs , error');
+<% } %>
 
-        Toastify({
-          text: "<%= error %>",
-          duration: 3000,
-          gravity: "top",
-          position: "right",
-          backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-          close: true
-        }).showToast();
-      </script>
-      <% } %>
-
-        <script>console.log('Toastify partial loaded');</script>
+<% if (error) { %>
+  <script>
+    Toastify({
+      text: "<%= error %>",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      close: true
+    }).showToast();
+  </script>
+<% } %>

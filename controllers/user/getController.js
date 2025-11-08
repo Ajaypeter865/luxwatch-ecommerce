@@ -158,8 +158,8 @@ const getShopPage = asyncHandler(async (req, res) => {
             categories,
             category: category || "",
             sort: sort || "",
-            success: req.flash("success"),
-            error: req.flash("error"),
+            // success: req.flash("success"),  // THIS IS THE MAIN PROBLEM THAT I FACE OF TOASTIFY IS ASWOME PROBLEM
+            // error: req.flash("error"),
         });
     } catch (error) {
         console.error("Error loading shop page:", error.message);

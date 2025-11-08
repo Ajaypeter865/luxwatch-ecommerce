@@ -616,8 +616,8 @@ const addToWishlist = async (req, res) => {
 
       if (existingProductIndex > -1) {
          const checkIsProductExist = wishlist.products[existingProductIndex]
-         req.flash('error', 'This Product Is Already In Wishlist')
-         return res.redirect('/shop')
+         req.flash('success', 'This Product Is Already In Wishlist')
+         // return res.redirect('/shop')
 
       } else {
          wishlist.products.push(productId)
