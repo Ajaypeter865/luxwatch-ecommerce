@@ -379,72 +379,72 @@ const deleteAddress = asyncHandler(async (req, res) => {
 
 //------------------------------------------------------- CART FUNCTIONS
 
-const addToCart = async (req, res) => {
+// const addToCart = async (req, res) => {
 
-   const userId = req.auth?.id || req.user?.id
+//    const userId = req.auth?.id || req.user?.id
 
-   const productId = req.params.id
-   try {
-      const product = await productModel.findOne({ _id: productId })
-      if (!product) {
-         req.flash('error', 'No product found')
-         return res.redirect('/shop')
-      }
-
-
-      let cart = await cartModel.findOne({ user: userId })
-      if (!cart) {
-         cart = new cartModel({
-            product: [],
-            user: userId,
-            subTotal: 0,
-            shipping: 0,
-            grandTotal: 0
-         })
-      }
-
-      const existingProductIndex = cart.products.findIndex(item => item.product.equals(productId))
-
-      if (existingProductIndex > -1) {
-         const productInCart = cart.products[existingProductIndex]
-         productInCart.quantity += 1,
-
-            productInCart.totalPrice = productInCart.quantity * productInCart.price
-         req.flash('success', 'Product Incrimented')
-
-         // return res.redirect('/shop')
-
-      } else {
-         cart.products.push({
-            product: productId,
-            price: product.price,
-            quantity: 1,
-            totalPrice: product.price,
-
-         })
-         req.flash('success', 'Product Added Successfully')
-      }
-
-      cart.subTotal = cart.products.reduce((sum, item) => {
-         return sum + item.totalPrice;
-      }, 0)
-
-      cart.shipping = 10,
-
-         cart.grandTotal = cart.subTotal + cart.shipping
-
-      await cart.save()
-      return res.redirect('/shop')
+//    const productId = req.params.id
+//    try {
+//       const product = await productModel.findOne({ _id: productId })
+//       if (!product) {
+//          req.flash('error', 'No product found')
+//          return res.redirect('/shop')
+//       }
 
 
-   } catch (error) {
-      console.log('Error from addToCart', error.message, error.stack);
-      req.flash('error', 'Server error')
-      return res.redirect('/shop')
+//       let cart = await cartModel.findOne({ user: userId })
+//       if (!cart) {
+//          cart = new cartModel({
+//             product: [],
+//             user: userId,
+//             subTotal: 0,
+//             shipping: 0,
+//             grandTotal: 0
+//          })
+//       }
 
-   }
+//       const existingProductIndex = cart.products.findIndex(item => item.product.equals(productId))
 
-}
+//       if (existingProductIndex > -1) {
+//          const productInCart = cart.products[existingProductIndex]
+//          productInCart.quantity += 1,
+
+//             productInCart.totalPrice = productInCart.quantity * productInCart.price
+//          req.flash('success', 'Product Incrimented')
+
+//          // return res.redirect('/shop')
+
+//       } else {
+//          cart.products.push({
+//             product: productId,
+//             price: product.price,
+//             quantity: 1,
+//             totalPrice: product.price,
+
+//          })
+//          req.flash('success', 'Product Added Successfully')
+//       }
+
+//       cart.subTotal = cart.products.reduce((sum, item) => {
+//          return sum + item.totalPrice;
+//       }, 0)
+
+//       cart.shipping = 10,
+
+//          cart.grandTotal = cart.subTotal + cart.shipping
+
+//       await cart.save()
+//       return res.redirect('/shop')
+
+
+//    } catch (error) {
+//       console.log('Error from addToCart', error.message, error.stack);
+//       req.flash('error', 'Server error')
+//       return res.redirect('/shop')
+
+//    }
+
+// }
 
 // GEMINI
 // const updateCart = asyncHandler(async (req, res) => {
@@ -525,13 +525,13 @@ const updateCart = async (req, res) => {
    const { quantities } = req.body
    console.log('updateCart - req.body =', req.body);
 
-   const cart = await cartModel.findOne({user : userId})
+   const cart = await cartModel.findOne({ user: userId })
 
    // req.body.forEach(updateItem => {
    //    const index = cart.products.findIndex(p => p.quantities.toString() === updateItem._id)
 
    //    if(index > -1)
-      
+
    // });
 
    return res.send('Hi')
@@ -589,55 +589,55 @@ const deleteCartProducts = async (req, res) => {
 
 //------------------------------------------------------- WISHLIST FUNCTIONS
 
-const addToWishlist = async (req, res) => {
+// const addToWishlist = async (req, res) => {
 
-   try {
-      const userId = req.auth?.id || req.user?.id
+//    try {
+//       const userId = req.auth?.id || req.user?.id
 
-      const productId = req.params.id
+//       const productId = req.params.id
 
-      // const product = await productModel.findOne({ _id: productId })
-      // console.log('addProductsToWishlist - product =', product);
+//       // const product = await productModel.findOne({ _id: productId })
+//       // console.log('addProductsToWishlist - product =', product);
 
-      let wishlist = await wishlistModel.findOne({ user: userId })
-
-
-      if (!wishlist) {
-         wishlist = new wishlistModel({
-            user: userId,
-            products: [],
-         })
-
-      }
+//       let wishlist = await wishlistModel.findOne({ user: userId })
 
 
-      const existingProductIndex = wishlist.products.findIndex(id => id.toString() === productId)
-      console.log('addProductsToWishlist - existingProductIndex =', existingProductIndex);
+//       if (!wishlist) {
+//          wishlist = new wishlistModel({
+//             user: userId,
+//             products: [],
+//          })
 
-      if (existingProductIndex > -1) {
-         const checkIsProductExist = wishlist.products[existingProductIndex]
-         req.flash('success', 'This Product Is Already In Wishlist')
-         // return res.redirect('/shop')
-
-      } else {
-         wishlist.products.push(productId)
-         console.log('addProductsToWishlist - else');
-
-         req.flash('success', 'Product Added To Wishlist')
-      }
-
-      await wishlist.save()
+//       }
 
 
+//       const existingProductIndex = wishlist.products.findIndex(id => id.toString() === productId)
+//       console.log('addProductsToWishlist - existingProductIndex =', existingProductIndex);
 
-      return res.redirect('/wishlist')
-   } catch (error) {
-      console.log('Error from addProductsToWishlist =', error.message, error.stack);
-      return res.status(500).redirect('/shop?Server error')
+//       if (existingProductIndex > -1) {
+//          const checkIsProductExist = wishlist.products[existingProductIndex]
+//          req.flash('success', 'This Product Is Already In Wishlist')
+//          // return res.redirect('/shop')
 
-   }
+//       } else {
+//          wishlist.products.push(productId)
+//          console.log('addProductsToWishlist - else');
 
-}
+//          req.flash('success', 'Product Added To Wishlist')
+//       }
+
+//       await wishlist.save()
+
+
+
+//       return res.redirect('/wishlist')
+//    } catch (error) {
+//       console.log('Error from addProductsToWishlist =', error.message, error.stack);
+//       return res.status(500).redirect('/shop?Server error')
+
+//    }
+
+// }
 
 
 const removeFromWishlist = async (req, res) => {
@@ -686,6 +686,110 @@ const removeFromWishlist = async (req, res) => {
 
 
 
+//------------------------------------------------------- AJAX FUNCTIONS
+
+const addToCartAjax = async (req, res) => {
+   const userId = req.auth?.id || req.user?.id;
+   const productId = req.params.id;
+
+   try {
+      const product = await productModel.findById(productId);
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      let cart = await cartModel.findOne({ user: userId });
+      if (!cart) {
+         cart = new cartModel({
+            products: [],
+            user: userId,
+            subTotal: 0,
+            shipping: 0,
+            grandTotal: 0
+         });
+      }
+
+      const existingProductIndex = cart.products.findIndex(
+         item => item.product.equals(productId)
+      );
+
+      let message = '';
+
+      if (existingProductIndex > -1) {
+         const productInCart = cart.products[existingProductIndex];
+         productInCart.quantity += 1;
+         productInCart.totalPrice = productInCart.quantity * productInCart.price;
+         message = 'Quantity increased in cart';
+      } else {
+         cart.products.push({
+            product: productId,
+            price: product.price,
+            quantity: 1,
+            totalPrice: product.price
+         });
+         message = 'Product added to cart';
+      }
+
+      cart.subTotal = cart.products.reduce((sum, item) => sum + item.totalPrice, 0);
+      cart.shipping = 10;
+      cart.grandTotal = cart.subTotal + cart.shipping;
+
+      await cart.save();
+
+      // Return updated cart count or summary
+      const totalItems = cart.products.reduce((sum, item) => sum + item.quantity, 0);
+
+      return res.json({
+         success: true,
+         message,
+         totalItems,
+         subTotal: cart.subTotal,
+         grandTotal: cart.grandTotal
+      });
+   } catch (error) {
+      console.error('Error in addToCartAjax:', error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+   }
+};
+
+// ✅ ADD TO WISHLIST (AJAX)
+const addToWishlistAjax = async (req, res) => {
+   const userId = req.auth?.id || req.user?.id;
+   const productId = req.params.id;
+
+   try {
+      let wishlist = await wishlistModel.findOne({ user: userId });
+
+      if (!wishlist) {
+         wishlist = new wishlistModel({ user: userId, products: [] });
+      }
+
+      const alreadyExists = wishlist.products.some(
+         id => id.toString() === productId
+      );
+
+      if (alreadyExists) {
+         return res.json({
+            success: false,
+            message: 'This product is already in your wishlist'
+         });
+      }
+
+      wishlist.products.push(productId);
+      await wishlist.save();
+
+      return res.json({
+         success: true,
+         message: 'Product added to wishlist',
+         totalItems: wishlist.products.length
+      });
+   } catch (error) {
+      console.error('Error in addToWishlistAjax:', error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+   }
+};
+
+
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
 const logoutUser = async (req, res) => {
@@ -707,10 +811,12 @@ module.exports = {
    setDefaultAddress,
    // editAddress,
    deleteAddress,
-   addToCart,
+   // addToCart,
    deleteCartProducts,
    updateCart,
-   addToWishlist,
-   removeFromWishlist
+   // addToWishlist,
+   removeFromWishlist,
+   addToWishlistAjax,
+   addToCartAjax,
 
 }

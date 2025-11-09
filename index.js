@@ -62,6 +62,7 @@ app.use((req, res, next) => {
 
 
 
+
 // ERROR HANDLER (ASYNC HANDLER)
 app.use((err, req, res, next) => {
     console.error('--- Global Error Handler ---')

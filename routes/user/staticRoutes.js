@@ -36,15 +36,15 @@ router.get('/address', proctedAuth, getAddressPage)
 
 // SHOP ROUTES
 
-router.get('/shop', proctedAuth, getShopPage)
+router.get('/shop', proctedAuth, resLocals,getShopPage)
 
 // CART ROUTES
 
-router.get('/cart', proctedAuth, getCartPage)
+router.get('/cart', proctedAuth,resLocals, getCartPage)
 
 
 // WISHLIST ROUTES
-router.get('/wishlist', proctedAuth, getWishList)
+router.get('/wishlist', proctedAuth,resLocals, getWishList)
 
 
 // GOOGLE AUTHENTICATION

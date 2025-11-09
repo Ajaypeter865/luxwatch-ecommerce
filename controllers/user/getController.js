@@ -220,8 +220,57 @@ const getCartPage = asyncHandler(async (req, res) => {
 
 });
 
+//------------------------------------------------------------GPT
+// const getCartPage = asyncHandler(async (req, res) => {
+//     const userId = req.auth?.id || req.user?.id;
+
+//     let cart = await cartModel
+//         .findOne({ user: userId })
+//         .populate('products.product', 'name image price');
+
+//     if (!cart || !cart.products || cart.products.length === 0) {
+//         return res.render('user/cart', {
+//             cartItems: [],
+//             totals: { subTotal: 0, shipping: 0, grandTotal: 0 },
+//         });
+//     }
+
+//     // ✅ Filter out items with null product (deleted)
+//     const validProducts = cart.products.filter(
+//         (item) => item.product !== null
+//     );
+
+//     const cartItems = validProducts.map((item) => ({
+//         _id: item.product._id,
+//         name: item.product.name,
+//         image: item.product.image,
+//         price: Number(item.product.price),
+//         quantity: item.quantity,
+//         total: Number(item.product.price) * item.quantity,
+//     }));
+
+//     // ✅ Safely calculate totals
+//     const subTotal = cartItems.reduce((sum, item) => sum + item.total, 0);
+//     const shipping = cart.shipping || 10;
+//     const grandTotal = subTotal + shipping;
+
+//     // Optionally clean invalid items from DB to prevent future errors
+//     if (validProducts.length !== cart.products.length) {
+//         cart.products = validProducts;
+//         cart.subTotal = subTotal;
+//         cart.shipping = shipping;
+//         cart.grandTotal = grandTotal;
+//         await cart.save();
+//     }
+
+//     const totals = { subTotal, shipping, grandTotal };
+
+//     return res.render('user/cart', { cartItems, totals });
+// });
 
 // -----------------------------------------------------WISHLIST FUNCTIONS
+
+
 
 const getWishList = async (req, res) => {
     try {

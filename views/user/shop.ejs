@@ -64,7 +64,7 @@
   <%- include('../partials/user/navbar') %>
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    
+
     <%- include('../partials/user/_toastify', { success: success, error: error }) %>
 
 
@@ -238,7 +238,9 @@
         <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
 
-        <script>
+          <!------------------------------------- THIS IS THE 1ST SCRIPT THAT I HAD BEFORE AJAX ---------------------------->
+
+        <!-- <script>
           // Add to cart AJAX + Toastify handler
           $('.add-to-cart-btn').on('click', function (e) {
             e.preventDefault();
@@ -262,7 +264,77 @@
               }).showToast();
             });
           });
+        </script> -->
+
+
+
+
+        <script>
+          // ✅ Reusable Toastify function
+          function showToast(message, success = true) {
+            Toastify({
+              text: message,
+              backgroundColor: success
+                ? "linear-gradient(to right, #00b09b, #96c93d)"
+                : "linear-gradient(to right, #ff5f6d, #ffc371)",
+              duration: 2500,
+              close: true
+            }).showToast();
+          }
+
+          // ✅ ADD TO CART AJAX
+          $(document).on('click', '.add-to-cart-btn', function (e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            const productId = form.attr('action').split('/').pop();
+
+            $.ajax({
+              url: `/api/cart/add/${productId}`,
+              type: 'POST',
+              success: function (res) {
+                if (res.success) {
+                  showToast(res.message, true);
+
+                  // update cart count in navbar (if you have element with id="cart-count")
+                  if (res.totalItems !== undefined) {
+                    $('#cart-count').text(res.totalItems);
+                  }
+                } else {
+                  showToast(res.message, false);
+                }
+              },
+              error: function () {
+                showToast('Something went wrong while adding to cart', false);
+              }
+            });
+          });
+
+          // ✅ ADD TO WISHLIST AJAX
+          $(document).on('click', '.wishlist-btn', function (e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            const productId = form.attr('action').split('/').pop();
+
+            $.ajax({
+              url: `/api/wishlist/add/${productId}`,
+              type: 'POST',
+              success: function (res) {
+                if (res.success) {
+                  showToast(res.message, true);
+                  if (res.totalItems !== undefined) {
+                    $('#wishlist-count').text(res.totalItems);
+                  }
+                } else {
+                  showToast(res.message, false);
+                }
+              },
+              error: function () {
+                showToast('Error adding to wishlist', false);
+              }
+            });
+          });
         </script>
+
 
 
 </body>
