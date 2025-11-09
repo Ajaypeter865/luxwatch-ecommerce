@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>
+        <%= product.name %> | Watch Shop
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/productDescription.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <style>
+        body {
+            font-family: "Josefin Sans", sans-serif;
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/navbar') %>
+        <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
+            <main class="product-main">
+                <div class="container py-5">
+                    <div class="row align-items-center g-5">
+                        <!-- Product Image -->
+                        <div class="col-lg-6 text-center">
+                            <div class="product-image-wrapper">
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+                            </div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="col-lg-6">
+                            <div class="product-details">
+                                <h2 class="product-name">
+                                    <%= product.name %>
+                                </h2>
+
+                                <p class="product-category">
+                                    <%= product.category==='Automatic' ? 'Automatic Model' : product.category==='Manual'
+                                        ? 'Manual Model' : 'Limited Edition Model' %>
+                                </p>
+
+                                <h3 class="product-price">₹ <%= product.price.toLocaleString('en-IN') %>
+                                </h3>
+
+                                <p class="product-description">
+                                    <%= product.description %>
+                                </p>
+
+                                <p class="delivery"><strong>Delivery:</strong> within 7–10 days</p>
+
+                                <div class="product-actions mt-4 d-flex flex-wrap gap-3">
+                                    <form action="/shop/addtocart/<%= product._id %>" method="POST"
+                                        class="add-to-cart-form">
+                                        <button type="submit" class="btn btn-add-cart">Add to Cart</button>
+                                    </form>
+
+                                    <form action="/wishlist/add/<%= product._id %>" method="POST" class="wishlist-form">
+                                        <button type="submit" class="btn btn-wishlist">Wishlist</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <%- include('../partials/user/footer') %>
+
+                <!-- JS -->
+                <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+                <script src="/js/bootstrap.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+
+                <script>
+                    // ✅ Reusable Toastify function
+                    function showToast(message, success = true) {
+                        Toastify({
+                            text: message,
+                            backgroundColor: success
+                                ? "linear-gradient(to right, #00b09b, #96c93d)"
+                                : "linear-gradient(to right, #ff5f6d, #ffc371)",
+                            duration: 2500,
+                            close: true
+                        }).showToast();
+                    }
+
+                    // ✅ ADD TO CART AJAX
+                    $(document).on('submit', '.add-to-cart-form', function (e) {
+                        e.preventDefault();
+                        const action = $(this).attr('action');
+
+                        $.ajax({
+                            url: action,
+                            type: 'POST',
+                            success: function (res) {
+                                if (res.success) {
+                                    showToast(res.message, true);
+                                    if (res.totalItems !== undefined) $('#cart-count').text(res.totalItems);
+                                } else showToast(res.message, false);
+                            },
+                            error: function () {
+                                showToast('Error adding to cart', false);
+                            }
+                        });
+                    });
+
+                    // ✅ ADD TO WISHLIST AJAX
+                    $(document).on('submit', '.wishlist-form', function (e) {
+                        e.preventDefault();
+                        const action = $(this).attr('action');
+
+                        $.ajax({
+                            url: action,
+                            type: 'POST',
+                            success: function (res) {
+                                if (res.success) {
+                                    showToast(res.message, true);
+                                    if (res.totalItems !== undefined) $('#wishlist-count').text(res.totalItems);
+                                } else showToast(res.message, false);
+                            },
+                            error: function () {
+                                showToast('Error adding to wishlist', false);
+                            }
+                        });
+                    });
+                </script>
+</body>
+
+</html>
