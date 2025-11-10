@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Checkout | Time Zone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <style>
+    body {
+      font-family: "Josefin Sans", sans-serif;
+      background-color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <%- include('../partials/user/navbar') %>
+  <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
+  <main class="checkout-main py-5">
+    <div class="container">
+      <div class="row g-5">
+        <!-- Left: Checkout Form -->
+        <div class="col-lg-8">
+          <div class="checkout-card shadow-box p-4">
+            <!-- Saved Address -->
+            <h5 class="section-title mb-3">Delivery Address</h5>
+            <div class="form-group mb-3">
+              <label for="savedAddress">Select Saved Address</label>
+              <select id="savedAddress" name="address" class="form-control custom-select-box">
+                <% if (addresses && addresses.length > 0) { %>
+                  <% addresses.forEach((addr, index) => { %>
+                    <option value="<%= addr._id %>"><%= addr.label %> - <%= addr.fullAddress %></option>
+                  <% }) %>
+                <% } else { %>
+                  <option>No saved addresses</option>
+                <% } %>
+              </select>
+            </div>
+            <button class="btn btn-outline" onclick="window.location.href='/user/address'">+ Add / Edit Address</button>
+
+            <!-- Contact Details -->
+            <h5 class="section-title mt-4 mb-3">Contact Details</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <input type="text" class="form-control" placeholder="Full Name" value="<%= user.name %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <input type="email" class="form-control" placeholder="Email" value="<%= user.email %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <input type="text" class="form-control" placeholder="Phone Number" value="<%= user.phone %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <input type="text" class="form-control" placeholder="Alternate Phone Number">
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <h5 class="section-title mt-4 mb-3">Payment Method</h5>
+            <div class="form-group mb-3">
+              <label for="paymentMethod">Select Payment Method</label>
+              <select id="paymentMethod" name="payment" class="form-control custom-select-box">
+                <option value="COD" selected>Cash on Delivery</option>
+                <option value="Card">Credit / Debit Card</option>
+              </select>
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="deliveryInstructions">Delivery Instructions (Optional)</label>
+              <textarea id="deliveryInstructions" class="form-control" rows="2" placeholder="E.g. Leave package at the door"></textarea>
+            </div>
+
+            <button class="btn btn-proceed w-100 mt-3">Proceed to Payment</button>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="col-lg-4">
+          <div class="order-summary shadow-box p-4">
+            <h5 class="section-title mb-3">Order Summary</h5>
+            <ul class="list-unstyled mb-3">
+              <% if (cartItems && cartItems.length > 0) { %>
+                <% cartItems.forEach(item => { %>
+                  <li class="d-flex justify-content-between mb-2">
+                    <span><%= item.name %> (x<%= item.quantity %>)</span>
+                    <span>₹<%= item.total.toLocaleString('en-IN') %></span>
+                  </li>
+                <% }) %>
+              <% } else { %>
+                <li>Your cart is empty.</li>
+              <% } %>
+            </ul>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+              <strong>Subtotal:</strong>
+              <span>₹<%= totals.subTotal.toLocaleString('en-IN') %></span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <strong>Delivery Charge:</strong>
+              <span>₹<%= totals.shipping.toLocaleString('en-IN') %></span>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-between total-amount">
+              <strong>Total:</strong>
+              <strong>₹<%= totals.grandTotal.toLocaleString('en-IN') %></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/user/footer') %>
+
+  <!-- JS -->
+  <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+
+  <script>
+    // Toastify function for feedback
+    function showToast(message, success = true) {
+      Toastify({
+        text: message,
+        backgroundColor: success
+          ? "linear-gradient(to right, #00b09b, #96c93d)"
+          : "linear-gradient(to right, #ff5f6d, #ffc371)",
+        duration: 2500,
+        close: true
+      }).showToast();
+    }
+  </script>
+</body>
+</html>

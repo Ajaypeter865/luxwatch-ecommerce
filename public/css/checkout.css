@@ -1,0 +1,101 @@
+/* ---------- CHECKOUT PAGE ---------- */
+.checkout-main {
+  background-color: #fff;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+/* ---------- SHADOW BOX ---------- */
+.shadow-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.shadow-box:hover {
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- FORM ELEMENTS ---------- */
+.section-title {
+  font-weight: 700;
+  color: #111;
+}
+
+.form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: #ff2020;
+  box-shadow: 0 0 0 0.2rem rgba(255, 32, 32, 0.15);
+}
+
+.custom-select-box {
+  appearance: none;
+  -webkit-appearance: none;
+  background: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23ff2020'><path d='M1 4l6 6 6-6z'/></svg>")
+    no-repeat right 1rem center/12px;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-outline {
+  border: 2px solid #ff2020;
+  color: #ff2020;
+  background: transparent;
+  padding: 10px 25px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: #ff2020;
+  color: #fff;
+}
+
+.btn-proceed {
+  background-color: #ff2020;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-proceed:hover {
+  background-color: #e01c1c;
+  transform: translateY(-2px);
+}
+
+/* ---------- ORDER SUMMARY ---------- */
+.order-summary h5 {
+  font-weight: 700;
+  color: #111;
+}
+
+.order-summary ul {
+  padding: 0;
+  list-style: none;
+}
+
+.total-amount {
+  font-size: 1.1rem;
+  color: #ff2020;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .checkout-card,
+  .order-summary {
+    margin-bottom: 25px;
+  }
+
+  .btn-proceed {
+    width: 100%;
+  }
+}

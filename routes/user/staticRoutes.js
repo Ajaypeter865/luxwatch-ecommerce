@@ -9,7 +9,7 @@ const { proctedAuth, resLocals } = require('../../middlewares/auth')
 const { editProfile } = require('../../controllers/user/authController')
 
 // IMPORT GET MODULES
-const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage, getCartPage, getWishList, getproductPage
+const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage, getCartPage, getWishList, getproductPage, getCheckoutPage
 
 } = require('../../controllers/user/getController')
 
@@ -45,8 +45,10 @@ router.get('/cart', proctedAuth, resLocals, getCartPage)
 router.get('/wishlist', proctedAuth, resLocals, getWishList)
 
 // PRODUCT DETAILS 
-
 router.get('/product/:id', getproductPage)
+
+// CHECKOUT PAGE
+router.get('/checkout',proctedAuth, getCheckoutPage)
 
 
 // GOOGLE AUTHENTICATION

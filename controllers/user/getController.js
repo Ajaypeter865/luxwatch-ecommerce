@@ -310,19 +310,103 @@ const getproductPage = async (req, res) => {
         const productId = req.params.id
 
         const product = await productModel.findOne({ _id: productId })
-        console.log('getProductPage - product =', product);
-        
-        
-        return res.render('user/product', {product})
+        // console.log('getProductPage - product =', product);
 
 
-
+        return res.render('user/product', { product })
     } catch (error) {
         console.log('Error from getProductPage =', error.message, error.stack);
         return res.redirect(`/shop${error}`)
     }
 
 }
+
+// -----------------------------------------------------CHECKOUT FUNCTIONS
+
+// const getCheckoutPage = asyncHandler(async (req, res) => {
+//   try {
+//     // Dummy user info
+//     const user = {
+//       name: "Abinav",
+//       email: "abinav3420@gmail.com",
+//       phone: "7902598742",
+//     };
+
+//     // Dummy saved addresses
+//     const addresses = [
+//       {
+//         _id: "1",
+//         label: "Home",
+//         fullAddress: "Kizhakkayil House, Kannur, Kerala - 670741",
+//       },
+//       {
+//         _id: "2",
+//         label: "Office",
+//         fullAddress: "TimeZone Building, MG Road, Kochi, Kerala - 682016",
+//       },
+//     ];
+
+//     // Dummy cart items
+//     const cartItems = [
+//       {
+//         _id: "101",
+//         name: "Rolex Ocean",
+//         quantity: 1,
+//         price: 110,
+//         total: 110,
+//       },
+//       {
+//         _id: "102",
+//         name: "Rolex Black",
+//         quantity: 1,
+//         price: 120,
+//         total: 120,
+//       },
+//     ];
+
+//     // Totals calculation
+//     const subTotal = cartItems.reduce((acc, item) => acc + item.total, 0);
+//     const shipping = 25;
+//     const grandTotal = subTotal + shipping;
+
+//     // ✅ Render Checkout Page
+//     res.render("user/checkout", {
+//       user,
+//       addresses,
+//       cartItems,
+//       totals: { subTotal, shipping, grandTotal },
+//       success: req.flash("success"),
+//       error: req.flash("error"),
+//     });
+//   } catch (error) {
+//     console.error("Error loading checkout page:", error);
+//     req.flash("error", "Unable to load checkout page");
+//     res.redirect("/cart");
+//   }
+// });
+
+const getCheckoutPage = asyncHandler(async (req, res) => {
+
+    try {
+
+        const userId = req.auth?.id || req.user?.id
+
+        const user = await userModel.findOne({ _id: userId })
+        console.log('getCheckOutPage - user = ', user);
+
+        const address = await addressModel.findOne({user : userId})
+        console.log('getCheckOutPage - address =', address);
+        
+
+
+        return res.send('Hi')
+
+    } catch (error) {
+        console.log('Error in getCheckoutPage =', error.stack, error.message);
+        return res.redirect('/cart')
+    }
+
+})
 
 module.exports = {
     getLoginUser,
@@ -338,4 +422,5 @@ module.exports = {
     getCartPage,
     getWishList,
     getproductPage,
+    getCheckoutPage,
 }
