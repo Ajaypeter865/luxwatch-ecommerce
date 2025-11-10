@@ -446,6 +446,70 @@ const deleteAddress = asyncHandler(async (req, res) => {
 
 // }
 
+const addToCartAjax = async (req, res) => {
+   const userId = req.auth?.id || req.user?.id;
+   const productId = req.params.id;
+
+   try {
+      const product = await productModel.findById(productId);
+      if (!product) {
+         return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+
+      let cart = await cartModel.findOne({ user: userId });
+      if (!cart) {
+         cart = new cartModel({
+            products: [],
+            user: userId,
+            subTotal: 0,
+            shipping: 0,
+            grandTotal: 0
+         });
+      }
+
+      const existingProductIndex = cart.products.findIndex(
+         item => item.product.equals(productId)
+      );
+
+      let message = '';
+
+      if (existingProductIndex > -1) {
+         const productInCart = cart.products[existingProductIndex];
+         productInCart.quantity += 1;
+         productInCart.totalPrice = productInCart.quantity * productInCart.price;
+         message = 'Quantity increased in cart';
+      } else {
+         cart.products.push({
+            product: productId,
+            price: product.price,
+            quantity: 1,
+            totalPrice: product.price
+         });
+         message = 'Product added to cart';
+      }
+
+      cart.subTotal = cart.products.reduce((sum, item) => sum + item.totalPrice, 0);
+      cart.shipping = 10;
+      cart.grandTotal = cart.subTotal + cart.shipping;
+
+      await cart.save();
+
+      // Return updated cart count or summary
+      const totalItems = cart.products.reduce((sum, item) => sum + item.quantity, 0);
+
+      return res.json({
+         success: true,
+         message,
+         totalItems,
+         subTotal: cart.subTotal,
+         grandTotal: cart.grandTotal
+      });
+   } catch (error) {
+      console.error('Error in addToCartAjax:', error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+   }
+};
+
 // GEMINI
 // const updateCart = asyncHandler(async (req, res) => {
 //    // Assuming you have middleware to get userId (e.g., req.user.id or req.auth.id)
@@ -639,6 +703,42 @@ const deleteCartProducts = async (req, res) => {
 
 // }
 
+const addToWishlistAjax = async (req, res) => {
+   const userId = req.auth?.id || req.user?.id;
+   const productId = req.params.id;
+
+   try {
+      let wishlist = await wishlistModel.findOne({ user: userId });
+
+      if (!wishlist) {
+         wishlist = new wishlistModel({ user: userId, products: [] });
+      }
+
+      const alreadyExists = wishlist.products.some(
+         id => id.toString() === productId
+      );
+
+      if (alreadyExists) {
+         return res.json({
+            success: false,
+            message: 'This product is already in your wishlist'
+         });
+      }
+
+      wishlist.products.push(productId);
+      await wishlist.save();
+
+      return res.json({
+         success: true,
+         message: 'Product added to wishlist',
+         totalItems: wishlist.products.length
+      });
+   } catch (error) {
+      console.error('Error in addToWishlistAjax:', error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+   }
+};
+
 
 const removeFromWishlist = async (req, res) => {
    try {
@@ -683,111 +783,6 @@ const removeFromWishlist = async (req, res) => {
    }
 
 }
-
-
-
-//------------------------------------------------------- AJAX FUNCTIONS
-
-const addToCartAjax = async (req, res) => {
-   const userId = req.auth?.id || req.user?.id;
-   const productId = req.params.id;
-
-   try {
-      const product = await productModel.findById(productId);
-      if (!product) {
-         return res.status(404).json({ success: false, message: 'Product not found' });
-      }
-
-      let cart = await cartModel.findOne({ user: userId });
-      if (!cart) {
-         cart = new cartModel({
-            products: [],
-            user: userId,
-            subTotal: 0,
-            shipping: 0,
-            grandTotal: 0
-         });
-      }
-
-      const existingProductIndex = cart.products.findIndex(
-         item => item.product.equals(productId)
-      );
-
-      let message = '';
-
-      if (existingProductIndex > -1) {
-         const productInCart = cart.products[existingProductIndex];
-         productInCart.quantity += 1;
-         productInCart.totalPrice = productInCart.quantity * productInCart.price;
-         message = 'Quantity increased in cart';
-      } else {
-         cart.products.push({
-            product: productId,
-            price: product.price,
-            quantity: 1,
-            totalPrice: product.price
-         });
-         message = 'Product added to cart';
-      }
-
-      cart.subTotal = cart.products.reduce((sum, item) => sum + item.totalPrice, 0);
-      cart.shipping = 10;
-      cart.grandTotal = cart.subTotal + cart.shipping;
-
-      await cart.save();
-
-      // Return updated cart count or summary
-      const totalItems = cart.products.reduce((sum, item) => sum + item.quantity, 0);
-
-      return res.json({
-         success: true,
-         message,
-         totalItems,
-         subTotal: cart.subTotal,
-         grandTotal: cart.grandTotal
-      });
-   } catch (error) {
-      console.error('Error in addToCartAjax:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
-   }
-};
-
-// ✅ ADD TO WISHLIST (AJAX)
-const addToWishlistAjax = async (req, res) => {
-   const userId = req.auth?.id || req.user?.id;
-   const productId = req.params.id;
-
-   try {
-      let wishlist = await wishlistModel.findOne({ user: userId });
-
-      if (!wishlist) {
-         wishlist = new wishlistModel({ user: userId, products: [] });
-      }
-
-      const alreadyExists = wishlist.products.some(
-         id => id.toString() === productId
-      );
-
-      if (alreadyExists) {
-         return res.json({
-            success: false,
-            message: 'This product is already in your wishlist'
-         });
-      }
-
-      wishlist.products.push(productId);
-      await wishlist.save();
-
-      return res.json({
-         success: true,
-         message: 'Product added to wishlist',
-         totalItems: wishlist.products.length
-      });
-   } catch (error) {
-      console.error('Error in addToWishlistAjax:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
-   }
-};
 
 
 //------------------------------------------------------- LOGOUT FUNCTIONS

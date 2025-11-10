@@ -1,0 +1,180 @@
+/* ---------- PRODUCT PAGE LAYOUT ---------- */
+.product-main {
+  background-color: #fff;
+  color: #111;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+/* ---------- IMAGE SECTION ---------- */
+.product-image-wrapper {
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  display: inline-block;
+}
+
+.product-image {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Carousel controls */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #ff2020;
+  border-radius: 50%;
+  padding: 12px;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  background-color: #e01c1c;
+}
+
+/* ---------- PRODUCT DETAILS SECTION ---------- */
+.shadow-box {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 40px 35px;
+  transition: all 0.3s ease;
+}
+
+.shadow-box:hover {
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+.product-details {
+  text-align: left;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 2rem;
+  color: #111;
+}
+
+.product-category {
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.product-price {
+  color: #ff2020;
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin-bottom: 15px;
+}
+
+.product-description {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.delivery {
+  font-size: 1rem;
+  color: #111;
+  margin-top: 10px;
+}
+
+/* ---------- BUTTONS ---------- */
+.product-main .btn {
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  padding: 22px 35px;
+  border: none;
+}
+
+/* Add to Cart */
+.product-main .btn-add-cart {
+  background-color: #ff2020;
+  color: #fff;
+}
+
+.product-main .btn-add-cart:hover {
+  background-color: #e01c1c;
+}
+
+/* Wishlist */
+.product-main .btn-wishlist {
+  background-color: #f6f6f6;
+  color: #111;
+}
+
+.product-main .btn-wishlist:hover {
+  background-color: #eee;
+}
+
+/* ✅ Gap Between Buttons */
+.product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+/* ---------- BUY NOW BUTTON (Standalone Style) ---------- */
+.btn-buy-now {
+  background: #fff;
+  color: #ff2020;
+  border: 2px solid #ff2020;
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 600;
+  padding: 12px 35px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.btn-buy-now:hover {
+  background: #ff2020;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 32, 32, 0.3);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 992px) {
+  .product-name {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-name {
+    font-size: 1.5rem;
+  }
+
+  .product-image {
+    max-width: 300px;
+  }
+
+  .product-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .product-main .btn-add-cart,
+  .product-main .btn-wishlist,
+  .btn-theme-outline {
+    width: 100%;
+  }
+
+  .shadow-box {
+    padding: 25px;
+  }
+}
+
+

@@ -220,7 +220,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
 });
 
-//------------------------------------------------------------GPT
+//GET CART PAGE GPT
 // const getCartPage = asyncHandler(async (req, res) => {
 //     const userId = req.auth?.id || req.user?.id;
 
@@ -271,6 +271,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 // -----------------------------------------------------WISHLIST FUNCTIONS
 
 
+// -----------------------------------------------------WISHLIST FUNCTIONS
 
 const getWishList = async (req, res) => {
     try {
@@ -302,7 +303,26 @@ const getWishList = async (req, res) => {
 
 }
 
+// -----------------------------------------------------PRODUCT DETAILS FUNCTIONS
 
+const getproductPage = async (req, res) => {
+    try {
+        const productId = req.params.id
+
+        const product = await productModel.findOne({ _id: productId })
+        console.log('getProductPage - product =', product);
+        
+        
+        return res.render('user/product', {product})
+
+
+
+    } catch (error) {
+        console.log('Error from getProductPage =', error.message, error.stack);
+        return res.redirect(`/shop${error}`)
+    }
+
+}
 
 module.exports = {
     getLoginUser,
@@ -316,5 +336,6 @@ module.exports = {
     getAddressPage,
     getShopPage,
     getCartPage,
-    getWishList
+    getWishList,
+    getproductPage,
 }
