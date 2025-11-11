@@ -50,6 +50,9 @@ router.get('/product/:id', getproductPage)
 // CHECKOUT PAGE
 router.get('/checkout',proctedAuth, getCheckoutPage)
 
+router.get('/checkout/:id',proctedAuth, getCheckoutPage)
+
+
 
 // GOOGLE AUTHENTICATION
 router.get('/google', passport.authenticate('google', {

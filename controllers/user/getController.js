@@ -198,6 +198,9 @@ const getCartPage = asyncHandler(async (req, res) => {
         quantity: item.quantity,
         total: item.product.price * item.quantity,
     }));
+
+    console.log('getCartPage - cartItems =', cartItems);
+
     // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
 
 
@@ -392,18 +395,40 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
         const userId = req.auth?.id || req.user?.id
 
         const user = await userModel.findOne({ _id: userId })
-        console.log('getCheckOutPage - user = ', user);
+        // console.log('getCheckOutPage - user = ', user);
 
-        const address = await addressModel.findOne({user : userId})
-        console.log('getCheckOutPage - address =', address);
-        
+        let address = await addressModel.find({ user: userId })
+        // console.log('getCheckOutPage - address =', address);
+
+        const addresses = address.map((item) => ({
+            label: item.label,
+            _id: item.id,
+            addressLine: item.addressLine
+        }))
 
 
-        return res.send('Hi')
+        const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name price')
+        // console.log('getCheckOutPage - cart =', cart);
+
+        const cartItems = cart.products.map(item => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            total: item.product.price * item.quantity
+
+        }))
+
+        console.log('getCheckOutPage - cartItems =', cartItems);
+        const subTotal = cart.subTotal
+
+        const shipping = cart.shipping
+
+        const grandTotal = cart.grandTotal
+
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
 
     } catch (error) {
         console.log('Error in getCheckoutPage =', error.stack, error.message);
-        return res.redirect('/cart')
+        return res.send('error')
     }
 
 })

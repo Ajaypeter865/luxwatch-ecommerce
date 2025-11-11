@@ -103,12 +103,12 @@
 
                                 <!-- Buttons -->
                                 <div class="product-actions mt-4 d-flex flex-wrap gap-3">
-                                    <form action="/shop/addtocart/<%= product._id %>" method="POST"
+                                    <form action="/api/cart/add/<%= product._id %>" method="POST"
                                         class="add-to-cart-form">
                                         <button type="submit" class="btn btn-add-cart">Add to Cart</button>
                                     </form>
 
-                                    <form action="/wishlist/add/<%= product._id %>" method="POST" class="wishlist-form">
+                                    <form action="/api/wishlist/add/<%= product._id %>" method="POST" class="wishlist-form">
                                         <button type="submit" class="btn btn-wishlist">Wishlist</button>
                                     </form>
                                 </div>
