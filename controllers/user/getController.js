@@ -397,15 +397,8 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
         const user = await userModel.findOne({ _id: userId })
         // console.log('getCheckOutPage - user = ', user);
 
-        let address = await addressModel.find({ user: userId })
+        const addresses = await addressModel.find({ user: userId }).select('label addressLine')
         // console.log('getCheckOutPage - address =', address);
-
-        const addresses = address.map((item) => ({
-            label: item.label,
-            _id: item.id,
-            addressLine: item.addressLine
-        }))
-
 
         const cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name price')
         // console.log('getCheckOutPage - cart =', cart);
@@ -433,6 +426,50 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
 })
 
+
+const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
+    try {
+
+        const userId = req.auth?.id || req.user?.id
+        const user = await userModel.findOne({ _id: userId })
+
+        const addresses = await addressModel.find({ user: userId }).select('label addressLine')
+        // console.log('getCheckoutPageByProduct - address =', addresses);
+
+
+        const productId = req.params.id
+
+        const cart = await productModel.findOne({ _id: productId })
+        console.log('getCheckoutPageByProduct - cart =', cart);
+
+        const cartItems = [{
+            name: cart.name,
+            quantity: 1,
+            total: cart.price,
+        }]
+
+        // shipping: 10
+
+        console.log('getCheckoutPageByProduct - cartItems =', cartItems);
+
+        const subTotal = cart.price
+
+        const shipping = 10
+
+        const grandTotal = Number(subTotal) + Number(shipping)
+
+
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
+     
+    } catch (error) {
+        console.log('Error from getCheckoutPageByProduct =', error.message, error.stack);
+        return res.send('Error')
+
+
+    }
+
+})
+
 module.exports = {
     getLoginUser,
     getSignupUser,
@@ -448,4 +485,5 @@ module.exports = {
     getWishList,
     getproductPage,
     getCheckoutPage,
+    getCheckoutPageByProduct,
 }
