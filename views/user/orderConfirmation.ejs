@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Order Confirmation | Time Zone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="/css/flaticon.css">
+  <link rel="stylesheet" href="/css/slicknav.css">
+  <link rel="stylesheet" href="/css/animate.min.css">
+  <link rel="stylesheet" href="/css/magnific-popup.css">
+  <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+  <link rel="stylesheet" href="/css/themify-icons.css">
+  <link rel="stylesheet" href="/css/slick.css">
+  <link rel="stylesheet" href="/css/nice-select.css">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/orderConfirmation.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <style>
+    body {
+      font-family: "Josefin Sans", sans-serif;
+      background-color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <%- include('../partials/user/navbar') %>
+    <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+
+      <!-- Hero Section -->
+      <!-- <div class="slider-area">
+    <div class="single-slider slider-height2 d-flex align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="hero-cap text-center">
+              <h2>Order Confirmation</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+      <!-- Main Content -->
+      <main class="order-confirmation-main py-5">
+        <div class="container">
+          <div class="order-confirm-box shadow-box p-4 mx-auto">
+            <h3 class="text-success text-center mb-2">Order Confirmed!</h3>
+            <p class="text-center mb-4">Thank you for your purchase, <strong>
+                <%= order.shippingAddress.fullName %>
+              </strong>!</p>
+
+            <!-- Order Summary -->
+            <div class="order-summary-section">
+              <h5 class="section-title">Order Summary</h5>
+              <p><strong>Order ID:</strong> #<%= order._id %>
+              </p>
+              <p><strong>Payment Method:</strong>
+                <%= order.paymentMethod %>
+              </p>
+              <p><strong>Order Date:</strong>
+                <%= order.placedAt%>
+              </p>
+              <hr>
+
+              <!-- Shipping Address -->
+              <div class="shipping-section mb-4">
+                <h5 class="section-title">Shipping Address</h5>
+                <div class="address-box p-3 rounded">
+                  <p><strong>
+                      <%= order.shippingAddress.label %>
+                    </strong></p>
+                  <p>
+                    <%= order.shippingAddress.addressLine %>,
+                      <%= order.shippingAddress.city %>
+                  </p>
+                  <p>
+                    <%= order.shippingAddress.state %> - <%= order.shippingAddress.pincode %>
+                  </p>
+                  <p>Phone: <%= order.shippingAddress.phone %>,
+                      Alt Phone: <%= order.shippingAddress.alternatePhone %>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Ordered Items -->
+              <div class="ordered-items mb-3">
+                <h5 class="section-title">Ordered Items</h5>
+                <% order.orderItems.forEach(item=> { %>
+                  <div class="ordered-item d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                      <strong>
+                        <%= item.name %>
+                      </strong>
+                      <p class="m-0 small text-muted">Qty: <%= item.quantity %>
+                      </p>
+                    </div>
+                    <span>₹<%= item.price %></span>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <hr>
+
+              <!-- Total -->
+              <div class="d-flex justify-content-between total-line mt-3">
+                <strong>Total:</strong>
+                <strong>₹<%= order.grandTotal.toLocaleString('en-IN') %></strong>
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="text-center mt-4">
+              <a href="/shop" class="btn btn-continue me-2">Continue Shopping</a>
+              <button onclick="window.print()" class="btn btn-print">Print this Page</button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <%- include('../partials/user/footer') %>
+
+        <!-- JS -->
+        <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+</body>
+
+</html>

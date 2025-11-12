@@ -6,7 +6,8 @@ const router = express.Router()
 // -----------------------------------------------------------CONTROLLERS
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
     logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
-    deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax } = require('../../controllers/user/authController')
+    deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
+    proccedToPayement } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -46,6 +47,12 @@ router.post('/wishlist/delete/:id', proctedAuth, removeFromWishlist)
 //----------------------------------------------------- API ROUTES FOR AJAX
 router.post('/api/cart/add/:id', proctedAuth, addToCartAjax);
 router.post('/api/wishlist/add/:id', proctedAuth, addToWishlistAjax);
+
+
+//----------------------------------------------------- CHECKOUT FUCNTION
+ 
+router.post('/checkout/proccedPayment',proctedAuth, proccedToPayement)
+
 
 
 module.exports = router

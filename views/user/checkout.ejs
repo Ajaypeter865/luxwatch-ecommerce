@@ -36,65 +36,93 @@
   <%- include('../partials/user/navbar') %>
     <%- include('../partials/user/_toastify', { success: success, error: error }) %>
 
+      <div class="slider-area">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+          <div class="container">
+            <div class="row">
+              <div class="col-xl-12">
+                <div class="hero-cap text-center">
+                  <h2>Checkout</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main class="checkout-main py-5">
         <div class="container">
           <div class="row g-5">
+
             <!-- Left: Checkout Form -->
             <div class="col-lg-8">
               <div class="checkout-card shadow-box p-4">
-                <!-- Saved Address -->
-                <h5 class="section-title mb-3">Delivery Address</h5>
-                <div class="form-group mb-3">
-                  <label for="savedAddress">Select Saved Address</label>
-                  <select id="savedAddress" name="address" class="form-control custom-select-box">
-                    <% if (addresses && addresses.length> 0) { %>
-                      <% addresses.forEach((addr, index)=> { %>
-                        <option value="<%= addr._id %>">
-                          <%= addr.label %> - <%= addr.addressLine %>
-                        </option>
-                        <% }) %>
-                          <% } else { %>
-                            <option>No saved addresses</option>
-                            <% } %>
-                  </select>
-                </div>
-                <button class="btn btn-outline" onclick="window.location.href='/address'">+ Add / Edit Address</button>
 
-                <!-- Contact Details -->
-                <h5 class="section-title mt-4 mb-3">Contact Details</h5>
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <input type="text" class="form-control" placeholder="Full Name" value="<%= user.name %>" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <input type="email" class="form-control" placeholder="Email" value="<%= user.email %>" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <input type="text" class="form-control" placeholder="Phone Number" value="<%= user.phone %>"
-                      required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <input type="text" class="form-control" placeholder="Alternate Phone Number">
-                  </div>
-                </div>
+                <!-- ✅ Wrap the entire form here -->
+                <form action="/checkout/proccedPayment" method="POST">
 
-                <!-- Payment Method -->
-                <h5 class="section-title mt-4 mb-3">Payment Method</h5>
-                <div class="form-group mb-3">
-                  <label for="paymentMethod">Select Payment Method</label>
-                  <select id="paymentMethod" name="payment" class="form-control custom-select-box">
-                    <option value="COD" selected>Cash on Delivery</option>
-                    <option value="Card">Credit / Debit Card</option>
-                  </select>
-                </div>
+                  <!-- Saved Address -->
+                  <h5 class="section-title mb-3">Delivery Address</h5>
+                  <div class="form-group mb-3">
+                    <label for="savedAddress">Select Saved Address</label>
+                    <select id="savedAddress" name="address" class="form-control custom-select-box" required>
+                      <% if (addresses && addresses.length> 0) { %>
+                        <% addresses.forEach((addr, index)=> { %>
+                          <option value="<%= addr._id %>">
+                            <%= addr.label %> - <%= addr.addressLine %>
+                          </option>
+                          <% }) %>
+                            <% } else { %>
+                              <option value="">No saved addresses</option>
+                              <% } %>
+                    </select>
+                  </div>
 
-                <div class="form-group mb-4">
-                  <label for="deliveryInstructions">Delivery Instructions (Optional)</label>
-                  <textarea id="deliveryInstructions" class="form-control" rows="2"
-                    placeholder="E.g. Leave package at the door"></textarea>
-                </div>
+                  <button type="button" class="btn btn-outline mb-4" onclick="window.location.href='/address'">
+                    + Add / Edit Address
+                  </button>
 
-                <button class="btn btn-proceed w-100 mt-3">Proceed to Payment</button>
+                  <!-- Contact Details -->
+                  <h5 class="section-title mt-4 mb-3">Contact Details</h5>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <input type="text" class="form-control" name="name" placeholder="Full Name"
+                        value="<%= user.name %>" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <input type="email" class="form-control" name="email" placeholder="Email"
+                        value="<%= user.email %>" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <input type="text" class="form-control" name="phone" placeholder="Phone Number"
+                        value="<%= user.phone %>" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <input type="text" class="form-control" name="altPhone" placeholder="Alternate Phone Number">
+                    </div>
+                  </div>
+
+                  <!-- Payment Method -->
+                  <h5 class="section-title mt-4 mb-3">Payment Method</h5>
+                  <div class="form-group mb-3">
+                    <label class="form-label fw-semibold">Select Payment Method</label>
+                    <select class="form-select" name="paymentMethod" required>
+                      <option value="COD">Cash on Delivery</option>
+                      <option value="Card">Credit / Debit Card</option>
+                      <option value="upi">UPI (Google Pay, PhonePe, Paytm)</option>
+                      <option value="netbanking">Net Banking</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group mb-4">
+                    <label for="deliveryInstructions">Delivery Instructions (Optional)</label>
+                    <textarea id="deliveryInstructions" name="deliveryInstructions" class="form-control" rows="2"
+                      placeholder="E.g. Leave package at the door"></textarea>
+                  </div>
+
+                  <!-- ✅ Proceed Button (inside form now) -->
+                  <button class="btn btn-proceed w-100 mt-3" type="submit">Proceed to Payment</button>
+                </form>
               </div>
             </div>
 

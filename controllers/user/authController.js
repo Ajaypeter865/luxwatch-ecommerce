@@ -807,12 +807,12 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 
       const addressId = await addressModel.findById(address)
       // console.log('proccedToPayment - addressId =', addressId);
-
+      
       const cart = await cartModel.findOne({ user: userId }).populate('products.product')
-
+      
       const orders = await orderModel.create({
          user: userId,
-
+         
          shippingAddress: {
             fullName: name,
             email: email,
@@ -821,8 +821,10 @@ const proccedToPayement = asyncHandler(async (req, res) => {
             city: addressId.city,
             state: addressId.state,
             alternatePhone: altPhone,
+            label : addressId.label,
+            pincode : addressId.pincode
          },
-
+         
          orderItems: cart.products.map(item => ({
             productId: item.product.id,
             name: item.product.name,
@@ -830,7 +832,7 @@ const proccedToPayement = asyncHandler(async (req, res) => {
             price: item.price,
             total: item.quantity * item.price,
          })),
-
+         
          paymentMethord: paymentMethod,
          orderStatus: 'Pending',
          grandTotal: cart.grandTotal,
@@ -839,10 +841,12 @@ const proccedToPayement = asyncHandler(async (req, res) => {
          deliveredAt: '',
          deliveryInstruction: deliveryInstructions || '',
          // cancel: '',
-
-
+         
+         
       })
-
+      console.log('proccedToPayment - orders =', orders);
+      
+      
       if (paymentMethod === 'COD') {
 
          return res.redirect(`/order/success/${orders.id}`)

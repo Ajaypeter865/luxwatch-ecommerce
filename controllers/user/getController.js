@@ -5,6 +5,7 @@ const productModel = require('../../models/products')
 const asyncHandler = require('express-async-handler')
 const cartModel = require('../../models/cart')
 const wishlistModel = require('../../models/wishlist')
+const orderModel = require('../../models/order')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -326,68 +327,6 @@ const getproductPage = async (req, res) => {
 
 // -----------------------------------------------------CHECKOUT FUNCTIONS
 
-// const getCheckoutPage = asyncHandler(async (req, res) => {
-//   try {
-//     // Dummy user info
-//     const user = {
-//       name: "Abinav",
-//       email: "abinav3420@gmail.com",
-//       phone: "7902598742",
-//     };
-
-//     // Dummy saved addresses
-//     const addresses = [
-//       {
-//         _id: "1",
-//         label: "Home",
-//         fullAddress: "Kizhakkayil House, Kannur, Kerala - 670741",
-//       },
-//       {
-//         _id: "2",
-//         label: "Office",
-//         fullAddress: "TimeZone Building, MG Road, Kochi, Kerala - 682016",
-//       },
-//     ];
-
-//     // Dummy cart items
-//     const cartItems = [
-//       {
-//         _id: "101",
-//         name: "Rolex Ocean",
-//         quantity: 1,
-//         price: 110,
-//         total: 110,
-//       },
-//       {
-//         _id: "102",
-//         name: "Rolex Black",
-//         quantity: 1,
-//         price: 120,
-//         total: 120,
-//       },
-//     ];
-
-//     // Totals calculation
-//     const subTotal = cartItems.reduce((acc, item) => acc + item.total, 0);
-//     const shipping = 25;
-//     const grandTotal = subTotal + shipping;
-
-//     // ✅ Render Checkout Page
-//     res.render("user/checkout", {
-//       user,
-//       addresses,
-//       cartItems,
-//       totals: { subTotal, shipping, grandTotal },
-//       success: req.flash("success"),
-//       error: req.flash("error"),
-//     });
-//   } catch (error) {
-//     console.error("Error loading checkout page:", error);
-//     req.flash("error", "Unable to load checkout page");
-//     res.redirect("/cart");
-//   }
-// });
-
 const getCheckoutPage = asyncHandler(async (req, res) => {
 
     try {
@@ -427,6 +366,8 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 })
 
 
+
+// THIS FUNCTION IS FOR WHEN WE DO ADD TO CART FROM PRODUCT DISCRIPTION THIS FUNCTION WILL WORK
 const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
     try {
 
@@ -460,7 +401,7 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
 
 
         return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
-     
+
     } catch (error) {
         console.log('Error from getCheckoutPageByProduct =', error.message, error.stack);
         return res.send('Error')
@@ -469,6 +410,58 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
     }
 
 })
+
+
+// const getOrderSummaryPage = asyncHandler(async (req, res) => {
+//   // Dummy order data for testing
+//   const order = {
+//     _id: req.params.id || '8612dc105d71398f6a8dd51',
+//     userName: 'Abinav',
+//     paymentMethod: 'cod',
+//     orderDate: new Date(),
+//     address: {
+//       label: 'Home',
+//       street: 'kannur, kannur',
+//       city: 'kannur',
+//       state: 'kerala',
+//       zip: '670768',
+//       phone: '7025991242',
+//     },
+//     items: [
+//       { name: 'Rolex Black', price: 150, quantity: 3 },
+
+//     ],
+//   };
+
+//   // Calculate total amount
+//   order.total = order.items.reduce(
+//     (sum, item) => sum + item.price * item.quantity,
+//     0
+//   );
+
+//   // Render the EJS file with dummy data
+//   res.render('user/orderConfirmation', {
+//     order,
+//     success: 'Your order has been placed successfully!',
+//     error: null,
+//   });
+// });
+
+const getOrderSummaryPage = asyncHandler(async (req, res) => {
+    const orderId = req.params.id
+    console.log('getOrderPageSummary - orderId =', orderId);
+
+    const order = await orderModel.findOne({ _id: orderId })
+    console.log('getOrderPageSummary - order =', order);
+
+
+    return res.render('user/orderConfirmation', { order })
+
+})
+
+
+
+
 
 module.exports = {
     getLoginUser,
@@ -486,4 +479,5 @@ module.exports = {
     getproductPage,
     getCheckoutPage,
     getCheckoutPageByProduct,
+    getOrderSummaryPage,
 }

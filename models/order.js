@@ -44,9 +44,17 @@ const orderSchema = new mongoose.Schema({
         city: String,
         state: String,
         pincode: String,
+        alternatePhone: Number,
+        email: String,
+        label : String,
     },
 
-    paymentMethord: {
+    deliveryInstruction: {
+        type: String,
+        default: '',
+    },
+
+    paymentMethod: {
         type: String,
         enum: ['COD', 'Card'],
         default: 'COD'
@@ -60,7 +68,7 @@ const orderSchema = new mongoose.Schema({
 
     orderStatus: {
         type: String,
-        enum: ['Pendingn', 'Shipped', 'Deliverd', 'Cancelled'],
+        enum: ['Pending', 'Shipped', 'Deliverd', 'Cancelled'],
         default: 'Pending'
     },
 
@@ -74,11 +82,18 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
 
-    deliveredAt :{
+    deliveredAt: {
         type: String,
-        required: true,
+        // required: true,
     },
-})
+    cancel: {
+        type: Boolean,
+        default: false
+    },
+
+},
+    { timestamps: true }
+)
 
 
 
