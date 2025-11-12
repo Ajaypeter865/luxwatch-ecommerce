@@ -12,6 +12,8 @@ const { errorMonitor } = require('nodemailer/lib/xoauth2')
 const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
 const wishlistModel = require('../../models/wishlist')
+const orderModel = require('../../models/order')
+// const { name } = require('ejs')
 require('dotenv').config()
 
 
@@ -787,6 +789,75 @@ const removeFromWishlist = async (req, res) => {
 //------------------------------------------------------- CHECKOUT FUNCTIONS
 
 
+const proccedToPayement = asyncHandler(async (req, res) => {
+
+   try {
+      const userId = req.auth?.id || req.user?.id
+
+      const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
+      console.log('proccedToPayement - req.body =', req.body);
+
+      const orderDate = new Date().toLocaleDateString('en-us', {
+         year: 'numeric',
+         month: 'long',
+         day: 'numeric'
+      })
+      // console.log('proccedToPayment - orderDate =', orderDate);
+
+
+      const addressId = await addressModel.findById(address)
+      // console.log('proccedToPayment - addressId =', addressId);
+
+      const cart = await cartModel.findOne({ user: userId }).populate('products.product')
+
+      const orders = await orderModel.create({
+         user: userId,
+
+         shippingAddress: {
+            fullName: name,
+            email: email,
+            phone: phone,
+            addressLine: addressId.addressLine,
+            city: addressId.city,
+            state: addressId.state,
+            alternatePhone: altPhone,
+         },
+
+         orderItems: cart.products.map(item => ({
+            productId: item.product.id,
+            name: item.product.name,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.quantity * item.price,
+         })),
+
+         paymentMethord: paymentMethod,
+         orderStatus: 'Pending',
+         grandTotal: cart.grandTotal,
+         paymentStatus: 'Pending',
+         placedAt: orderDate,
+         deliveredAt: '',
+         deliveryInstruction: deliveryInstructions || '',
+         // cancel: '',
+
+
+      })
+
+      if (paymentMethod === 'COD') {
+
+         return res.redirect(`/order/success/${orders.id}`)
+      } else {
+
+         return res.redirect(`/payment/${order.id}`)
+      }
+
+
+   } catch (error) {
+      console.log('Error in proccedPayment =', error.stack, error.message);
+      res.send('Error')
+
+   }
+})
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
@@ -816,5 +887,6 @@ module.exports = {
    removeFromWishlist,
    addToWishlistAjax,
    addToCartAjax,
+   proccedToPayement,
 
 }
