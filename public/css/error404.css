@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap');
+
+body {
+  font-family: "Josefin Sans", sans-serif;
+  background-color: #fff;
+  color: #222;
+}
+
+.error-main {
+  min-height: 80vh;
+}
+
+.error-box {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-code {
+  font-size: 6rem;
+  color: #ff2020;
+  font-weight: 700;
+}
+
+.error-message {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.btn-back {
+  background-color: #ff2020;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background-color: #e91a1a;
+  transform: translateY(-2px);
+}

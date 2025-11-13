@@ -10,6 +10,8 @@ const productModel = require('../../models/products')
 const addressesModel = require('../../models/addresses')
 const { emitWarning } = require('process')
 const userModel = require('../../models/user')
+const orderModel = require('../../models/order')
+
 
 
 
@@ -128,26 +130,27 @@ const deleteProduct = asyncHandler(async (req, res) => {
 })
 
 
+
 // -------------------------------------------------------CUSTOMER CONTROLLER
 
 const blockCustomer = asyncHandler(async (req, res) => {
     const userId = req.params.id;
     console.log('blockCustomer - userId =', userId);
-
+    
     if (!userId) {
         req.flash('error', 'No user exists');
         return res.redirect('/admin/customers');
     }
-
+    
     const user = await userModel.findById(userId);
     if (!user) {
         req.flash('error', 'User not found');
         return res.redirect('/admin/customers');
     }
-
+    
     const newStatus = user.status === 'Blocked' ? 'Active' : 'Blocked';
     await userModel.findByIdAndUpdate(userId, { status: newStatus });
-
+    
     req.flash('success', `Customer status set to ${newStatus}`);
     return res.redirect('/admin/customers');
 });
@@ -160,19 +163,27 @@ const deleteCustomer = asyncHandler(async (req, res) => {
         req.flash('error', 'No user exists')
         return res.redirect('/admin/customers')
     }
-
+    
     const deleteAddress = await addressesModel.deleteMany({ user: userId })
     console.log('delteCustomer - deleteAdress =', deleteAddress);
-
-
-
+    
+    
+    
     await userModel.findByIdAndDelete(userId)
     res.clearCookie('userToken')
-
+    
     return res.redirect('/admin/customers')
-
-
+    
+    
 })
+
+// -------------------------------------------------------ORDERS CONTROLLER
+
+
+
+
+
+
 
 module.exports = {
     loginAdmin,

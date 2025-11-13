@@ -930,15 +930,98 @@ const removeFromWishlist = async (req, res) => {
 // })
 
 
+// const postCheckoutByProduct = asyncHandler(async (req, res) => {
+//   try {
+//     const userId = req.auth?.id || req.user?.id;
+
+//     // ✅ Extract data from the form submission
+//     const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body;
+//     const productId = req.params._id; // product ID from URL
+
+//     console.log('postCheckoutByProduct - req.params._id =', productId);
+//     console.log('postCheckoutByProduct - req.body =', req.body);
+
+//     // ✅ Fetch the selected product and address
+//     const product = await productModel.findById(productId);
+//     const selectedAddress = await addressModel.findOne({user : userId});
+
+//     if (!product || !selectedAddress) {
+//       req.flash('error', 'Invalid product or address');
+//       return res.redirect(`/checkout/${productId}`);
+//     }
+
+//     // ✅ Create order date
+//     const orderDate = new Date().toDateString('en-US', {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric'
+//     });
+
+//     // ✅ Create the order
+//     const order = await orderModel.create({
+//       user: userId,
+
+//       shippingAddress: {
+//         fullName: name,
+//         email,
+//         phone,
+//         addressLine: selectedAddress.addressLine,
+//         city: selectedAddress.city,
+//         state: selectedAddress.state,
+//         alternatePhone: altPhone,
+//         label: selectedAddress.label,
+//         pincode: selectedAddress.pincode,
+//       },
+
+//       orderItems: [
+//         {
+//           productId,
+//           name: product.name,
+//           quantity: 1,
+//           price: product.price,
+//           total: product.price + 10, // Including flat shipping charge
+//         },
+//       ],
+
+//       paymentMethod,
+//       deliveryInstruction: deliveryInstructions || '',
+//       paymentStatus: 'Pending',
+//       orderStatus: 'Pending',
+//       grandTotal: product.price + 10,
+//       placedAt: orderDate,
+//       deliveredAt: '',
+//     });
+
+//     // ✅ Redirect based on payment method
+//     if (paymentMethod === 'COD') {
+//       return res.redirect(`/order/success/${order.id}`);
+//     } else {
+//       return res.redirect(`/payment/${order.id}`);
+//     }
+
+//   } catch (error) {
+//     console.log('Error in postCheckoutByProduct =', error.message, error.stack);
+//     return res.status(500).send('Error creating order');
+//   }
+// });
+
+
 const proccedToPayement = asyncHandler(async (req, res) => {
 
    const userId = req.auth?.id || req.user?.id
 
+   //   console.log('proccedToPayement - URL:', req.originalUrl);
+   //  console.log('proccedToPayement- Params:', req.params);
+
    const productId = req.params.id
-   console.log('proccedToPayement - productId = ', productId );
-   
+   console.log('proccedToPayement - productId = ', productId);
+
 
    const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
+
+   console.log('proccedToPayement - req.body.deliveryInstructions =', deliveryInstructions);
+
+   console.log('proccedToPayement - req.body.address =', address);
 
    const orderDate = new Date().toDateString('en-us', {
       year: 'numeric',
@@ -1012,7 +1095,7 @@ const proccedToPayement = asyncHandler(async (req, res) => {
       },
       paymentMethod,
       paymentStatus: 'Pending',
-      deliveryInstructions,
+      deliveryInstruction: deliveryInstructions,
       orderStatus: 'Pending',
       grandTotal,
       orderItems,
@@ -1057,5 +1140,6 @@ module.exports = {
    addToCartAjax,
    proccedToPayement,
    // proccedPaymentByProduct, // FOR PRODUCT DETAILS CHECKOUT
+   // postCheckoutByProduct,
 
 }

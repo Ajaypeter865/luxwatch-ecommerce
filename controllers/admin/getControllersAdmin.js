@@ -3,6 +3,8 @@ const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
 const userModel = require('../../models/user')
 const addressesModel = require('../../models/addresses')
+const orderModel = require('../../models/order')
+
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
     return res.render('admin/adminLogin')
@@ -31,26 +33,75 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
 })
 
 
+
+
+// const getOrdersAdmin = asyncHandler(async (req, res) => {
+
+//     try {
+//         const orders = await orderModel.find().sort({ createdAt: -1 })
+//         console.log('getOrdersAdmin - orders =', orders);
+
+//         // return res.send('Hi')
+
+
+//         const formattedOrders = orders.map(order => ({
+//             productName: order.orderItems.name,
+//             customerName: order.shippingAddress.fullName,
+//             address: order.shippingAddress.addressLine,
+//             phone: order.shippingAddress.phone,
+//             grandTotal: order.grandTotal,
+//             paymentStatus: order.paymentStatus,
+//             cancelRequest: order.cancelRequest ? 'Requested' : 'Not requested'
+//         }))
+
+//         // console.log('getOrdersAdmin - formattedOrders =', formattedOrders);
+//         console.log('getOrdersAdmin - formattedOrders =', formattedOrders);
+        
+//         return res.render('admin/orders', {
+//             orders: formattedOrders
+//         })
+
+//     } catch (error) {
+//         console.log('Error from getOrdersAdmin =', error);
+//         return res.redirect('/error?orderadmin')
+
+//     }
+
+// })
+
+
 const getOrdersAdmin = asyncHandler(async (req, res) => {
+  try {
+    const orders = await orderModel.find().sort({ createdAt: -1 });
+    console.log('getOrdersAdmin - orders =', orders);
 
-    const orders = []
-    const formattedOrders = orders.map(order => ({
-        _id: [],
-        productName: [],
-        customerName: [],
-        address: [],
-        phone: [],
-        quantity: [],
-        total: [],
-        status: [],
-        paymentStatus: [],
-        cancelRequest: order.cancelRequest ? 'Requested' : 'No Request'
-    }));
-    return res.render('admin/orders', {
-        orders: formattedOrders
-    })
+    const formattedOrders = orders.map(order => {
+    //   const item = order.orderItems[0]; // First item
+    const productNames  = order.orderItems.map(item => `${item.name} (x${item.quantity})`).join(', ')
 
-})
+      return {
+        _id: order._id,
+        productName: productNames,
+        // quantity: item?.quantity || 0,
+        customerName: order.shippingAddress.fullName,
+        address: order.shippingAddress.addressLine,
+        phone: order.shippingAddress.phone,
+        grandTotal: order.grandTotal,
+        status: order.orderStatus,
+        paymentStatus: order.paymentStatus,
+        cancelRequest: order.cancelRequest ? 'Requested' : 'Not requested'
+      };
+    });
+
+    console.log('getOrdersAdmin - formattedOrders =', formattedOrders);
+
+    return res.render('admin/orders', { orders: formattedOrders });
+
+  } catch (error) {
+    console.log('Error from getOrdersAdmin =', error);
+    return res.redirect('/error?orderadmin');
+  }
+});
 
 const getProductsAdmin = asyncHandler(async (req, res) => {
 

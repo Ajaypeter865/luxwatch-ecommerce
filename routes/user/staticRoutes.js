@@ -9,7 +9,7 @@ const { proctedAuth, resLocals } = require('../../middlewares/auth')
 const { editProfile } = require('../../controllers/user/authController')
 
 // IMPORT GET MODULES
-const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage, getCartPage, getWishList, getproductPage, getCheckoutPage, getCheckoutPageByProduct, getOrderSummaryPage
+const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage, getCartPage, getWishList, getproductPage, getCheckoutPage, getCheckoutPageByProduct, getOrderSummaryPage, errorPage
 
 } = require('../../controllers/user/getController')
 
@@ -50,12 +50,18 @@ router.get('/product/:id', getproductPage)
 // CHECKOUT PAGE
 router.get('/checkout', proctedAuth, getCheckoutPage)
 
+// THIS IS FOR BUY NOW BUTTON FOR PRODUCT DISCRIPTION
 router.get('/checkout/:id', proctedAuth, getCheckoutPageByProduct)
 
 // ORDER SUMMARY PAGE 
 router.get('/order/success/:id', getOrderSummaryPage)
 
 
+
+
+// ERROR PAGE 
+
+router.get('/error', errorPage)
 
 // GOOGLE AUTHENTICATION
 router.get('/google', passport.authenticate('google', {
@@ -71,5 +77,9 @@ router.get('/auth/google/callback', passport.authenticate('google', {
 
         res.redirect('/')
     })
+
+
+
+
 
 module.exports = router

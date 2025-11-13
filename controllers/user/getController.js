@@ -356,7 +356,7 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
         const grandTotal = cart.grandTotal
 
-        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal }, productId : null })
 
     } catch (error) {
         console.log('Error in getCheckoutPage =', error.stack, error.message);
@@ -367,7 +367,7 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
 
 
-// THIS FUNCTION IS FOR WHEN WE DO ADD TO CART FROM PRODUCT DISCRIPTION THIS FUNCTION WILL WORK
+// THIS FUNCTION IS FOR WHEN WE DO BUY NOW FROM PRODUCT DISCRIPTION THIS FUNCTION WILL WORK
 const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
     try {
 
@@ -379,9 +379,10 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
 
 
         const productId = req.params.id
+        console.log('getCheckoutPageByProduct - productId =', productId);
 
-        const cart = await productModel.findOne({ _id: productId })
-        console.log('getCheckoutPageByProduct - cart =', cart);
+        const cart = await productModel.findById(productId)
+        // console.log('getCheckoutPageByProduct - cart =', cart);
 
         const cartItems = [{
             name: cart.name,
@@ -391,7 +392,7 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
 
         // shipping: 10
 
-        console.log('getCheckoutPageByProduct - cartItems =', cartItems);
+        // console.log('getCheckoutPageByProduct - cartItems =', cartItems);
 
         const subTotal = cart.price
 
@@ -400,7 +401,7 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
         const grandTotal = Number(subTotal) + Number(shipping)
 
 
-        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal }})
 
     } catch (error) {
         console.log('Error from getCheckoutPageByProduct =', error.message, error.stack);
@@ -412,47 +413,12 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
 })
 
 
-// const getOrderSummaryPage = asyncHandler(async (req, res) => {
-//   // Dummy order data for testing
-//   const order = {
-//     _id: req.params.id || '8612dc105d71398f6a8dd51',
-//     userName: 'Abinav',
-//     paymentMethod: 'cod',
-//     orderDate: new Date(),
-//     address: {
-//       label: 'Home',
-//       street: 'kannur, kannur',
-//       city: 'kannur',
-//       state: 'kerala',
-//       zip: '670768',
-//       phone: '7025991242',
-//     },
-//     items: [
-//       { name: 'Rolex Black', price: 150, quantity: 3 },
-
-//     ],
-//   };
-
-//   // Calculate total amount
-//   order.total = order.items.reduce(
-//     (sum, item) => sum + item.price * item.quantity,
-//     0
-//   );
-
-//   // Render the EJS file with dummy data
-//   res.render('user/orderConfirmation', {
-//     order,
-//     success: 'Your order has been placed successfully!',
-//     error: null,
-//   });
-// });
-
 const getOrderSummaryPage = asyncHandler(async (req, res) => {
     const orderId = req.params.id
-    console.log('getOrderPageSummary - orderId =', orderId);
+    // console.log('getOrderPageSummary - orderId =', orderId);
 
     const order = await orderModel.findOne({ _id: orderId })
-    console.log('getOrderPageSummary - order =', order);
+    // console.log('getOrderPageSummary - order =', order);
 
 
     return res.render('user/orderConfirmation', { order })
@@ -460,6 +426,14 @@ const getOrderSummaryPage = asyncHandler(async (req, res) => {
 })
 
 
+
+// ERROR PAGE
+
+const errorPage = async (req,res) => {
+
+    return res.render('user/404')
+    
+}
 
 
 
@@ -480,4 +454,5 @@ module.exports = {
     getCheckoutPage,
     getCheckoutPageByProduct,
     getOrderSummaryPage,
+    errorPage,
 }
