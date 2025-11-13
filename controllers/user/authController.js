@@ -789,78 +789,242 @@ const removeFromWishlist = async (req, res) => {
 //------------------------------------------------------- CHECKOUT FUNCTIONS
 
 
+// const proccedToPayement = asyncHandler(async (req, res) => {
+
+//    try {
+//       const userId = req.auth?.id || req.user?.id
+
+//       const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
+//       console.log('proccedToPayement - req.body =', req.body);
+
+//       const orderDate = new Date().toLocaleDateString('en-us', {
+//          year: 'numeric',
+//          month: 'long',
+//          day: 'numeric'
+//       })
+//       // console.log('proccedToPayment - orderDate =', orderDate);
+
+//       const addressId = await addressModel.findById(address)
+//       // console.log('proccedToPayment - addressId =', addressId);
+
+//       const cart = await cartModel.findOne({ user: userId }).populate('products.product')
+
+
+//       const orders = await orderModel.create({
+//          user: userId,
+
+//          shippingAddress: {
+//             fullName: name,
+//             email: email,
+//             phone: phone,
+//             addressLine: addressId.addressLine,
+//             city: addressId.city,
+//             state: addressId.state,
+//             alternatePhone: altPhone,
+//             label: addressId.label,
+//             pincode: addressId.pincode
+//          },
+
+//          orderItems: cart.products.map(item => ({
+//             productId: item.product.id,
+//             name: item.product.name,
+//             quantity: item.quantity,
+//             price: item.price,
+//             total: item.quantity * item.price,
+//          })),
+
+//          paymentMethord: paymentMethod,
+//          orderStatus: 'Pending',
+//          grandTotal: cart.grandTotal,
+//          paymentStatus: 'Pending',
+//          placedAt: orderDate,
+//          deliveredAt: '',
+//          deliveryInstruction: deliveryInstructions || '',
+//          // cancel: '',
+
+
+//       })
+//       // console.log('proccedToPayment - orders =', orders);
+
+
+//       if (paymentMethod === 'COD') {
+
+//          return res.redirect(`/order/success/${orders.id}`)
+//       } else {
+
+//          return res.redirect(`/payment/${order.id}`)
+//       }
+
+//    } catch (error) {
+//       console.log('Error in proccedPayment =', error.stack, error.message);
+//       res.send('Error')
+
+//    }
+// })
+
+
+// THIS FUNCITON  IS FOR PRODUCTDETAILS PAGE -> BUYNOW -> PROCCED TO CHEKCOUT ->
+// const proccedPaymentByProduct = asyncHandler(async (req, res) => {
+//    // console.log('From proccedPayment');
+
+
+//    try {
+
+//       const userId = req.auth?.id || req.user?.id
+
+//       const productId = req.params.id
+
+//       const { address, name, email, phone, altPhone, paymentMethod, deliveryInstructions } = req.body
+
+//       const cart = await productModel.findById(productId)
+//       const addressId = await addressModel.findById(address)
+//       // console.log('proccedPaymentByProduct - cart =', cart);
+
+//       const orderDate = new Date().toDateString('en-us', {
+//          year: 'numeric',
+//          month: 'long',
+//          day: 'numeric'
+//       })
+
+//       const order = await orderModel.create({
+//          user: userId,
+
+//          shippingAddress: {
+//             fullName: name,
+//             email,
+//             phone,
+//             addressLine: addressId.addressLine,
+//             state: addressId.state,
+//             alternatePhone: altPhone,
+//             label: addressId.label,
+//             pincode: addressId.pincode
+//          },
+
+//          orderItems: {
+//             productId,
+//             name: productId.name,
+//             quantity: 1,
+//             price: productId.price,
+//             total: productId.price + 10 //(SHIPPING AMOUNT WILL CHANGE)
+//          },
+//          deliveryInstruction: deliveryInstruction,
+//          paymentMethod: paymentMethod,
+//          paymentStatus: 'Pending',
+//          orderStatus: 'Pending',
+//          grandTotal: total,
+//          deliveredAt: '',
+//          placedAt: orderDate,
+//       })
+
+//       if (paymentMethod === 'COD') {
+//          return res.redirect(`/order/success/${order.id}`)
+//       } else {
+//          return res.redirect(`/payment/${order.id}`)
+//       }
+
+//    } catch (error) {
+//       console.log('Error in proccedPayment =', error.stack, error.message);
+//       res.send('Error')
+//    }
+
+// })
+
+
 const proccedToPayement = asyncHandler(async (req, res) => {
 
-   try {
-      const userId = req.auth?.id || req.user?.id
+   const userId = req.auth?.id || req.user?.id
 
-      const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
-      console.log('proccedToPayement - req.body =', req.body);
+   const productId = req.params.id
+   console.log('proccedToPayement - productId = ', productId );
+   
 
-      const orderDate = new Date().toLocaleDateString('en-us', {
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric'
-      })
-      // console.log('proccedToPayment - orderDate =', orderDate);
+   const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
+
+   const orderDate = new Date().toDateString('en-us', {
+      year: 'numeric',
+      day: 'numeric',
+      month: 'long',
+   })
+
+   const addressData = await addressModel.findById(address)
 
 
-      const addressId = await addressModel.findById(address)
-      // console.log('proccedToPayment - addressId =', addressId);
-      
+   let orderItems = []
+   let grandTotal = 0
+
+   if (!productId) {
+
       const cart = await cartModel.findOne({ user: userId }).populate('products.product')
-      
-      const orders = await orderModel.create({
-         user: userId,
-         
-         shippingAddress: {
-            fullName: name,
-            email: email,
-            phone: phone,
-            addressLine: addressId.addressLine,
-            city: addressId.city,
-            state: addressId.state,
-            alternatePhone: altPhone,
-            label : addressId.label,
-            pincode : addressId.pincode
-         },
-         
-         orderItems: cart.products.map(item => ({
-            productId: item.product.id,
-            name: item.product.name,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.quantity * item.price,
-         })),
-         
-         paymentMethord: paymentMethod,
-         orderStatus: 'Pending',
-         grandTotal: cart.grandTotal,
-         paymentStatus: 'Pending',
-         placedAt: orderDate,
-         deliveredAt: '',
-         deliveryInstruction: deliveryInstructions || '',
-         // cancel: '',
-         
-         
-      })
-      console.log('proccedToPayment - orders =', orders);
-      
-      
-      if (paymentMethod === 'COD') {
 
-         return res.redirect(`/order/success/${orders.id}`)
-      } else {
-
-         return res.redirect(`/payment/${order.id}`)
+      if (!cart || cart.products.length < 0) {
+         req.flash('error', 'You have no products in the cart')
+         return res.redirect('/shop')
       }
 
+      orderItems = cart.products.map(item => ({
+         productId: item.product.id,
+         name: item.product.name,
+         quantity: item.quantity,
+         price: item.price,
+         total: item.quantity * item.price,
 
-   } catch (error) {
-      console.log('Error in proccedPayment =', error.stack, error.message);
-      res.send('Error')
 
+      }))
+
+      grandTotal = cart.grandTotal
+
+   } else {
+
+      const product = await productModel.findById(productId)
+      if (!product) {
+         req.flash('error', 'Product Not Found')
+         return res.redirect('/shop')
+      }
+
+      orderItems = [
+         {
+            productId: productId,
+            name: product.name,
+            quantity: 1,
+            price: Number(product.price),
+            total: Number(product.price) + 10 // SHIPPING CHARGE
+
+
+         }
+      ]
+
+      grandTotal = product.price + 10
    }
+
+
+   const order = await orderModel.create({
+      user: userId,
+      shippingAddress: {
+         fullName: name,
+         phone: phone,
+         addressLine: addressData.addressLine,
+         city: addressData.city,
+         state: addressData.state,
+         pincode: addressData.state,
+         alternatePhone: altPhone,
+         email: email,
+         label: addressData.label,
+      },
+      paymentMethod,
+      paymentStatus: 'Pending',
+      deliveryInstructions,
+      orderStatus: 'Pending',
+      grandTotal,
+      orderItems,
+      placedAt: orderDate,
+   })
+
+   if (paymentMethod === 'COD') {
+      return res.redirect(`/order/success/${order.id}`)
+   } else {
+      return res.redirect(`/order/payment${order.id}`)
+   }
+
 })
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
@@ -892,5 +1056,6 @@ module.exports = {
    addToWishlistAjax,
    addToCartAjax,
    proccedToPayement,
+   // proccedPaymentByProduct, // FOR PRODUCT DETAILS CHECKOUT
 
 }
