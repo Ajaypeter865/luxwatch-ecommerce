@@ -6,6 +6,7 @@ const asyncHandler = require('express-async-handler')
 const cartModel = require('../../models/cart')
 const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
+const { report } = require('../../routes/user/staticRoutes')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -73,8 +74,7 @@ const getProfilePage = async (req, res) => {
         }
     } catch (error) {
         console.log('Error from profilePage = ', error.stack, error.message);
-        return res.render('user/index', { success: null, error: null, products: null })
-
+        return res.redirect('/error?profile')
     }
 }
 
@@ -122,6 +122,78 @@ const getAddressPage = async (req, res) => {
     }
 }
 
+// const getUserOrdersPage = asyncHandler(async (req, res) => {
+
+//     // Dummy logged-in user
+//     const user = {
+//         name: "Abinav Sajeevan",
+//         email: "abinav@example.com",
+//         phone: "+91 9876543210",
+//     };
+
+//     // Dummy order list
+//     const orders = [
+//         {
+//             _id: "ORD1001",
+//             orderStatus: "delivered",
+//             total: 7999,
+//             paymentMethod: "COD",
+//             createdAt: new Date("2025-10-01T14:30:00"),
+
+//             items: [
+//                 { name: "Rolex Submariner Black", quantity: 1, price: 5000 },
+//                 { name: "Titan Silver Classic", quantity: 1, price: 2999 }
+//             ]
+//         },
+
+//         {
+//             _id: "ORD1002",
+//             orderStatus: "processing",
+//             total: 2499,
+//             paymentMethod: "Card",
+//             createdAt: new Date("2025-10-15T10:00:00"),
+
+//             items: [
+//                 { name: "Fastrack Bold", quantity: 1, price: 2499 }
+//             ]
+//         },
+
+
+
+//     ];
+
+//     res.render("user/profile", {
+//         user,
+//         orders,
+//         success: null,
+//         error: null,
+//     });
+// });
+
+
+const getUserOrdersPage = asyncHandler(async (req, res) => {
+
+    try {
+
+        const userId = req.auth?.id || req.user?.id
+
+        const user = await userModel.findById(userId).select('name phone email')
+        // console.log('getUserOrdersPage - user =', user);
+        
+        const orderId = await orderModel.find({user : userId})
+        // console.log('getUserOrdersPage - orderId =', orderId);
+
+        return res.send('Hi')
+
+
+
+    } catch (error) {
+        console.log('Error from getUserOrderPage =', error.message, error.stack);
+        return res.redirect('/error?userorder')
+
+    }
+
+})
 // -----------------------------------------------------SHOP FUNCTIONS
 
 
@@ -356,7 +428,7 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
         const grandTotal = cart.grandTotal
 
-        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal }, productId : null })
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal }, productId: null })
 
     } catch (error) {
         console.log('Error in getCheckoutPage =', error.stack, error.message);
@@ -401,7 +473,7 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
         const grandTotal = Number(subTotal) + Number(shipping)
 
 
-        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal }})
+        return res.render('user/checkout', { user, addresses, cartItems, totals: { subTotal, shipping, grandTotal } })
 
     } catch (error) {
         console.log('Error from getCheckoutPageByProduct =', error.message, error.stack);
@@ -429,10 +501,10 @@ const getOrderSummaryPage = asyncHandler(async (req, res) => {
 
 // ERROR PAGE
 
-const errorPage = async (req,res) => {
+const errorPage = async (req, res) => {
 
     return res.render('user/404')
-    
+
 }
 
 
@@ -455,4 +527,5 @@ module.exports = {
     getCheckoutPageByProduct,
     getOrderSummaryPage,
     errorPage,
+    getUserOrdersPage
 }

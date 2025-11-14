@@ -62,7 +62,7 @@
 }
 
 .profile-nav .nav-link:hover {
-    background-color: #ffe0e0; /* Lighter red for hover */
+    background-color: #ffe0e0;
     color: #ff2020;
 }
 
@@ -77,7 +77,9 @@
     font-weight: 600;
 }
 
-/* Main Content */
+/* ===== MAIN CONTENT ===== */
+
+/* Order item hover effect */
 .order-item {
     background-color: #fff;
     transition: box-shadow 0.3s ease;
@@ -85,6 +87,108 @@
 
 .order-item:hover {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ----------------------------------------------------------
+   ⭐ FIXED ORDER SECTION (SOLVES OVERFLOW + SPACING + LAYOUT)
+   ---------------------------------------------------------- */
+
+/* Wrapper to force all orders inside card */
+.orders-wrapper {
+    width: 100%;
+    display: block;
+}
+
+/* Each order container */
+.order-box {
+    border: 1px solid #ff2020;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 25px; /* consistent spacing between orders */
+    overflow: hidden; /* prevents table pushing outside */
+}
+
+/* Remove margin-bottom on last order */
+.order-box:last-child {
+    margin-bottom: 0;
+}
+
+/* Order table */
+.order-table {
+    width: 100%;
+    table-layout: fixed; /* prevents stretching */
+}
+
+.order-table th {
+    font-weight: 600;
+    color: #333;
+}
+
+.order-table td,
+.order-table th {
+    word-wrap: break-word;
+}
+
+/* Prevent unwanted spacing in table */
+.table.order-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+/* Status badge styles */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-size: 0.85rem;
+}
+
+/* Dynamic statuses */
+.status-badge.pending {
+    background-color: #ff9800;
+    color: #fff;
+}
+
+.status-badge.processing {
+    background-color: #0275d8;
+    color: #fff;
+}
+
+.status-badge.delivered {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-badge.cancelled {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Cancel button styling */
+.cancel-btn {
+    background-color: #ff2020;
+    color: #fff;
+    border-radius: 0px;
+    padding: 26px 12px;
+    border: none;
+    transition: 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: #d81c1c;
+}
+
+/* Ensure card grows properly */
+.main-content-card {
+    width: 100%;
+    display: block;
+}
+
+.card-body {
+    overflow: visible !important;
 }
 
 /* ===== Edit Profile Modal Styling ===== */
@@ -153,4 +257,4 @@
         font-size: 14px;
         padding: 8px 16px;
     }
-}   
+}

@@ -9,7 +9,24 @@ const { proctedAuth, resLocals } = require('../../middlewares/auth')
 const { editProfile } = require('../../controllers/user/authController')
 
 // IMPORT GET MODULES
-const { getLoginUser, getSignupUser, getHomePage, getforgotPassword, getEnterOtp, getRestPassword, getLogout, getProfilePage, getAddressPage, getShopPage, getCartPage, getWishList, getproductPage, getCheckoutPage, getCheckoutPageByProduct, getOrderSummaryPage, errorPage
+const {
+    getLoginUser,
+    getSignupUser,
+    getHomePage,
+    getforgotPassword,
+    getEnterOtp, getRestPassword
+    , getLogout,
+    getProfilePage,
+    getAddressPage,
+    getShopPage,
+    getCartPage,
+    getWishList,
+    getproductPage,
+    getCheckoutPage,
+    getCheckoutPageByProduct,
+    getOrderSummaryPage,
+    errorPage,
+    getUserOrdersPage
 
 } = require('../../controllers/user/getController')
 
@@ -27,7 +44,7 @@ router.get('/logout', proctedAuth, getLogout)
 
 
 // HOME ROUTES
-router.get('/profile', proctedAuth, getProfilePage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
+router.get('/profile', proctedAuth, getUserOrdersPage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
 router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
 router.get('/address', proctedAuth, getAddressPage)
 
