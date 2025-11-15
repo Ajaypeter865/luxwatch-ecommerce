@@ -131,13 +131,13 @@ const getUserOrdersPage = asyncHandler(async (req, res) => {
 
         const user = await userModel.findById(userId).select('name phone email')
 
-        const orderId = await orderModel.find({ user: userId })
+        const orderId = await orderModel.find({ user: userId, cancel : false })
 
         const orders = orderId.map(order => ({
             _id: order.id,
             orderStatus: order.orderStatus,
             total: order.grandTotal,
-            paymnetMethod: order.paymentMethod,
+            paymentMethod: order.paymentMethod,
             createdAt: order.createdAt.toISOString(),
 
             items: order.orderItems.map(item => ({

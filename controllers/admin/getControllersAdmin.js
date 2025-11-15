@@ -89,7 +89,8 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
         grandTotal: order.grandTotal,
         status: order.orderStatus,
         paymentStatus: order.paymentStatus,
-        cancelRequest: order.cancelRequest ? 'Requested' : 'Not requested'
+        cancel: order.cancel,
+        cancelReason : order.cancelReason
       };
     });
 

@@ -378,6 +378,36 @@ const deleteAddress = asyncHandler(async (req, res) => {
 })
 
 
+//------------------------------------------------------- ORDER FUNCTIONS
+
+
+const cancelOrder = asyncHandler(async (req, res) => {
+
+   try {
+      const { orderId, reason, customReason } = req.body
+      console.log('cancelOrder - req.body =', req.body);
+
+      const cancelOrder = await orderModel.findByIdAndUpdate(orderId,
+         { $set: { cancel: true, cancelReason: reason || customReason } },
+         { new: true, runValidators: true }
+      )
+
+      console.log('cancelOrder =', cancelOrder);
+      req.flash('success', 'Order cancel request was submitted')
+      return res.redirect('/profile')
+
+      // res.send('Hi')
+
+   } catch (error) {
+      console.log('Error from cancelOrder =', error.message, error.stack);
+
+      return res.redirect('/error?cancelorder')
+
+
+   }
+
+})
+
 
 
 //------------------------------------------------------- CART FUNCTIONS
@@ -1114,6 +1144,7 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
 const logoutUser = async (req, res) => {
+
    res.clearCookie('userToken')
    res.render('user/login')
 
@@ -1140,6 +1171,7 @@ module.exports = {
    addToWishlistAjax,
    addToCartAjax,
    proccedToPayement,
+   cancelOrder,
    // proccedPaymentByProduct, // FOR PRODUCT DETAILS CHECKOUT
    // postCheckoutByProduct,
 

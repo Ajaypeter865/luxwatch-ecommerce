@@ -7,7 +7,7 @@ const router = express.Router()
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
     logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
     deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
-    proccedToPayement, postCheckoutByProduct} = require('../../controllers/user/authController')
+    proccedToPayement, postCheckoutByProduct, cancelOrder } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -30,6 +30,9 @@ router.post('/address/set-default/:id', proctedAuth, setDefaultAddress)
 router.post('/address/delete/:id', proctedAuth, deleteAddress)
 // router.post('/address/edit', proctedAuth, editAddress)
 
+//------------------------------------------------------- ORDER FUNCTIONS
+router.post('/orders/cancel',cancelOrder)
+
 
 //----------------------------------------------------- ADD TO CART FUCNTION
 
@@ -50,9 +53,9 @@ router.post('/api/wishlist/add/:id', proctedAuth, addToWishlistAjax);
 
 
 //----------------------------------------------------- CHECKOUT FUCNTION
- 
-router.post('/checkout/proccedPayment/:id',proctedAuth, proccedToPayement)
-router.post('/checkout/proccedPayment',proctedAuth, proccedToPayement)
+
+router.post('/checkout/proccedPayment/:id', proctedAuth, proccedToPayement)
+router.post('/checkout/proccedPayment', proctedAuth, proccedToPayement)
 
 // router.post('/checkout/:_id', proctedAuth, postCheckoutByProduct);
 

@@ -82,7 +82,16 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <%= order.cancelRequest %>
+                                                <span class="badge order-badge 
+                                                            <%= order.cancel === false ? 'bg-success' : 'bg-danger' %>"
+                                                    data-reason="<%= order.cancelReason %>">
+                                                    <%= order.cancel ? order.cancelReason : 'Not requested' %>
+                                                </span>
+
+
+
+
+                                                <!-- <%= order.cancelRequest %>  NOT REQUESTED -->
                                             </td>
                                             <td>
                                                 <form action="/admin/orders/update/<%= order._id %>" method="POST"
@@ -117,5 +126,23 @@
             </div>
         </main>
 </body>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".order-badge").forEach(function (badge) {
+            badge.addEventListener("click", function () {
+                const reason = this.getAttribute("data-reason");
+
+                if (reason !== "Not requested") {
+                    alert("Cancel request reason: " + reason);
+                }
+                // If reason === "Not requested", do nothing
+            });
+        });
+    });
+</script>
+
+
 
 </html>
