@@ -122,54 +122,6 @@ const getAddressPage = async (req, res) => {
     }
 }
 
-// const getUserOrdersPage = asyncHandler(async (req, res) => {
-
-//     // Dummy logged-in user
-//     const user = {
-//         name: "Abinav Sajeevan",
-//         email: "abinav@example.com",
-//         phone: "+91 9876543210",
-//     };
-
-//     // Dummy order list
-//     const orders = [
-//         {
-//             _id: "ORD1001",
-//             orderStatus: "delivered",
-//             total: 7999,
-//             paymentMethod: "COD",
-//             createdAt: new Date("2025-10-01T14:30:00"),
-
-//             items: [
-//                 { name: "Rolex Submariner Black", quantity: 1, price: 5000 },
-//                 { name: "Titan Silver Classic", quantity: 1, price: 2999 }
-//             ]
-//         },
-
-//         {
-//             _id: "ORD1002",
-//             orderStatus: "processing",
-//             total: 2499,
-//             paymentMethod: "Card",
-//             createdAt: new Date("2025-10-15T10:00:00"),
-
-//             items: [
-//                 { name: "Fastrack Bold", quantity: 1, price: 2499 }
-//             ]
-//         },
-
-
-
-//     ];
-
-//     res.render("user/profile", {
-//         user,
-//         orders,
-//         success: null,
-//         error: null,
-//     });
-// });
-
 
 const getUserOrdersPage = asyncHandler(async (req, res) => {
 
@@ -178,18 +130,30 @@ const getUserOrdersPage = asyncHandler(async (req, res) => {
         const userId = req.auth?.id || req.user?.id
 
         const user = await userModel.findById(userId).select('name phone email')
-        // console.log('getUserOrdersPage - user =', user);
-        
-        const orderId = await orderModel.find({user : userId})
-        // console.log('getUserOrdersPage - orderId =', orderId);
 
-        return res.send('Hi')
+        const orderId = await orderModel.find({ user: userId })
 
+        const orders = orderId.map(order => ({
+            _id: order.id,
+            orderStatus: order.orderStatus,
+            total: order.grandTotal,
+            paymnetMethod: order.paymentMethod,
+            createdAt: order.createdAt.toISOString(),
 
+            items: order.orderItems.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+            }))
+        }))
+
+        return res.render('user/profile', {
+            user, orders
+        })
 
     } catch (error) {
-        console.log('Error from getUserOrderPage =', error.message, error.stack);
-        return res.redirect('/error?userorder')
+        console.log('Error from getUserOrdersPage =', error.stack, error.message);
+        return res.redirect('/error')
 
     }
 

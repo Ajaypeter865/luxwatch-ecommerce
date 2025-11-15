@@ -47,6 +47,7 @@ router.get('/logout', proctedAuth, getLogout)
 router.get('/profile', proctedAuth, getUserOrdersPage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
 router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
 router.get('/address', proctedAuth, getAddressPage)
+router.get('/orders', proctedAuth,getUserOrdersPage)
 
 
 // SHOP ROUTES
