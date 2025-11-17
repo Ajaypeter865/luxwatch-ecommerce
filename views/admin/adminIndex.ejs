@@ -10,6 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/admin-sidebar.css">
   <link rel="stylesheet" href="/css/admin-dashboard.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
   <%- include('../partials/admin/_sidebar', { activePage: 'dashboard' }) %>
@@ -50,52 +54,93 @@
         </div>
       </div>
 
-      <!-- Recent Orders Table -->
-      <h4 class="fw-semibold mb-3 text-dark">Recent Orders</h4>
-      <div class="card recent-orders-card shadow-sm">
-        <div class="card-body p-0">
-          <table class="table table-hover mb-0">
-            <thead class="table-header">
-              <tr>
-                <th>#</th>
-                <th>Customer</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (recentOrders.length > 0) { %>
-                <% recentOrders.forEach((order, i) => { %>
-                  <tr>
-                    <td><%= i + 1 %></td>
-                    <td><%= order.customerName %></td>
-                    <td><%= order.productName %></td>
-                    <td><%= order.quantity %></td>
-                    <td>
-                      <% if(order.status === 'Delivered') { %>
-                        <span class="badge bg-success">Delivered</span>
-                      <% } else if(order.status === 'Pending') { %>
-                        <span class="badge bg-warning text-dark">Pending</span>
-                      <% } else { %>
-                        <span class="badge bg-danger">Cancelled</span>
-                      <% } %>
-                    </td>
-                    <td>₹<%= order.total.toLocaleString() %></td>
-                  </tr>
-                <% }) %>
-              <% } else { %>
-                <tr>
-                  <td colspan="6" class="text-center text-muted py-4">No recent orders found</td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
+
+      <!-- ==================== CHART SECTION ==================== -->
+      <div class="row g-4">
+        
+        <!-- Line Chart -->
+        <div class="col-md-4">
+          <div class="p-3 shadow rounded bg-white">
+            <h5 class="mb-3">Line Chart: Category Trends</h5>
+            <canvas id="lineChart"></canvas>
+          </div>
         </div>
+
+        <!-- Bar Chart -->
+        <div class="col-md-4">
+          <div class="p-3 shadow rounded bg-white">
+            <h5 class="mb-3">Bar Chart: Category Counts</h5>
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-md-4">
+          <div class="p-3 shadow rounded bg-white">
+            <h5 class="mb-3">Pie Chart: Category Share</h5>
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+
       </div>
+
     </div>
   </main>
+
+
+  <!-- ==================== CHART JS SCRIPT ==================== -->
+  <script>
+    // Convert backend EJS data to JS
+    const categoryData = {
+      manual: <%= dashboardCategories.manual %>,
+      limitedEdition: <%= dashboardCategories.limitedEdition %>,
+      automatic: <%= dashboardCategories.automatic %>
+    };
+
+    const labels = ["Manual", "Limited-Edition", "Automatic"];
+    const values = [
+      categoryData.manual,
+      categoryData.limitedEdition,
+      categoryData.automatic
+    ];
+
+    // Line Chart
+    new Chart(document.getElementById("lineChart"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Category Count",
+          data: values,
+          borderWidth: 2
+        }]
+      }
+    });
+
+    // Bar Chart
+    new Chart(document.getElementById("barChart"), {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Products per Category",
+          data: values,
+          borderWidth: 1
+        }]
+      }
+    });
+
+    // Pie Chart
+    new Chart(document.getElementById("pieChart"), {
+      type: "pie",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values
+        }]
+      }
+    });
+  </script>
 
 </body>
 </html>

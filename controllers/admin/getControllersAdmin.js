@@ -12,25 +12,38 @@ const getloginPageAdmin = asyncHandler(async (req, res) => {
 
 
 const gethomePageAdmin = asyncHandler(async (req, res) => {
-    const totalSales = []
-    const totalOrders = []
-    const pendingOrders = []
-    const totalProducts = []
-    const totalCustomers = []
-    const newCustomers = []
 
+    // Example: You must fetch real values from DB
+    const totalSales = 250000;             // Replace with DB value
+    const totalOrders = 120;               // Replace with DB value
+    const pendingOrders = 15;              // Replace with DB value
+    const totalProducts = 300;             // Replace with DB value
+    const totalCustomers = 800;            // Replace with DB value
+    const newCustomers = 40;               // Replace with DB value
 
-    return res.render('admin/adminIndex', {
+    // ===================== CATEGORY COUNTS =====================
+    // Fetch from MongoDB based on category field
+    const manualCount = await productModel.countDocuments({ category: "Manual" });
+    const limitedEditionCount = await productModel.countDocuments({ category: "Limited-Edition" });
+    const automaticCount = await productModel.countDocuments({ category: "Automatic" });
+
+    return res.render("admin/adminIndex", {
         dashboardData: {
-            totalSales: totalSales[0]?.total || 0,
+            totalSales,
             totalOrders,
             pendingOrders,
             totalProducts,
             totalCustomers,
             newCustomers
-        }, recentOrders: []
-    })
-})
+        },
+        dashboardCategories: {
+            manual: manualCount,
+            limitedEdition: limitedEditionCount,
+            automatic: automaticCount
+        },
+        recentOrders: []
+    });
+});
 
 
 
