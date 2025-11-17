@@ -8,7 +8,7 @@ const router = express.Router()
 const { upload } = require('../../middlewares/multer')
 
 // IMPORT MODULES
-const { loginAdmin, addProducts, editProducts, deleteProduct, blockCustomer, deleteCustomer } = require('../../controllers/admin/authControllerAdmin')
+const { loginAdmin, addProducts, editProducts, deleteProduct, blockCustomer, deleteCustomer,updateOrderStatus } = require('../../controllers/admin/authControllerAdmin')
 
 
 // ---------------------------------------------------------LOGIN ROUTES
@@ -24,5 +24,10 @@ router.post('/admin/products/delete/:id', deleteProduct)
 
 router.post('/admin/customers/toggle-status/:id', blockCustomer);
 router.post('/admin/customers/delete/:id', deleteCustomer);
+
+//-------------------------------------------------------ORDERS ROUTES
+
+router.post('/admin/orders/update/:id', updateOrderStatus)
+
 
 module.exports = router

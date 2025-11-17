@@ -97,8 +97,8 @@
                                                 <form action="/admin/orders/update/<%= order._id %>" method="POST"
                                                     class="d-flex gap-2">
                                                     <select name="status" class="form-select form-select-sm">
-                                                        <option value="Placed" <%=order.status==='Placed' ? 'selected'
-                                                            : '' %>>Placed</option>
+                                                        <!-- <option value="Placed" <%=order.status==='Placed' ? 'selected'
+                                                            : '' %>>Placed</option> -->
                                                         <option value="Pending" <%=order.status==='Pending' ? 'selected'
                                                             : '' %>>Pending</option>
                                                         <option value="Shipped" <%=order.status==='Shipped' ? 'selected'
