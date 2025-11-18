@@ -12,37 +12,101 @@ const getloginPageAdmin = asyncHandler(async (req, res) => {
 
 
 const gethomePageAdmin = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
 
-    // Example: You must fetch real values from DB
-    const totalSales = 250000;             // Replace with DB value
-    const totalOrders = 120;               // Replace with DB value
-    const pendingOrders = 15;              // Replace with DB value
-    const totalProducts = 300;             // Replace with DB value
-    const totalCustomers = 800;            // Replace with DB value
-    const newCustomers = 40;               // Replace with DB value
+  // Default filter = monthly
+  const dateFilter = { createdAt: { $gte: oneMonthAgo } };
 
-    // ===================== CATEGORY COUNTS =====================
-    // Fetch from MongoDB based on category field
-    const manualCount = await productModel.countDocuments({ category: "Manual" });
-    const limitedEditionCount = await productModel.countDocuments({ category: "Limited-Edition" });
-    const automaticCount = await productModel.countDocuments({ category: "Automatic" });
+  // -----------------------------
+  // LINE CHART: Revenue monthly
+  // -----------------------------
+  const revenueAgg = await orderModel.aggregate([
+    { $match: dateFilter },
+    {
+      $group: {
+        _id: { $dayOfMonth: "$createdAt" },
+        total: { $sum: "$totalPrice" }
+      }
+    },
+    { $sort: { "_id": 1 } }
+  ]);
 
-    return res.render("admin/adminIndex", {
-        dashboardData: {
-            totalSales,
-            totalOrders,
-            pendingOrders,
-            totalProducts,
-            totalCustomers,
-            newCustomers
-        },
-        dashboardCategories: {
-            manual: manualCount,
-            limitedEdition: limitedEditionCount,
-            automatic: automaticCount
-        },
-        recentOrders: []
-    });
+  const lineLabels = revenueAgg.map(r => "Day " + r._id);
+  const lineRevenue = revenueAgg.map(r => r.total);
+
+
+  // -----------------------------
+  // BAR CHART: Orders by Category
+  // -----------------------------
+  const orderCategory = await orderModel.aggregate([
+    { $match: dateFilter },
+    { $unwind: "$items" },
+    {
+      $group: {
+        _id: "$items.category",
+        totalOrders: { $sum: 1 }
+      }
+    }
+  ]);
+
+  const ordersByCategory = {
+    Manual: orderCategory.find(c => c._id === "Manual")?.totalOrders || 0,
+    "Limited-Edition": orderCategory.find(c => c._id === "Limited-Edition")?.totalOrders || 0,
+    Automatic: orderCategory.find(c => c._id === "Automatic")?.totalOrders || 0
+  };
+
+
+  // -----------------------------
+  // PIE CHART: Revenue by Category
+  // -----------------------------
+  const revCategory = await orderModel.aggregate([
+    { $match: dateFilter },
+    { $unwind: "$items" },
+    {
+      $group: {
+        _id: "$items.category",
+        totalRevenue: {
+          $sum: { $multiply: ["$items.price", "$items.quantity"] }
+        }
+      }
+    }
+  ]);
+
+  const revenueByCategory = {
+    Manual: revCategory.find(c => c._id === "Manual")?.totalRevenue || 0,
+    "Limited-Edition": revCategory.find(c => c._id === "Limited-Edition")?.totalRevenue || 0,
+    Automatic: revCategory.find(c => c._id === "Automatic")?.totalRevenue || 0
+  };
+
+
+  // ===================== Summary Boxes ======================
+  const totalSales = await orderModel.aggregate([{ $group: { _id: null, total: { $sum: "$totalPrice" } }}]);
+  const totalOrders = await orderModel.countDocuments();
+  const pendingOrders = await orderModel.countDocuments({ status: "Pending" });
+  const totalProducts = await productModel.countDocuments();
+  const totalCustomers = await userModel.countDocuments();
+  const newCustomers = await userModel.countDocuments({
+    createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+  });
+
+  return res.render("admin/adminIndex", {
+    dashboardData: {
+      totalSales: totalSales[0]?.total || 0,
+      totalOrders,
+      pendingOrders,
+      totalProducts,
+      totalCustomers,
+      newCustomers
+    },
+
+    chartData: {
+      lineLabels,
+      lineRevenue,
+      ordersByCategory,
+      revenueByCategory
+    }
+  });
 });
 
 

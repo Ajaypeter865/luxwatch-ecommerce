@@ -28,7 +28,7 @@
           <div class="summary-card">
             <h5>Total Sales</h5>
             <h2>₹<%= dashboardData.totalSales.toLocaleString() %></h2>
-            <p>This Month</p>
+            <p>This Period</p>
           </div>
         </div>
         <div class="col-md-3">
@@ -54,14 +54,22 @@
         </div>
       </div>
 
+      <!-- ==================== FILTER DROPDOWN ==================== -->
+      <div class="d-flex justify-content-end mb-3">
+        <select id="chartFilter" class="form-select w-auto">
+          <option value="weekly">Weekly</option>
+          <option value="monthly" selected>Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
 
       <!-- ==================== CHART SECTION ==================== -->
       <div class="row g-4">
-        
+
         <!-- Line Chart -->
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
-            <h5 class="mb-3">Line Chart: Category Trends</h5>
+            <h5 class="mb-3">Total Revenue</h5>
             <canvas id="lineChart"></canvas>
           </div>
         </div>
@@ -69,7 +77,7 @@
         <!-- Bar Chart -->
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
-            <h5 class="mb-3">Bar Chart: Category Counts</h5>
+            <h5 class="mb-3">Orders by Category</h5>
             <canvas id="barChart"></canvas>
           </div>
         </div>
@@ -77,7 +85,7 @@
         <!-- Pie Chart -->
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
-            <h5 class="mb-3">Pie Chart: Category Share</h5>
+            <h5 class="mb-3">Revenue by Category</h5>
             <canvas id="pieChart"></canvas>
           </div>
         </div>
@@ -90,56 +98,96 @@
 
   <!-- ==================== CHART JS SCRIPT ==================== -->
   <script>
-    // Convert backend EJS data to JS
-    const categoryData = {
-      manual: <%= dashboardCategories.manual %>,
-      limitedEdition: <%= dashboardCategories.limitedEdition %>,
-      automatic: <%= dashboardCategories.automatic %>
-    };
+    // ---------------------------
+    // Initial data from backend
+    // ---------------------------
+    const lineLabels = <%= JSON.stringify(chartData.lineLabels) %>;
+    const lineRevenue = <%= JSON.stringify(chartData.lineRevenue) %>;
 
-    const labels = ["Manual", "Limited-Edition", "Automatic"];
-    const values = [
-      categoryData.manual,
-      categoryData.limitedEdition,
-      categoryData.automatic
-    ];
+    const ordersByCategory = <%= JSON.stringify(chartData.ordersByCategory) %>;
+    const revenueByCategory = <%= JSON.stringify(chartData.revenueByCategory) %>;
 
-    // Line Chart
-    new Chart(document.getElementById("lineChart"), {
+    // ---------------------------
+    // Create global chart objects
+    // ---------------------------
+    const lineChart = new Chart(document.getElementById("lineChart"), {
       type: "line",
       data: {
-        labels: labels,
+        labels: lineLabels,
         datasets: [{
-          label: "Category Count",
-          data: values,
+          label: "Revenue",
+          data: lineRevenue,
           borderWidth: 2
         }]
       }
     });
 
-    // Bar Chart
-    new Chart(document.getElementById("barChart"), {
+    const barChart = new Chart(document.getElementById("barChart"), {
       type: "bar",
       data: {
-        labels: labels,
+        labels: ["Manual", "Limited-Edition", "Automatic"],
         datasets: [{
-          label: "Products per Category",
-          data: values,
+          label: "Orders",
+          data: [
+            ordersByCategory.Manual,
+            ordersByCategory["Limited-Edition"],
+            ordersByCategory.Automatic
+          ],
           borderWidth: 1
         }]
       }
     });
 
-    // Pie Chart
-    new Chart(document.getElementById("pieChart"), {
+    const pieChart = new Chart(document.getElementById("pieChart"), {
       type: "pie",
       data: {
-        labels: labels,
+        labels: ["Manual", "Limited-Edition", "Automatic"],
         datasets: [{
-          data: values
+          data: [
+            revenueByCategory.Manual,
+            revenueByCategory["Limited-Edition"],
+            revenueByCategory.Automatic
+          ]
         }]
       }
     });
+
+
+    // ---------------------------
+    // FILTER DROPDOWN AJAX UPDATE
+    // ---------------------------
+    const filterSelect = document.getElementById("chartFilter");
+
+    filterSelect.addEventListener("change", function () {
+      const filter = this.value;
+
+      fetch(`/admin/chart-data?filter=${filter}`)
+        .then(res => res.json())
+        .then(data => {
+
+          // Update Line Chart
+          lineChart.data.labels = data.line.labels;
+          lineChart.data.datasets[0].data = data.line.revenue;
+          lineChart.update();
+
+          // Update Bar Chart
+          barChart.data.datasets[0].data = [
+            data.bar.Manual,
+            data.bar["Limited-Edition"],
+            data.bar.Automatic
+          ];
+          barChart.update();
+
+          // Update Pie Chart
+          pieChart.data.datasets[0].data = [
+            data.pie.Manual,
+            data.pie["Limited-Edition"],
+            data.pie.Automatic
+          ];
+          pieChart.update();
+        });
+    });
+
   </script>
 
 </body>

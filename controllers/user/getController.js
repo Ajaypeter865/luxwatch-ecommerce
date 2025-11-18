@@ -131,7 +131,7 @@ const getUserOrdersPage = asyncHandler(async (req, res) => {
 
         const user = await userModel.findById(userId).select('name phone email')
 
-        const orderId = await orderModel.find({ user: userId, cancel : false })
+        const orderId = await orderModel.find({ user: userId, cancel: false })
 
         const orders = orderId.map(order => ({
             _id: order.id,
@@ -227,7 +227,9 @@ const getCartPage = asyncHandler(async (req, res) => {
         })
     }
 
-    const cartItems = cart.products.map(item => ({
+    const validProducts = cart.products.filter((item) => item.product !== null)
+
+    const cartItems = pvalidProducts.map(item => ({
         _id: item.product._id,
         name: item.product.name,
         image: item.product.image,
