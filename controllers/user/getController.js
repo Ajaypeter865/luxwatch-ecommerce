@@ -229,7 +229,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
     const validProducts = cart.products.filter((item) => item.product !== null)
 
-    const cartItems = pvalidProducts.map(item => ({
+    const cartItems = validProducts.map(item => ({
         _id: item.product._id,
         name: item.product.name,
         image: item.product.image,
