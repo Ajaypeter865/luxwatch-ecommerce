@@ -7,83 +7,19 @@ const orderModel = require('../../models/order')
 
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
-    return res.render('admin/adminLogin')
+  return res.render('admin/adminLogin')
 })
 
 
 const gethomePageAdmin = asyncHandler(async (req, res) => {
-  const now = new Date();
-  const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+  const chartData = await generateChartData("monthly");
 
-  // Default filter = monthly
-  const dateFilter = { createdAt: { $gte: oneMonthAgo } };
-
-  // -----------------------------
-  // LINE CHART: Revenue monthly
-  // -----------------------------
-  const revenueAgg = await orderModel.aggregate([
-    { $match: dateFilter },
-    {
-      $group: {
-        _id: { $dayOfMonth: "$createdAt" },
-        total: { $sum: "$totalPrice" }
-      }
-    },
-    { $sort: { "_id": 1 } }
+  // Summary Boxes
+  const totalSales = await orderModel.aggregate([
+    { $group: { _id: null, total: { $sum: "$grandTotal" } } }
   ]);
-
-  const lineLabels = revenueAgg.map(r => "Day " + r._id);
-  const lineRevenue = revenueAgg.map(r => r.total);
-
-
-  // -----------------------------
-  // BAR CHART: Orders by Category
-  // -----------------------------
-  const orderCategory = await orderModel.aggregate([
-    { $match: dateFilter },
-    { $unwind: "$items" },
-    {
-      $group: {
-        _id: "$items.category",
-        totalOrders: { $sum: 1 }
-      }
-    }
-  ]);
-
-  const ordersByCategory = {
-    Manual: orderCategory.find(c => c._id === "Manual")?.totalOrders || 0,
-    "Limited-Edition": orderCategory.find(c => c._id === "Limited-Edition")?.totalOrders || 0,
-    Automatic: orderCategory.find(c => c._id === "Automatic")?.totalOrders || 0
-  };
-
-
-  // -----------------------------
-  // PIE CHART: Revenue by Category
-  // -----------------------------
-  const revCategory = await orderModel.aggregate([
-    { $match: dateFilter },
-    { $unwind: "$items" },
-    {
-      $group: {
-        _id: "$items.category",
-        totalRevenue: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] }
-        }
-      }
-    }
-  ]);
-
-  const revenueByCategory = {
-    Manual: revCategory.find(c => c._id === "Manual")?.totalRevenue || 0,
-    "Limited-Edition": revCategory.find(c => c._id === "Limited-Edition")?.totalRevenue || 0,
-    Automatic: revCategory.find(c => c._id === "Automatic")?.totalRevenue || 0
-  };
-
-
-  // ===================== Summary Boxes ======================
-  const totalSales = await orderModel.aggregate([{ $group: { _id: null, total: { $sum: "$totalPrice" } }}]);
   const totalOrders = await orderModel.countDocuments();
-  const pendingOrders = await orderModel.countDocuments({ status: "Pending" });
+  const pendingOrders = await orderModel.countDocuments({ orderStatus: "Pending" });
   const totalProducts = await productModel.countDocuments();
   const totalCustomers = await userModel.countDocuments();
   const newCustomers = await userModel.countDocuments({
@@ -99,18 +35,127 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
       totalCustomers,
       newCustomers
     },
-
-    chartData: {
-      lineLabels,
-      lineRevenue,
-      ordersByCategory,
-      revenueByCategory
-    }
+    chartData
   });
 });
 
+// Helper function to generate chart data based on filter
+const generateChartData = async (filterType) => {
+  let dateFilter;
+
+  if (filterType === "weekly") {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    dateFilter = { createdAt: { $gte: sevenDaysAgo } };
+  } else if (filterType === "yearly") {
+    const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+    dateFilter = { createdAt: { $gte: oneYearAgo } };
+  } else {
+    // Default: monthly
+    const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
+    dateFilter = { createdAt: { $gte: oneMonthAgo } };
+  }
+
+  // LINE CHART: Revenue by Day
+  const revenueAgg = await orderModel.aggregate([
+    { $match: dateFilter },
+    {
+      $group: {
+        _id: { $dayOfMonth: "$createdAt" },
+        total: { $sum: "$grandTotal" }
+      }
+    },
+    { $sort: { "_id": 1 } }
+  ]);
+
+  console.log('generateChartData - revenueAgg =',revenueAgg);
+
+  const lineLabels = revenueAgg.map(r => "Day " + r._id);
+  const lineRevenue = revenueAgg.map(r => r.total);
+
+  console.log('generateChartData - lineLabels =',lineLabels);
+  console.log('generateChartData - lineRevenue =',lineRevenue);
+
+  
+
+  // BAR CHART: Orders by Category
+  // We need to unwind orderItems, lookup product info, then group by category
+  const orderCategory = await orderModel.aggregate([
+    { $match: dateFilter },
+    { $unwind: "$orderItems" },
+    {
+      $lookup: {
+        from: "products",  // Collection name from productModel
+        localField: "orderItems.productId",
+        foreignField: "_id",
+        as: "productInfo"
+      }
+    },
+    { $unwind: "$productInfo" },
+    {
+      $group: {
+        _id: "$productInfo.category",
+        totalOrders: { $sum: 1 }
+      }
+    }
+  ]);
+
+  console.log('generateChartData - orderCategory =', orderCategory);
+  
+
+  const ordersByCategory = {
+    Manual: orderCategory.find(c => c._id === "Manual")?.totalOrders || 0,
+    "Limited-Edition": orderCategory.find(c => c._id === "Limited-Edition")?.totalOrders || 0,
+    Automatic: orderCategory.find(c => c._id === "Automatic")?.totalOrders || 0
+  };
+
+  // PIE CHART: Revenue by Category
+  const revCategory = await orderModel.aggregate([
+    { $match: dateFilter },
+    { $unwind: "$orderItems" },
+    {
+      $lookup: {
+        from: "products",  // Collection name from productModel
+        localField: "orderItems.productId",
+        foreignField: "_id",
+        as: "productInfo"
+      }
+    },
+    { $unwind: "$productInfo" },
+    {
+      $group: {
+        _id: "$productInfo.category",
+        totalRevenue: { $sum: "$orderItems.total" }
+      }
+    }
+  ]);
+
+  const revenueByCategory = {
+    Manual: revCategory.find(c => c._id === "Manual")?.totalRevenue || 0,
+    "Limited-Edition": revCategory.find(c => c._id === "Limited-Edition")?.totalRevenue || 0,
+    Automatic: revCategory.find(c => c._id === "Automatic")?.totalRevenue || 0
+  };
+
+  return {
+    lineLabels,
+    lineRevenue,
+    ordersByCategory,
+    revenueByCategory
+  };
+};
+
+// AJAX endpoint for chart filter updates
+const getChartData = asyncHandler(async (req, res) => {
+  const { filter } = req.query;
+  console.log('getChartData - filter =', req.query);
+  
+  const chartData = await generateChartData(filter || "monthly");
+  console.log('getChartData - chartData =', chartData);
+
+  res.json(chartData);
+});
 
 
+//  (THIS GETORDERPAGE IS FOR SHOWING THE 1ST ITEM ONLY FROM THE ORDER ITEMS) !! DONT DELETE
 
 // const getOrdersAdmin = asyncHandler(async (req, res) => {
 
@@ -133,7 +178,7 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
 
 //         // console.log('getOrdersAdmin - formattedOrders =', formattedOrders);
 //         console.log('getOrdersAdmin - formattedOrders =', formattedOrders);
-        
+
 //         return res.render('admin/orders', {
 //             orders: formattedOrders
 //         })
@@ -153,8 +198,8 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
     console.log('getOrdersAdmin - orders =', orders);
 
     const formattedOrders = orders.map(order => {
-    //   const item = order.orderItems[0]; // First item
-    const productNames  = order.orderItems.map(item => `${item.name} (x${item.quantity})`).join(', ')
+      //   const item = order.orderItems[0]; // First item
+      const productNames = order.orderItems.map(item => `${item.name} (x${item.quantity})`).join(', ')
 
       return {
         _id: order._id,
@@ -167,7 +212,7 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
         status: order.orderStatus,
         paymentStatus: order.paymentStatus,
         cancel: order.cancel,
-        cancelReason : order.cancelReason
+        cancelReason: order.cancelReason
       };
     });
 
@@ -183,36 +228,36 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
 
 const getProductsAdmin = asyncHandler(async (req, res) => {
 
-    const products = await productModel.find().sort({ createdAt: -1 })
-    return res.render('admin/products', { products })
+  const products = await productModel.find().sort({ createdAt: -1 })
+  return res.render('admin/products', { products })
 
 })
 
 
 const getCustomers = asyncHandler(async (req, res) => {
-    const allUser = await userModel.find()
+  const allUser = await userModel.find()
 
-    const defaultAddress = await addressesModel.find({ isDefault: true }).populate('user', '_id').select('city state user')
-    // console.log('getCustomers - defaultAddress =', defaultAddress);
+  const defaultAddress = await addressesModel.find({ isDefault: true }).populate('user', '_id').select('city state user')
+  // console.log('getCustomers - defaultAddress =', defaultAddress);
 
 
-    const addAddress = new Map()
+  const addAddress = new Map()
 
-    defaultAddress.forEach(address => {
-        // console.log('getCustomers - addAddress =', addAddress);
-        addAddress.set(address.user._id.toString(), `${address.city} ${address.state}`)
-        // console.log('getCustomers - addAddress =', addAddress);
+  defaultAddress.forEach(address => {
+    // console.log('getCustomers - addAddress =', addAddress);
+    addAddress.set(address.user._id.toString(), `${address.city} ${address.state}`)
+    // console.log('getCustomers - addAddress =', addAddress);
 
-    })
-    const customers = allUser.map(user => ({
-        _id: user._id,
-        name: user.name,
-        phone: user.phone,
-        email: user.email,
-        status: user.status,
-        address: addAddress.get(user._id.toString()) || 'No Default Address',
-    }))
-    return res.render('admin/customers', { customers })
+  })
+  const customers = allUser.map(user => ({
+    _id: user._id,
+    name: user.name,
+    phone: user.phone,
+    email: user.email,
+    status: user.status,
+    address: addAddress.get(user._id.toString()) || 'No Default Address',
+  }))
+  return res.render('admin/customers', { customers })
 })
 
 
@@ -223,10 +268,11 @@ const getCustomers = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-    gethomePageAdmin,
-    getloginPageAdmin,
-    getOrdersAdmin,
-    getProductsAdmin,
-    getCustomers,
-
+  gethomePageAdmin,
+  getloginPageAdmin,
+  getOrdersAdmin,
+  getProductsAdmin,
+  getCustomers,
+  getChartData,
+  generateChartData,
 }

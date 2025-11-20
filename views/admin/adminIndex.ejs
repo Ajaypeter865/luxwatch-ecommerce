@@ -12,8 +12,15 @@
   <link rel="stylesheet" href="/css/admin-dashboard.css">
 
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
+  <style>
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <%- include('../partials/admin/_sidebar', { activePage: 'dashboard' }) %>
@@ -54,7 +61,7 @@
         </div>
       </div>
 
-      <!-- ==================== FILTER DROPDOWN ==================== -->
+      <!-- FILTER DROPDOWN -->
       <div class="d-flex justify-content-end mb-3">
         <select id="chartFilter" class="form-select w-auto">
           <option value="weekly">Weekly</option>
@@ -63,14 +70,16 @@
         </select>
       </div>
 
-      <!-- ==================== CHART SECTION ==================== -->
+      <!-- CHART SECTION -->
       <div class="row g-4">
 
         <!-- Line Chart -->
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
             <h5 class="mb-3">Total Revenue</h5>
-            <canvas id="lineChart"></canvas>
+            <div class="chart-container">
+              <canvas id="lineChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -78,7 +87,9 @@
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
             <h5 class="mb-3">Orders by Category</h5>
-            <canvas id="barChart"></canvas>
+            <div class="chart-container">
+              <canvas id="barChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -86,7 +97,9 @@
         <div class="col-md-4">
           <div class="p-3 shadow rounded bg-white">
             <h5 class="mb-3">Revenue by Category</h5>
-            <canvas id="pieChart"></canvas>
+            <div class="chart-container">
+              <canvas id="pieChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -96,98 +109,185 @@
   </main>
 
 
-  <!-- ==================== CHART JS SCRIPT ==================== -->
+  <!-- CHART JS SCRIPT -->
   <script>
-    // ---------------------------
-    // Initial data from backend
-    // ---------------------------
-    const lineLabels = <%= JSON.stringify(chartData.lineLabels) %>;
-    const lineRevenue = <%= JSON.stringify(chartData.lineRevenue) %>;
+    // Initial data from backend - with proper defaults
+    const lineLabels = <%- JSON.stringify(chartData?.lineLabels || []) %>;
+    const lineRevenue = <%- JSON.stringify(chartData?.lineRevenue || []) %>;
+    const ordersByCategory = <%- JSON.stringify(chartData?.ordersByCategory || { Manual: 0, 'Limited-Edition': 0, Automatic: 0 }) %>;
+    const revenueByCategory = <%- JSON.stringify(chartData?.revenueByCategory || { Manual: 0, 'Limited-Edition': 0, Automatic: 0 }) %>;
 
-    const ordersByCategory = <%= JSON.stringify(chartData.ordersByCategory) %>;
-    const revenueByCategory = <%= JSON.stringify(chartData.revenueByCategory) %>;
+    console.log("Chart Data Loaded:");
+    console.log("lineLabels:", lineLabels);
+    console.log("lineRevenue:", lineRevenue);
+    console.log("ordersByCategory:", ordersByCategory);
+    console.log("revenueByCategory:", revenueByCategory);
 
-    // ---------------------------
-    // Create global chart objects
-    // ---------------------------
-    const lineChart = new Chart(document.getElementById("lineChart"), {
-      type: "line",
-      data: {
-        labels: lineLabels,
-        datasets: [{
-          label: "Revenue",
-          data: lineRevenue,
-          borderWidth: 2
-        }]
-      }
+    // Store chart instances globally
+    let lineChartInstance, barChartInstance, pieChartInstance;
+
+    // Initialize Line Chart
+    function initLineChart() {
+      const ctx = document.getElementById("lineChart").getContext("2d");
+      lineChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: lineLabels,
+          datasets: [{
+            label: "Revenue (₹)",
+            data: lineRevenue,
+            borderColor: "#ff6b6b",
+            backgroundColor: "rgba(255, 107, 107, 0.1)",
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: "#ff6b6b"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top"
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return "₹" + value.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+      console.log("Line Chart initialized");
+    }
+
+    // Initialize Bar Chart
+    function initBarChart() {
+      const ctx = document.getElementById("barChart").getContext("2d");
+      barChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Manual", "Limited-Edition", "Automatic"],
+          datasets: [{
+            label: "Number of Orders",
+            data: [
+              ordersByCategory.Manual || 0,
+              ordersByCategory["Limited-Edition"] || 0,
+              ordersByCategory.Automatic || 0
+            ],
+            backgroundColor: ["#4ecdc4", "#44a3df", "#95e1d3"],
+            borderColor: ["#2c9b96", "#2a6ba8", "#6cc4b0"],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top"
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+      console.log("Bar Chart initialized");
+    }
+
+    // Initialize Pie Chart
+    function initPieChart() {
+      const ctx = document.getElementById("pieChart").getContext("2d");
+      pieChartInstance = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["Manual", "Limited-Edition", "Automatic"],
+          datasets: [{
+            data: [
+              revenueByCategory.Manual || 0,
+              revenueByCategory["Limited-Edition"] || 0,
+              revenueByCategory.Automatic || 0
+            ],
+            backgroundColor: ["#ff6b6b", "#ffd93d", "#6bcf7f"],
+            borderColor: ["#ff4444", "#ffb700", "#4a9d5f"],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom"
+            }
+          }
+        }
+      });
+      console.log("Pie Chart initialized");
+    }
+
+    // Initialize all charts on page load
+    window.addEventListener("DOMContentLoaded", function() {
+      console.log("DOM Content Loaded - Initializing charts");
+      initLineChart();
+      initBarChart();
+      initPieChart();
     });
 
-    const barChart = new Chart(document.getElementById("barChart"), {
-      type: "bar",
-      data: {
-        labels: ["Manual", "Limited-Edition", "Automatic"],
-        datasets: [{
-          label: "Orders",
-          data: [
-            ordersByCategory.Manual,
-            ordersByCategory["Limited-Edition"],
-            ordersByCategory.Automatic
-          ],
-          borderWidth: 1
-        }]
-      }
-    });
-
-    const pieChart = new Chart(document.getElementById("pieChart"), {
-      type: "pie",
-      data: {
-        labels: ["Manual", "Limited-Edition", "Automatic"],
-        datasets: [{
-          data: [
-            revenueByCategory.Manual,
-            revenueByCategory["Limited-Edition"],
-            revenueByCategory.Automatic
-          ]
-        }]
-      }
-    });
-
-
-    // ---------------------------
-    // FILTER DROPDOWN AJAX UPDATE
-    // ---------------------------
-    const filterSelect = document.getElementById("chartFilter");
-
-    filterSelect.addEventListener("change", function () {
+    // Filter Dropdown - Update Charts
+    document.getElementById("chartFilter").addEventListener("change", function() {
       const filter = this.value;
+      console.log("Filter changed to:", filter);
 
       fetch(`/admin/chart-data?filter=${filter}`)
-        .then(res => res.json())
+        .then(res => {
+          console.log("Response status:", res.status);
+          return res.json();
+        })
         .then(data => {
+          console.log("Data received from server:", data);
 
           // Update Line Chart
-          lineChart.data.labels = data.line.labels;
-          lineChart.data.datasets[0].data = data.line.revenue;
-          lineChart.update();
+          lineChartInstance.data.labels = data.lineLabels;
+          lineChartInstance.data.datasets[0].data = data.lineRevenue;
+          lineChartInstance.update();
 
           // Update Bar Chart
-          barChart.data.datasets[0].data = [
-            data.bar.Manual,
-            data.bar["Limited-Edition"],
-            data.bar.Automatic
+          barChartInstance.data.datasets[0].data = [
+            data.ordersByCategory.Manual || 0,
+            data.ordersByCategory["Limited-Edition"] || 0,
+            data.ordersByCategory.Automatic || 0
           ];
-          barChart.update();
+          barChartInstance.update();
 
           // Update Pie Chart
-          pieChart.data.datasets[0].data = [
-            data.pie.Manual,
-            data.pie["Limited-Edition"],
-            data.pie.Automatic
+          pieChartInstance.data.datasets[0].data = [
+            data.revenueByCategory.Manual || 0,
+            data.revenueByCategory["Limited-Edition"] || 0,
+            data.revenueByCategory.Automatic || 0
           ];
-          pieChart.update();
-        });
-    });
+          pieChartInstance.update();
 
+          console.log("Charts updated successfully");
+        })
+        .catch(err => console.error("Error updating charts:", err));
+    });
   </script>
 
 </body>
