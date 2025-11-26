@@ -238,8 +238,54 @@ const updateCoupon = asyncHandler(async (req, res) => {
     }
 })
 
+const deleteCoupon = asyncHandler(async (req, res) => {
+    try {
 
+        const couponId = req.params.id
 
+        console.log('deleteCoupon - couponId =', couponId);
+
+        await couponModel.findByIdAndDelete(couponId)
+
+        return res.json({ success: true, message: "Deleted!" })
+
+    } catch (error) {
+        console.log('Error from deleteCoupon =', error.message, error.stack);
+        return res.redirect('/error')
+
+    }
+
+})
+
+const unblockCoupon = asyncHandler(async (req, res) => {
+    try {
+        const couponId = req.params.id
+        console.log('unblockCoupon - couponId =', couponId);
+        const active = await couponModel.findByIdAndUpdate(couponId, { active: true }, {new : true})
+        return res.json({ message: 'Success', active })
+
+    } catch (error) {
+        console.log('Error from blockCoupon =', error.message, error.stack);
+        return res.redirect('/error')
+
+    }
+
+})
+
+const blockCoupon = asyncHandler(async (req, res) => {
+    try {
+        const couponId = req.params.id
+        console.log('blockCoupon - couponId =', couponId);
+        const active = await couponModel.findByIdAndUpdate(couponId, { active: false }, {new : true})
+        return res.json({ message: 'Success', active })
+
+    } catch (error) {
+        console.log('Error from blockCoupon =', error.message, error.stack);
+        return res.redirect('/error')
+
+    }
+
+})
 
 
 module.exports = {
@@ -252,5 +298,8 @@ module.exports = {
     updateOrderStatus,
     createCoupon,
     updateCoupon,
+    deleteCoupon,
+    unblockCoupon,
+    blockCoupon
 
 }
