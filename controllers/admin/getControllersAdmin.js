@@ -14,17 +14,17 @@ const getloginPageAdmin = asyncHandler(async (req, res) => {
 const gethomePageAdmin = asyncHandler(async (req, res) => {
   const chartData = await generateChartData("monthly");
 
-  // Summary Boxes
-  const totalSales = await orderModel.aggregate([
-    { $group: { _id: null, total: { $sum: "$grandTotal" } } }
-  ]);
-  const totalOrders = await orderModel.countDocuments();
-  const pendingOrders = await orderModel.countDocuments({ orderStatus: "Pending" });
-  const totalProducts = await productModel.countDocuments();
-  const totalCustomers = await userModel.countDocuments();
-  const newCustomers = await userModel.countDocuments({
-    createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-  });
+    // Summary Boxes
+    const totalSales = await orderModel.aggregate([
+      { $group: { _id: null, total: { $sum: "$grandTotal" } } }
+    ]);
+    const totalOrders = await orderModel.countDocuments();
+    const pendingOrders = await orderModel.countDocuments({ orderStatus: "Pending" });
+    const totalProducts = await productModel.countDocuments();
+    const totalCustomers = await userModel.countDocuments();
+    const newCustomers = await userModel.countDocuments({
+      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+    });
 
   return res.render("admin/adminIndex", {
     dashboardData: {
@@ -39,6 +39,21 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
   });
 });
 
+// const gethomePageAdmin = asyncHandler(async (req, res) => {
+//   const chartData = 'Hi'
+
+//   const totalSales = await orderModel.aggregate([
+//     {
+//       $group : {
+//         _id : null, grandTotal : { $ : '$grandTotal'}
+//       }
+//     }
+//   ])
+//   console.log('gethomePageAdmin - totalSales =', totalSales);
+//   const totalOrders = await orderModel.
+  
+//   res.send('Hi')
+// })
 // Helper function to generate chart data based on filter
 const generateChartData = async (filterType) => {
   let dateFilter;
@@ -67,15 +82,15 @@ const generateChartData = async (filterType) => {
     { $sort: { "_id": 1 } }
   ]);
 
-  console.log('generateChartData - revenueAgg =',revenueAgg);
+  console.log('generateChartData - revenueAgg =', revenueAgg);
 
   const lineLabels = revenueAgg.map(r => "Day " + r._id);
   const lineRevenue = revenueAgg.map(r => r.total);
 
-  console.log('generateChartData - lineLabels =',lineLabels);
-  console.log('generateChartData - lineRevenue =',lineRevenue);
+  console.log('generateChartData - lineLabels =', lineLabels);
+  console.log('generateChartData - lineRevenue =', lineRevenue);
 
-  
+
 
   // BAR CHART: Orders by Category
   // We need to unwind orderItems, lookup product info, then group by category
@@ -100,7 +115,7 @@ const generateChartData = async (filterType) => {
   ]);
 
   console.log('generateChartData - orderCategory =', orderCategory);
-  
+
 
   const ordersByCategory = {
     Manual: orderCategory.find(c => c._id === "Manual")?.totalOrders || 0,
@@ -147,7 +162,7 @@ const generateChartData = async (filterType) => {
 const getChartData = asyncHandler(async (req, res) => {
   const { filter } = req.query;
   console.log('getChartData - filter =', req.query);
-  
+
   const chartData = await generateChartData(filter || "monthly");
   console.log('getChartData - chartData =', chartData);
 
