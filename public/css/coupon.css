@@ -1,0 +1,143 @@
+/* Theme font + base */
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap');
+
+body,
+.page-title,
+.coupon-card,
+.btn,
+.table {
+    font-family: "Josefin Sans", sans-serif;
+}
+
+/* Admin main layout (keeps space for sidebar) */
+.admin-main {
+    margin-left: 260px;
+    padding-top: 20px;
+    background: #fff;
+}
+
+/* Title */
+.page-title {
+    color: #111;
+}
+
+/* Coupon card */
+.coupon-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.coupon-card .card-header {
+    background: #ff2020;
+    /* theme color */
+    color: #fff;
+    font-size: 18px;
+    padding: 12px 20px;
+    font-weight: 600;
+}
+
+/* Table heading */
+.table thead th {
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-weight: 700;
+    color: #222;
+}
+
+/* Table body rows */
+.table tbody tr td {
+    vertical-align: middle;
+    padding: 14px 12px;
+}
+
+/* Status badges using theme */
+.badge.status-active {
+    background: #ff2020;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.badge.status-blocked {
+    background: #6c757d;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Buttons - theme versions */
+.btn-theme {
+    background: #ff2020;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    border: none;
+}
+
+.btn-theme:hover {
+    background: #e61a1a;
+    color: #fff;
+}
+
+/* outline buttons (edit, block, etc) */
+.btn-outline-theme {
+    background: transparent;
+    color: #ff7a70;
+    border: 1px solid rgba(255, 32, 32, 0.15);
+}
+
+.btn-outline-theme:hover {
+    background: rgba(255, 32, 32, 0.06);
+}
+
+/* specific action buttons */
+.delete-btn {
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.15);
+}
+
+.delete-btn:hover {
+    background: rgba(220, 53, 69, 0.06);
+}
+
+.block-btn {
+    background: transparent;
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.15);
+}
+
+.unblock-btn {
+    background: transparent;
+    color: #198754;
+    border: 1px solid rgba(25, 135, 84, 0.12);
+}
+
+/* small spacing for action buttons */
+.table .btn {
+    margin-right: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+/* Card footer/pagination area */
+.coupon-card .card-footer {
+    background: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+    .admin-main {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .coupon-card .card-header {
+        font-size: 16px;
+    }
+}

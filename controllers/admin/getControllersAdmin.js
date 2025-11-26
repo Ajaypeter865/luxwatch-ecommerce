@@ -4,6 +4,7 @@ const productModel = require('../../models/products')
 const userModel = require('../../models/user')
 const addressesModel = require('../../models/addresses')
 const orderModel = require('../../models/order')
+const couponModel = require('../../models/coupon')
 
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
@@ -14,17 +15,17 @@ const getloginPageAdmin = asyncHandler(async (req, res) => {
 const gethomePageAdmin = asyncHandler(async (req, res) => {
   const chartData = await generateChartData("monthly");
 
-    // Summary Boxes
-    const totalSales = await orderModel.aggregate([
-      { $group: { _id: null, total: { $sum: "$grandTotal" } } }
-    ]);
-    const totalOrders = await orderModel.countDocuments();
-    const pendingOrders = await orderModel.countDocuments({ orderStatus: "Pending" });
-    const totalProducts = await productModel.countDocuments();
-    const totalCustomers = await userModel.countDocuments();
-    const newCustomers = await userModel.countDocuments({
-      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-    });
+  // Summary Boxes
+  const totalSales = await orderModel.aggregate([
+    { $group: { _id: null, total: { $sum: "$grandTotal" } } }
+  ]);
+  const totalOrders = await orderModel.countDocuments();
+  const pendingOrders = await orderModel.countDocuments({ orderStatus: "Pending" });
+  const totalProducts = await productModel.countDocuments();
+  const totalCustomers = await userModel.countDocuments();
+  const newCustomers = await userModel.countDocuments({
+    createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+  });
 
   return res.render("admin/adminIndex", {
     dashboardData: {
@@ -51,7 +52,7 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
 //   ])
 //   console.log('gethomePageAdmin - totalSales =', totalSales);
 //   const totalOrders = await orderModel.
-  
+
 //   res.send('Hi')
 // })
 // Helper function to generate chart data based on filter
@@ -275,6 +276,78 @@ const getCustomers = asyncHandler(async (req, res) => {
   return res.render('admin/customers', { customers })
 })
 
+// const getCoupons = async (req, res) => {
+//   // Dummy coupons array exactly in the format coupon.ejs expects
+//   const coupons = [
+//     {
+//       _id: "C001",
+//       code: "WELCOME10",
+//       discountValue: 10,
+//       expiryDate: new Date("2025-12-31"),
+//       minPurchase: 500,
+//       active: true
+//     },
+//     {
+//       _id: "C002",
+//       code: "FESTIVE20",
+//       discountValue: 20,
+//       expiryDate: new Date("2025-11-30"),
+//       minPurchase: 1000,
+//       active: false
+//     },
+//     {
+//       _id: "C003",
+//       code: "SUPER5",
+//       discountValue: 5,
+//       expiryDate: new Date("2026-01-15"),
+//       minPurchase: 0,
+//       active: true
+//     },
+//     {
+//       _id: "C004",
+//       code: "NEWYEAR30",
+//       discountValue: 30,
+//       expiryDate: new Date("2025-12-31"),
+//       minPurchase: 2000,
+//       active: false
+//     }
+//   ];
+
+//   // Dummy pagination (matches your ejs usage)
+//   // const pagination = `
+//   //     <nav>
+//   //       <ul class="pagination mb-0">
+//   //         <li class="page-item disabled"><span class="page-link">Prev</span></li>
+//   //         <li class="page-item active"><span class="page-link">1</span></li>
+//   //         <li class="page-item"><a class="page-link" href="#">2</a></li>
+//   //         <li class="page-item"><a class="page-link" href="#">Next</a></li>
+//   //       </ul>
+//   //     </nav>
+//   // `;
+
+//   res.render("admin/coupon", {
+//     coupons,
+//     // pagination,
+
+//   });
+// };
+
+
+const getCoupons = asyncHandler(async (req, res) => {
+  try {
+
+    const coupons = await couponModel.find()
+
+    return res.render('admin/coupon', { coupons })
+
+  } catch (error) {
+    console.log('Error from getCoupon =', error.message, error.stack);
+    return res.redirect('/error')
+
+  }
+
+})
+
 
 
 
@@ -290,4 +363,5 @@ module.exports = {
   getCustomers,
   getChartData,
   generateChartData,
+  getCoupons,
 }

@@ -11,6 +11,7 @@ const addressesModel = require('../../models/addresses')
 const { emitWarning } = require('process')
 const userModel = require('../../models/user')
 const orderModel = require('../../models/order')
+const couponModel = require('../../models/coupon')
 
 
 
@@ -91,6 +92,8 @@ const editProducts = asyncHandler(async (req, res) => {
     const { name, category, brand, price, stock, status } = req.body
 
     const productId = req.params.id
+    console.log('editProducts - productId', productId);
+
     const selectedProduct = await productModel.findById(productId)
 
     if (req.file) {
@@ -184,17 +187,56 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const orderId = req.params.id
     console.log('updateOrderStatus - orderId =', orderId);
 
-    const {status}  = req.body
+    const { status } = req.body
     // console.log('updateOrderStatus - req.body =', req.body);
-    
-    const order = await orderModel.findByIdAndUpdate(orderId , {orderStatus : status})
-    
+
+    const order = await orderModel.findByIdAndUpdate(orderId, { orderStatus: status })
+
     console.log('updateOrderStatus - order =', order);
 
-    return res.redirect('/admin/orders')    
-    
+    return res.redirect('/admin/orders')
+
 })
 
+// -------------------------------------------------------COUPON CONTROLLER
+
+const createCoupon = asyncHandler(async (req, res) => {
+
+    try {
+        const { code, discountValue, expiryDate, minPurchase } = req.body
+        const coupons = await couponModel.create({
+            code,
+            expiryDate,
+            discountValue,
+            minPurchase
+        })
+        await coupons.save()
+        return res.redirect('/admin/coupons')
+
+    } catch (error) {
+        console.log('Error from createCoupon =', error.message, error.stack);
+        return res.redirect('/error')
+    }
+})
+
+const updateCoupon = asyncHandler(async (req, res) => {
+    try {
+        const { code, expiryDate, discountValue, minPurchase } = req.body
+
+        const couponId = req.params.id
+        const coupons = await couponModel.findByIdAndUpdate(couponId, {
+            code,
+            expiryDate,
+            discountValue,
+            minPurchase
+        })
+        return res.redirect('/admin/coupons')
+
+    } catch (error) {
+        console.log('Error from updateCoupon =', error.message, error.stack);
+        return res.redirect('/error')
+    }
+})
 
 
 
@@ -208,5 +250,7 @@ module.exports = {
     blockCustomer,
     deleteCustomer,
     updateOrderStatus,
+    createCoupon,
+    updateCoupon,
 
 }
