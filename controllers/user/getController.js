@@ -216,10 +216,10 @@ const getCartPage = asyncHandler(async (req, res) => {
     // console.log('getCartPage - userId =', userId);
 
     let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
-    console.log('getCartPage - cart =', cart);
+    // console.log('getCartPage - cart =', cart);
 
     if (!cart || !cart.products || cart.products.length === 0) {
-        console.log('Enter if Block');
+        // console.log('Enter if Block');
 
         return res.render('user/cart', {
             cartItems: [],
@@ -238,7 +238,7 @@ const getCartPage = asyncHandler(async (req, res) => {
         total: item.product.price * item.quantity,
     }));
 
-    console.log('getCartPage - cartItems =', cartItems);
+    // console.log('getCartPage - cartItems =', cartItems);
 
     // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
 
@@ -248,7 +248,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
     cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
     cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
-    console.log('getCartPage - cart.subTotal =', cart.subTotal);
+    // console.log('getCartPage - cart.subTotal =', cart.subTotal);
 
     const totals = {
         shipping: cart.shipping,
@@ -256,7 +256,7 @@ const getCartPage = asyncHandler(async (req, res) => {
         subTotal: cart.subTotal,
     }
 
-    console.log('getCartPage - totals =', totals);
+    // console.log('getCartPage - totals =', totals);
 
     return res.render("user/cart", { cartItems, totals });
 

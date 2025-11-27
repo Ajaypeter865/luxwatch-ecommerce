@@ -7,7 +7,8 @@ const router = express.Router()
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
     logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
     deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
-    proccedToPayement, postCheckoutByProduct, cancelOrder } = require('../../controllers/user/authController')
+    proccedToPayement, postCheckoutByProduct, cancelOrder,
+    applyCoupon } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -31,7 +32,7 @@ router.post('/address/delete/:id', proctedAuth, deleteAddress)
 // router.post('/address/edit', proctedAuth, editAddress)
 
 //------------------------------------------------------- ORDER FUNCTIONS
-router.post('/orders/cancel',cancelOrder)
+router.post('/orders/cancel', cancelOrder)
 
 
 //----------------------------------------------------- ADD TO CART FUCNTION
@@ -56,8 +57,11 @@ router.post('/api/wishlist/add/:id', proctedAuth, addToWishlistAjax);
 
 router.post('/checkout/proccedPayment/:id', proctedAuth, proccedToPayement)
 router.post('/checkout/proccedPayment', proctedAuth, proccedToPayement)
-
 // router.post('/checkout/:_id', proctedAuth, postCheckoutByProduct);
+
+//----------------------------------------------------- COUPON FUCNTION
+
+router.post('/cart/apply-coupon', proctedAuth, applyCoupon)
 
 
 

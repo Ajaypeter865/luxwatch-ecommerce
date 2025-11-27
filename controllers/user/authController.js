@@ -13,6 +13,7 @@ const asyncHandler = require('express-async-handler')
 const productModel = require('../../models/products')
 const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
+const couponModel = require('../../models/coupon')
 // const { name } = require('ejs')
 require('dotenv').config()
 
@@ -1141,6 +1142,53 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 
 })
 
+//------------------------------------------------------- COUPON FUNCTIONS
+
+const applyCoupon = asyncHandler(async (req, res) => {
+
+   try {
+
+      const userId = req.auth?.id || req.user?.id
+
+      const { couponCode } = req.body
+      // console.log('applyCoupon - couponCode =', couponCode);
+
+
+      const coupon = await couponModel.findOne({ code: couponCode })
+      // console.log('applyCoupon - coupon =', coupon);
+
+
+      if (!coupon || couponCode.toString() !== coupon.code) {
+         req.flash('error', 'No such coupon')
+         return res.redirect('/cart')
+      }
+
+      let cart = await cartModel.findOne({ user: userId })
+      console.log('applyCoupon - cart =', cart);
+
+      let discount = coupon.discountValue
+      let afterDiscount = cart.grandTotal - discount
+      console.log('applyCoupon - afterDiscount =', afterDiscount);
+
+      cart = await cartModel.findOneAndUpdate({user : userId}, {
+         grandTotal: afterDiscount
+      }, { new: true })
+
+
+
+
+
+      return res.redirect('/cart')
+
+   } catch (error) {
+      console.log('Error from applyCoupon =', error.message, error.stack);
+      return res.redirect('/error')
+
+   }
+})
+
+
+
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
 const logoutUser = async (req, res) => {
@@ -1174,5 +1222,6 @@ module.exports = {
    cancelOrder,
    // proccedPaymentByProduct, // FOR PRODUCT DETAILS CHECKOUT
    // postCheckoutByProduct,
+   applyCoupon,
 
 }
