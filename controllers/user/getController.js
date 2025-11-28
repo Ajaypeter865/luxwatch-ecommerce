@@ -223,7 +223,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
         return res.render('user/cart', {
             cartItems: [],
-            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }
+            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon : null,k
         })
     }
 
@@ -256,9 +256,11 @@ const getCartPage = asyncHandler(async (req, res) => {
         subTotal: cart.subTotal,
     }
 
+    const appliedCoupon = null
+
     // console.log('getCartPage - totals =', totals);
 
-    return res.render("user/cart", { cartItems, totals });
+    return res.render("user/cart", { cartItems, totals, appliedCoupon});
 
 });
 
@@ -387,7 +389,7 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
         }))
 
-        console.log('getCheckOutPage - cartItems =', cartItems);
+        // console.log('getCheckOutPage - cartItems =', cartItems);
         const subTotal = cart.subTotal
 
         const shipping = cart.shipping
@@ -398,7 +400,7 @@ const getCheckoutPage = asyncHandler(async (req, res) => {
 
     } catch (error) {
         console.log('Error in getCheckoutPage =', error.stack, error.message);
-        return res.send('error')
+        return res.redirect('/error')
     }
 
 })

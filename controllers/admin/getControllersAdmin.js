@@ -83,13 +83,13 @@ const generateChartData = async (filterType) => {
     { $sort: { "_id": 1 } }
   ]);
 
-  console.log('generateChartData - revenueAgg =', revenueAgg);
+  // console.log('generateChartData - revenueAgg =', revenueAgg);
 
   const lineLabels = revenueAgg.map(r => "Day " + r._id);
   const lineRevenue = revenueAgg.map(r => r.total);
 
-  console.log('generateChartData - lineLabels =', lineLabels);
-  console.log('generateChartData - lineRevenue =', lineRevenue);
+  // console.log('generateChartData - lineLabels =', lineLabels);
+  // console.log('generateChartData - lineRevenue =', lineRevenue);
 
 
 
@@ -115,7 +115,7 @@ const generateChartData = async (filterType) => {
     }
   ]);
 
-  console.log('generateChartData - orderCategory =', orderCategory);
+  // console.log('generateChartData - orderCategory =', orderCategory);
 
 
   const ordersByCategory = {

@@ -19,7 +19,7 @@ const getTokenadmin = async (req) => {
 
 const resLocals = async (req, res, next) => {
     res.locals.user = req.user || req.auth || null
-    console.log('Function from resLocals: req.user', req.user, 'auth ', req.auth);
+    // console.log('Function from resLocals: req.user', req.user, 'auth ', req.auth);
 
     return next()
 }

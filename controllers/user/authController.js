@@ -1051,9 +1051,9 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 
    const { address, paymentMethod, deliveryInstructions, name, email, phone, altPhone } = req.body
 
-   console.log('proccedToPayement - req.body.deliveryInstructions =', deliveryInstructions);
+   // console.log('proccedToPayement - req.body.deliveryInstructions =', deliveryInstructions);
 
-   console.log('proccedToPayement - req.body.address =', address);
+   // console.log('proccedToPayement - req.body.address =', address);
 
    const orderDate = new Date().toDateString('en-us', {
       year: 'numeric',
@@ -1154,8 +1154,10 @@ const applyCoupon = asyncHandler(async (req, res) => {
       // console.log('applyCoupon - couponCode =', couponCode);
 
 
-      const coupon = await couponModel.findOne({ code: couponCode })
-      // console.log('applyCoupon - coupon =', coupon);
+      const coupon = await couponModel
+         .findOne({ code: couponCode })
+         .populate('usedBy', '_id name email');
+      console.log('applyCoupon - coupon =', coupon);
 
 
       if (!coupon || couponCode.toString() !== coupon.code) {
@@ -1164,19 +1166,19 @@ const applyCoupon = asyncHandler(async (req, res) => {
       }
 
       let cart = await cartModel.findOne({ user: userId })
-      console.log('applyCoupon - cart =', cart);
+      // console.log('applyCoupon - cart =', cart);
 
       let discount = coupon.discountValue
       let afterDiscount = cart.grandTotal - discount
-      console.log('applyCoupon - afterDiscount =', afterDiscount);
+      // console.log('applyCoupon - afterDiscount =', afterDiscount);
 
-      cart = await cartModel.findOneAndUpdate({user : userId}, {
+      cart = await cartModel.finkdOneAndUpdate({ user: userId }, {
          grandTotal: afterDiscount
       }, { new: true })
 
-
-
-
+      await couponModel.findByIdAndUpdate(coupon.id, {
+         $push: { usedBy: userId }
+      })
 
       return res.redirect('/cart')
 
