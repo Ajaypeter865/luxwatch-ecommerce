@@ -158,7 +158,17 @@
         </div>
 
         <!-- Coupon Apply Form (Only show if NO coupon applied) -->
-       k
+        <% if (!appliedCoupon) { %>
+            <form action="/cart/apply-coupon" method="POST" class="coupon-box mt-4">
+                <input 
+                    type="text" 
+                    name="couponCode" 
+                    class="form-control coupon-input"
+                    placeholder="Enter coupon code" 
+                    required 
+                >
+                <button type="submit" class="btn-theme-outline mt-2 w-100">Apply Coupon</button>
+            </form>
         <% } %>
 
         <div class="checkout-section">

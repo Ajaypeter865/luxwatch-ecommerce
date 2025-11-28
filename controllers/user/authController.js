@@ -1172,7 +1172,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
       let afterDiscount = cart.grandTotal - discount
       // console.log('applyCoupon - afterDiscount =', afterDiscount);
 
-      cart = await cartModel.finkdOneAndUpdate({ user: userId }, {
+      cart = await cartModel.findOneAndUpdate({ user: userId }, {
          grandTotal: afterDiscount
       }, { new: true })
 

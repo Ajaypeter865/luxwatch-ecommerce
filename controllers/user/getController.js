@@ -7,6 +7,7 @@ const cartModel = require('../../models/cart')
 const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
 const { report } = require('../../routes/user/staticRoutes')
+const couponModel = require('../../models/coupon')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -215,15 +216,26 @@ const getCartPage = asyncHandler(async (req, res) => {
     const userId = req.auth?.id || req.user?.id
     // console.log('getCartPage - userId =', userId);
 
-    let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ')
-    // console.log('getCartPage - cart =', cart);
+    let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ').populate('coupons')
 
+    const appliedCoupon = await couponModel.findOne({ usedBy: userId }).select('code _id discountValue')
+    console.log('getCartPage - appliedCoupon =', appliedCoupon);
+
+    if (appliedCoupon) {
+        cart.coupons.push(appliedCoupon) 
+        cart.coupons[cart.coupons.length -1].couponName.push(appliedCoupon.code)
+        cart.coupons[cart.coupons.length -1].discountValue.push(appliedCoupon.discountValue)
+    }
+
+    console.log('getCartPage - cart =', cart);
+
+    await cart.save()
     if (!cart || !cart.products || cart.products.length === 0) {
         // console.log('Enter if Block');
 
         return res.render('user/cart', {
             cartItems: [],
-            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon : null,k
+            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon
         })
     }
 
@@ -256,7 +268,7 @@ const getCartPage = asyncHandler(async (req, res) => {
         subTotal: cart.subTotal,
     }
 
-    const appliedCoupon = null
+    // const appliedCoupon = null
 
     // console.log('getCartPage - totals =', totals);
 
