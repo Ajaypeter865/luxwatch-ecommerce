@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 
+
+const appliedCouponSchema = new mongoose.Schema({
+    coupon: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon'
+    },
+    code: String,
+    discountType: {
+        type: String,
+        enum: ['Percentage', 'Fixed']
+    },
+    discountValue: Number, // e.g. 10 or 200
+    discountAmount: Number // computed rupee discount applied to cart
+}, { _id: false });
+
+
+
 const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -48,23 +65,10 @@ const cartSchema = new mongoose.Schema({
         required: true,
     },
 
-    coupons: [
-        {
-            coupon: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'coupon'
-            },
-
-            couponName: {
-                type: [String],
-                default: []
-            },
-
-            discountValue : {
-                type : Number
-            }
-        }
-    ]
+    appliedCoupon: {
+        type: appliedCouponSchema,
+        default: null
+    }
 },
     { timestamps: true }
 )

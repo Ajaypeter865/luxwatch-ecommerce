@@ -4,6 +4,8 @@ const userModel = require('../../models/user')
 const addressModel = require('../../models/addresses')
 const cartModel = require('../../models/cart')
 
+const utils = require('../../utils/helpers')
+
 // IMPORT DEPENDENCY
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -1144,85 +1146,221 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 
 //------------------------------------------------------- COUPON FUNCTIONS
 
+
+// THIS IS THE APPLY COUPON FUNCTION BY ME
+// const applyCoupon = asyncHandler(async (req, res) => {
+
+//    try {
+
+//       const userId = req.auth?.id || req.user?.id
+
+//       const { couponCode } = req.body
+//       // console.log('applyCoupon - couponCode =', couponCode);
+
+
+//       const coupon = await couponModel
+//          .findOne({ code: couponCode })
+//          .populate('usedBy', '_id name email');
+//       console.log('applyCoupon - coupon =', coupon);
+
+
+//       if (!coupon || couponCode.toString() !== coupon.code) {
+//          req.flash('error', 'No such coupon')
+//          return res.redirect('/cart')
+//       }
+
+//       let cart = await cartModel.findOne({ user: userId })
+//       // console.log('applyCoupon - cart =', cart);
+
+//       let discount = coupon.discountValue
+//       let afterDiscount = cart.grandTotal - discount
+//       // console.log('applyCoupon - afterDiscount =', afterDiscount);
+
+//       cart = await cartModel.findOneAndUpdate({ user: userId }, {
+//          grandTotal: afterDiscount
+//       }, { new: true })
+
+//       await couponModel.findByIdAndUpdate(coupon.id, {
+//          $push: { usedBy: userId }
+//       })
+
+//       return res.redirect('/cart')
+
+//    } catch (error) {
+//       console.log('Error from applyCoupon =', error.message, error.stack);
+//       return res.redirect('/error')
+
+//    }
+// })
+
+// THIS IS THE APPLY COUPOUN BY GPT 
 const applyCoupon = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.auth?.id || req.user?.id;
+    const { couponCode } = req.body;
+    if (!couponCode || typeof couponCode !== 'string') {
+      req.flash('error', 'Invalid coupon code');
+      return res.redirect('/cart');
+    }
 
-   try {
+    const codeUpper = couponCode.trim().toUpperCase();
 
-      const userId = req.auth?.id || req.user?.id
+    const coupon = await couponModel.findOne({ code: codeUpper });
+    if (!coupon) {
+      req.flash('error', 'Coupon not found');
+      return res.redirect('/cart');
+    }
 
-      const { couponCode } = req.body
-      // console.log('applyCoupon - couponCode =', couponCode);
+    // Basic validations
+    if (!coupon.active) {
+      req.flash('error', 'This coupon is not active');
+      return res.redirect('/cart');
+    }
+
+    const now = new Date();
+    if (coupon.expiryDate && coupon.expiryDate < now) {
+      req.flash('error', 'Coupon expired');
+      return res.redirect('/cart');
+    }
+
+    // Prevent reuse by same user
+    if (coupon.usedBy && coupon.usedBy.some(u => u.toString() === userId.toString())) {
+      req.flash('error', 'You have already used this coupon');
+      return res.redirect('/cart');
+    }
+
+    // Load cart and recalc totals
+    let cart = await cartModel.findOne({ user: userId });
+    if (!cart) {
+      req.flash('error', 'Cart not found');
+      return res.redirect('/cart');
+    }
+
+    await utils.recalcCartTotals(cart);
+
+    // Check minPurchase
+    const subTotal = cart.subTotal || 0;
+    if (coupon.minPurchase && subTotal < coupon.minPurchase) {
+      req.flash('error', `Minimum purchase of ₹${coupon.minPurchase} required to use this coupon`);
+      return res.redirect('/cart');
+    }
+
+    // Only one coupon per cart
+    if (cart.appliedCoupon) {
+      req.flash('error', 'A coupon is already applied to your cart');
+      return res.redirect('/cart');
+    }
+
+    // compute discountAmount (in rupees)
+    let discountAmount = 0;
+    if (coupon.discountType === 'Percentage') {
+      // coupon.discountValue is percentage (e.g., 10 for 10%)
+      discountAmount = (subTotal * (Number(coupon.discountValue) / 100));
+    } else { // Fixed
+      discountAmount = Number(coupon.discountValue);
+    }
+
+    // Normalize to 2 decimal places
+    discountAmount = Number(discountAmount.toFixed(2));
+    if (discountAmount < 0) discountAmount = 0;
+
+    // Save appliedCoupon into cart
+    cart.appliedCoupon = {
+      coupon: coupon._id,
+      code: coupon.code,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      discountAmount
+    };
+
+    // recalc grand total
+    cart = await utils.recalcCartTotals(cart);
+    await cart.save();
+
+    // Mark coupon as used by this user (so they can't use again)
+    await couponModel.findByIdAndUpdate(coupon._id, {
+      $addToSet: { usedBy: userId } // addToSet to avoid duplicates
+    });
+
+    req.flash('success', `Coupon ${coupon.code} applied. You saved ₹${discountAmount.toFixed(2)}`);
+    return res.redirect('/cart');
+
+  } catch (error) {
+    console.error('applyCoupon error:', error);
+    req.flash('error', 'Something went wrong while applying coupon');
+    return res.redirect('/cart');
+  }
+});
 
 
-      const coupon = await couponModel
-         .findOne({ code: couponCode })
-         .populate('usedBy', '_id name email');
-      console.log('applyCoupon - coupon =', coupon);
+// THIS IS THE REMOVE COUPON BY ME 
+
+// const removeCoupon = asyncHandler(async (req, res) => {
+//    try {
+
+//       const userId = req.user?.id || req.auth?.id
+
+//       let cart = await cartModel.findOne({ user: userId })
+
+//       if (!cart) {
+//          req.flash('error', 'No cart found')
+//          return res.redirect('/cart')
+
+//       }
+
+//       if (!cart.coupons) {
+//          req.flash('error', 'No coupon found')
+//          return res.redirect('/cart')
+//       }
+
+//       cart.coupons = null
+
+//       cart.save()
+
+//       req.flash('success', 'Coupon removed')
+//       return res.redirect('/cart')
+
+//    } catch (error) {
+//       console.log('Error from removeCoupon', error.message, error.stack);
+//       return res.redirect('/error')
+//    }
+// })
 
 
-      if (!coupon || couponCode.toString() !== coupon.code) {
-         req.flash('error', 'No such coupon')
-         return res.redirect('/cart')
-      }
 
-      let cart = await cartModel.findOne({ user: userId })
-      // console.log('applyCoupon - cart =', cart);
 
-      let discount = coupon.discountValue
-      let afterDiscount = cart.grandTotal - discount
-      // console.log('applyCoupon - afterDiscount =', afterDiscount);
-
-      cart = await cartModel.findOneAndUpdate({ user: userId }, {
-         grandTotal: afterDiscount
-      }, { new: true })
-
-      await couponModel.findByIdAndUpdate(coupon.id, {
-         $push: { usedBy: userId }
-      })
-
-      return res.redirect('/cart')
-
-   } catch (error) {
-      console.log('Error from applyCoupon =', error.message, error.stack);
-      return res.redirect('/error')
-
-   }
-})
-
+//  THIS IS THE REMOVE COUPON BY GPT
 const removeCoupon = asyncHandler(async (req, res) => {
-   try {
+  try {
+    const userId = req.auth?.id || req.user?.id;
+    let cart = await cartModel.findOne({ user: userId });
+    if (!cart) {
+      req.flash('error', 'Cart not found');
+      return res.redirect('/cart');
+    }
 
-      const userId = req.user?.id || req.auth?.id
+    if (!cart.appliedCoupon) {
+      req.flash('error', 'No coupon applied');
+      return res.redirect('/cart');
+    }
 
-      let cart = await cartModel.findOne({ user: userId })
+    // Note: We keep coupon.usedBy entry as-is (so user cannot reuse)
+    cart.appliedCoupon = null;
 
-      if (!cart) {
-         req.flash('error', 'No cart found')
-         return res.redirect('/cart')
+    await utils.recalcCartTotals(cart);
+    await cart.save();
 
-      }
+    req.flash('success', 'Coupon removed');
+    return res.redirect('/cart');
 
-      if (!cart.coupons) {
-         req.flash('error', 'No coupon found')
-         return res.redirect('/cart')
-      }
-
-      cart.coupons = null
-
-      cart.save()
-
-      req.flash('success', 'Coupon removed')
-      return res.redirect('/cart')
-
-   } catch (error) {
-      console.log('Error from removeCoupon', error.message, error.stack);
-      return res.redirect('/error')
-   }
-})
-
-
-
+  } catch (error) {
+    console.error('removeCoupon error:', error);
+    req.flash('error', 'Something went wrong while removing coupon');
+    return res.redirect('/cart');
+  }
+});
 //------------------------------------------------------- LOGOUT FUNCTIONS
+
 
 const logoutUser = async (req, res) => {
 

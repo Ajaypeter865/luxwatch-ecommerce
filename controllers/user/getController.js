@@ -8,6 +8,7 @@ const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
 const { report } = require('../../routes/user/staticRoutes')
 const couponModel = require('../../models/coupon')
+const utils = require('../../utils/helpers')
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -210,64 +211,119 @@ const getShopPage = asyncHandler(async (req, res) => {
 
 // -----------------------------------------------------CART FUNCTIONS
 
+//  THIS IS THE GETCART PAGE DONE BY ME IT SELF
+// const getCartPage = asyncHandler(async (req, res) => {
 
+//     const userId = req.auth?.id || req.user?.id
+
+//     let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ').populate('coupons')
+//     // console.log('getCartPage - cart1 =', cart);
+
+//     const appliedCoupon = await couponModel.findOne({ usedBy: userId }).select('code _id discountValue') 
+//     console.log('getCartPage - appliedCoupon =', appliedCoupon);
+
+
+
+//     if (appliedCoupon) {
+//         cart.coupons.push(appliedCoupon)
+//         cart.coupons[cart.coupons.length - 1].couponName.push(appliedCoupon.code)
+//         // cart.coupons[cart.coupons.length -1].discountValue.push(appliedCoupon.discountValue)
+//     }
+
+//     console.log('getCartPage - cart =', cart);
+
+//     // await cart.save()
+//     if (!cart || !cart.products || cart.products.length === 0) {
+//         // console.log('Enter if Block');
+
+//         return res.render('user/cart', {
+//             cartItems: [],
+//             totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon 
+//         })
+//     }
+
+//     const validProducts = cart.products.filter((item) => item.product !== null)
+
+//     const cartItems = validProducts.map(item => ({
+//         _id: item.product._id,
+//         name: item.product.name,
+//         image: item.product.image,
+//         price: Number(item.product.price),
+//         quantity: item.quantity,
+//         total: item.product.price * item.quantity,
+//     }));
+
+//     cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
+//     cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
+//     // console.log('getCartPage - cart.subTotal =', cart.subTotal);
+
+//     const totals = {
+//         shipping: cart.shipping,
+//         grandTotal: cart.grandTotal,
+//         subTotal: cart.subTotal,
+//     }
+
+//     // const appliedCoupon = null
+
+//     // console.log('getCartPage - totals =', totals);
+
+//     return res.render("user/cart", { cartItems, totals, appliedCoupon });
+
+// });
+
+
+// THIS IS THE GETCARTPAGE BY GPT - FOR COUPON CODE
 const getCartPage = asyncHandler(async (req, res) => {
+  const userId = req.auth?.id || req.user?.id;
 
-    const userId = req.auth?.id || req.user?.id
+  let cart = await cartModel.findOne({ user: userId })
+    .populate('products.product', 'name image price') // product fields
+    .populate('appliedCoupon.coupon', 'code discountType discountValue');
 
-    let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ').populate('coupons')
-    // console.log('getCartPage - cart1 =', cart);
+  if (!cart) {
+    // Create empty cart if not exist (optional)
+    cart = new cartModel({
+      user: userId,
+      products: [],
+      subTotal: 0,
+      shipping: 0,
+      grandTotal: 0,
+      appliedCoupon: null
+    });
+    await cart.save();
+  }
 
-    const appliedCoupon = await couponModel.findOne({ usedBy: userId }).select('code _id discountValue') 
-    console.log('getCartPage - appliedCoupon =', appliedCoupon);
+  // filter out deleted product refs
+  const validProducts = cart.products.filter(p => p.product !== null);
 
+  const cartItems = validProducts.map(item => ({
+    _id: item.product._id,
+    name: item.product.name,
+    image: item.product.image,
+    price: Number(item.price || item.product.price || 0),
+    quantity: item.quantity,
+    total: Number(item.totalPrice || (item.price * item.quantity) || 0)
+  }));
 
+  // Recalculate totals from DB fields to ensure correctness
+  await utils.recalcCartTotals(cart);
+  await cart.save();
 
-    if (appliedCoupon) {
-        cart.coupons.push(appliedCoupon)
-        cart.coupons[cart.coupons.length - 1].couponName.push(appliedCoupon.code)
-        // cart.coupons[cart.coupons.length -1].discountValue.push(appliedCoupon.discountValue)
-    }
+  const totals = {
+    subTotal: cart.subTotal || 0,
+    shipping: cart.shipping || 0,
+    grandTotal: cart.grandTotal || 0
+  };
 
-    console.log('getCartPage - cart =', cart);
+  // applied coupon object (null or object with fields code, discountValue, discountAmount)
+  const appliedCoupon = cart.appliedCoupon? {
+    code: cart.appliedCoupon.code,
+    discountType: cart.appliedCoupon.discountType,
+    discountValue: cart.appliedCoupon.discountValue,
+    discountAmount: cart.appliedCoupon.discountAmount
+  } : null;
 
-    // await cart.save()
-    if (!cart || !cart.products || cart.products.length === 0) {
-        // console.log('Enter if Block');
-
-        return res.render('user/cart', {
-            cartItems: [],
-            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon 
-        })
-    }
-
-    const validProducts = cart.products.filter((item) => item.product !== null)
-
-    const cartItems = validProducts.map(item => ({
-        _id: item.product._id,
-        name: item.product.name,
-        image: item.product.image,
-        price: Number(item.product.price),
-        quantity: item.quantity,
-        total: item.product.price * item.quantity,
-    }));
-
-    cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
-    cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
-    // console.log('getCartPage - cart.subTotal =', cart.subTotal);
-
-    const totals = {
-        shipping: cart.shipping,
-        grandTotal: cart.grandTotal,
-        subTotal: cart.subTotal,
-    }
-
-    // const appliedCoupon = null
-
-    // console.log('getCartPage - totals =', totals);
-
-    return res.render("user/cart", { cartItems, totals, appliedCoupon });
-
+  return res.render('user/cart', { cartItems, totals, appliedCoupon });
 });
 
 //GET CART PAGE GPT
