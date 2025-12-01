@@ -7,7 +7,7 @@ const router = express.Router()
 const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProfile,
     logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
     deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
-    proccedToPayement, postCheckoutByProduct, cancelOrder,
+    proccedToPayement, postCheckoutByProduct, cancelOrder, removeCoupon,
     applyCoupon } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
@@ -62,6 +62,8 @@ router.post('/checkout/proccedPayment', proctedAuth, proccedToPayement)
 //----------------------------------------------------- COUPON FUCNTION
 
 router.post('/cart/apply-coupon', proctedAuth, applyCoupon)
+router.post('/cart/remove-coupon', proctedAuth, removeCoupon)
+
 
 
 

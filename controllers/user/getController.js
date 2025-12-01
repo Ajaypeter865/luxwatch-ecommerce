@@ -214,28 +214,30 @@ const getShopPage = asyncHandler(async (req, res) => {
 const getCartPage = asyncHandler(async (req, res) => {
 
     const userId = req.auth?.id || req.user?.id
-    // console.log('getCartPage - userId =', userId);
 
     let cart = await cartModel.findOne({ user: userId }).populate('products.product', 'name image  price ').populate('coupons')
+    // console.log('getCartPage - cart1 =', cart);
 
-    const appliedCoupon = await couponModel.findOne({ usedBy: userId }).select('code _id discountValue')
+    const appliedCoupon = await couponModel.findOne({ usedBy: userId }).select('code _id discountValue') 
     console.log('getCartPage - appliedCoupon =', appliedCoupon);
 
+
+
     if (appliedCoupon) {
-        cart.coupons.push(appliedCoupon) 
-        cart.coupons[cart.coupons.length -1].couponName.push(appliedCoupon.code)
-        cart.coupons[cart.coupons.length -1].discountValue.push(appliedCoupon.discountValue)
+        cart.coupons.push(appliedCoupon)
+        cart.coupons[cart.coupons.length - 1].couponName.push(appliedCoupon.code)
+        // cart.coupons[cart.coupons.length -1].discountValue.push(appliedCoupon.discountValue)
     }
 
     console.log('getCartPage - cart =', cart);
 
-    await cart.save()
+    // await cart.save()
     if (!cart || !cart.products || cart.products.length === 0) {
         // console.log('Enter if Block');
 
         return res.render('user/cart', {
             cartItems: [],
-            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon
+            totals: { subTotal: 0, shipping: 0, grandTotal: 0 }, appliedCoupon 
         })
     }
 
@@ -249,14 +251,6 @@ const getCartPage = asyncHandler(async (req, res) => {
         quantity: item.quantity,
         total: item.product.price * item.quantity,
     }));
-
-    // console.log('getCartPage - cartItems =', cartItems);
-
-    // console.log('getCartPage - cart 2 =',cartItems,  JSON.stringify(cartItems[0].products, null, 2))
-
-
-
-    // const totals = await cartModel.findOne({ user: userId }).select('subTotal shipping grandTotal')
 
     cart.subTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0)
     cart.grandTotal = cart.products.reduce((sum, item) => sum + item.subTotal, 0) + cart.shipping
@@ -272,7 +266,7 @@ const getCartPage = asyncHandler(async (req, res) => {
 
     // console.log('getCartPage - totals =', totals);
 
-    return res.render("user/cart", { cartItems, totals, appliedCoupon});
+    return res.render("user/cart", { cartItems, totals, appliedCoupon });
 
 });
 

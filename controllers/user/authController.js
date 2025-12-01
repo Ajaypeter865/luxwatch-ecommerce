@@ -1189,6 +1189,37 @@ const applyCoupon = asyncHandler(async (req, res) => {
    }
 })
 
+const removeCoupon = asyncHandler(async (req, res) => {
+   try {
+
+      const userId = req.user?.id || req.auth?.id
+
+      let cart = await cartModel.findOne({ user: userId })
+
+      if (!cart) {
+         req.flash('error', 'No cart found')
+         return res.redirect('/cart')
+
+      }
+
+      if (!cart.coupons) {
+         req.flash('error', 'No coupon found')
+         return res.redirect('/cart')
+      }
+
+      cart.coupons = null
+
+      cart.save()
+
+      req.flash('success', 'Coupon removed')
+      return res.redirect('/cart')
+
+   } catch (error) {
+      console.log('Error from removeCoupon', error.message, error.stack);
+      return res.redirect('/error')
+   }
+})
+
 
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
@@ -1225,5 +1256,6 @@ module.exports = {
    // proccedPaymentByProduct, // FOR PRODUCT DETAILS CHECKOUT
    // postCheckoutByProduct,
    applyCoupon,
+   removeCoupon,
 
 }
