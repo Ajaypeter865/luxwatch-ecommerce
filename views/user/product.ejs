@@ -40,19 +40,19 @@
     <%- include('../partials/user/navbar') %>
         <%- include('../partials/user/_toastify', { success: success, error: error }) %>
 
-             <div class="slider-area">
-                    <div class="single-slider slider-height2 d-flex align-items-center">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-xl-12">
-                                    <div class="hero-cap text-center">
-                                        <h2>Product</h2>
-                                    </div>
+            <div class="slider-area">
+                <div class="single-slider slider-height2 d-flex align-items-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="hero-cap text-center">
+                                    <h2>Product</h2>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
             <main class="product-main py-5">
                 <div class="container">
@@ -122,7 +122,8 @@
                                         <button type="submit" class="btn btn-add-cart">Add to Cart</button>
                                     </form>
 
-                                    <form action="/api/wishlist/add/<%= product._id %>" method="POST" class="wishlist-form">
+                                    <form action="/api/wishlist/add/<%= product._id %>" method="POST"
+                                        class="wishlist-form">
                                         <button type="submit" class="btn btn-wishlist">Wishlist</button>
                                     </form>
                                 </div>
@@ -142,6 +143,9 @@
                 </div>
             </main>
 
+            <div class="container my-5">
+                <%- include('../partials/user/aiSuggestions', { suggestions: suggestions }) %>
+            </div>
             <%- include('../partials/user/footer') %>
 
                 <!-- JS -->

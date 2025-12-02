@@ -9,6 +9,8 @@ const orderModel = require('../../models/order')
 const { report } = require('../../routes/user/staticRoutes')
 const couponModel = require('../../models/coupon')
 const utils = require('../../utils/helpers')
+const { ensureEmbeddingForProduct } = require('../../lib/embeddings');
+const mongoose = require('mongoose');
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -411,21 +413,102 @@ const getWishList = async (req, res) => {
 
 // -----------------------------------------------------PRODUCT DETAILS FUNCTIONS
 
+
+// THIS IS THE GETPRODUCT PAGE WITHOUT AI 
+// const getproductPage = async (req, res) => {
+//     try {
+//         const productId = req.params.id
+
+//         const product = await productModel.findOne({ _id: productId })
+//         // console.log('getProductPage - product =', product);
+
+
+//         return res.render('user/product', { product })
+//     } catch (error) {
+//         console.log('Error from getProductPage =', error.message, error.stack);
+//         return res.redirect(`/shop${error}`)
+//     }
+
+// }
+
+
+//THIS IS THE GETPRODUCT PAGE WITH AI (NEW)
 const getproductPage = async (req, res) => {
     try {
-        const productId = req.params.id
+        const productId = req.params.id;
 
-        const product = await productModel.findOne({ _id: productId })
-        // console.log('getProductPage - product =', product);
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).send('Invalid product ID');
+        }
 
+        // Get product (lean version)
+        const product = await productModel.findById(productId).lean();
+        if (!product) {
+            return res.status(404).render('user/404');
+        }
 
-        return res.render('user/product', { product })
+        // Get full document (non-lean) for saving embedding
+        const productDoc = await productModel.findById(productId);
+        await ensureEmbeddingForProduct(productDoc);
+
+        // Fetch updated version with embedding
+        const freshProduct = await productModel.findById(productId).lean();
+
+        // If still no embedding → fallback
+        if (!freshProduct.embedding || freshProduct.embedding.length === 0) {
+            const fallback = await productModel
+                .find({ _id: { $ne: productId } })
+                .limit(4)
+                .lean();
+
+            return res.render('user/product', {
+                product: freshProduct,
+                suggestions: fallback
+            });
+        }
+
+        // -------------------------------
+        //   VECTOR SEARCH (AI SUGGESTIONS)
+        // -------------------------------
+        const agg = [
+            {
+                $search: {
+                    index: 'default', // MUST match Atlas index name
+                    knnBeta: {
+                        vector: freshProduct.embedding,
+                        path: 'embedding',
+                        k: 6
+                    }
+                }
+            },
+            { $match: { _id: { $ne: freshProduct._id } } },
+            { $limit: 6 },
+            {
+                $project: {
+                    name: 1,
+                    price: 1,
+                    image: 1,
+                    description: 1,
+                    category: 1,
+                    status: 1
+                }
+            }
+        ];
+
+        const results = await productModel.aggregate(agg).allowDiskUse(true);
+
+        const suggestions = results.slice(0, 4);
+
+        return res.render('user/product', {
+            product: freshProduct,
+            suggestions
+        });
+
     } catch (error) {
         console.log('Error from getProductPage =', error.message, error.stack);
         return res.redirect(`/shop${error}`)
     }
-
-}
+};
 
 // -----------------------------------------------------CHECKOUT FUNCTIONS
 

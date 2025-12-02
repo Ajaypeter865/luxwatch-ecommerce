@@ -33,13 +33,19 @@ const productSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['Automatic', 'Manual', 'Limited-Edition'],
+        enum: ['Automatic', 'Manual', 'Limited-Edition',],
         require: true
     },
     image: {
         type: String,
         // require: true
     },
+
+    embedding: {
+        type: [Number],
+        default: []
+    },
+
     reviews: {
         type: String,
 
@@ -49,4 +55,4 @@ const productSchema = new mongoose.Schema({
 
 const productModel = mongoose.model('product', productSchema)
 
-module.exports =  productModel 
+module.exports = productModel 
