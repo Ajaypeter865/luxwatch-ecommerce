@@ -274,56 +274,56 @@ const getShopPage = asyncHandler(async (req, res) => {
 
 // THIS IS THE GETCARTPAGE BY GPT - FOR COUPON CODE
 const getCartPage = asyncHandler(async (req, res) => {
-  const userId = req.auth?.id || req.user?.id;
+    const userId = req.auth?.id || req.user?.id;
 
-  let cart = await cartModel.findOne({ user: userId })
-    .populate('products.product', 'name image price') // product fields
-    .populate('appliedCoupon.coupon', 'code discountType discountValue');
+    let cart = await cartModel.findOne({ user: userId })
+        .populate('products.product', 'name image price') // product fields
+        .populate('appliedCoupon.coupon', 'code discountType discountValue');
 
-  if (!cart) {
-    // Create empty cart if not exist (optional)
-    cart = new cartModel({
-      user: userId,
-      products: [],
-      subTotal: 0,
-      shipping: 0,
-      grandTotal: 0,
-      appliedCoupon: null
-    });
+    if (!cart) {
+        // Create empty cart if not exist (optional)
+        cart = new cartModel({
+            user: userId,
+            products: [],
+            subTotal: 0,
+            shipping: 0,
+            grandTotal: 0,
+            appliedCoupon: null
+        });
+        await cart.save();
+    }
+
+    // filter out deleted product refs
+    const validProducts = cart.products.filter(p => p.product !== null);
+
+    const cartItems = validProducts.map(item => ({
+        _id: item.product._id,
+        name: item.product.name,
+        image: item.product.image,
+        price: Number(item.price || item.product.price || 0),
+        quantity: item.quantity,
+        total: Number(item.totalPrice || (item.price * item.quantity) || 0)
+    }));
+
+    // Recalculate totals from DB fields to ensure correctness
+    await utils.recalcCartTotals(cart);
     await cart.save();
-  }
 
-  // filter out deleted product refs
-  const validProducts = cart.products.filter(p => p.product !== null);
+    const totals = {
+        subTotal: cart.subTotal || 0,
+        shipping: cart.shipping || 0,
+        grandTotal: cart.grandTotal || 0
+    };
 
-  const cartItems = validProducts.map(item => ({
-    _id: item.product._id,
-    name: item.product.name,
-    image: item.product.image,
-    price: Number(item.price || item.product.price || 0),
-    quantity: item.quantity,
-    total: Number(item.totalPrice || (item.price * item.quantity) || 0)
-  }));
+    // applied coupon object (null or object with fields code, discountValue, discountAmount)
+    const appliedCoupon = cart.appliedCoupon ? {
+        code: cart.appliedCoupon.code,
+        discountType: cart.appliedCoupon.discountType,
+        discountValue: cart.appliedCoupon.discountValue,
+        discountAmount: cart.appliedCoupon.discountAmount
+    } : null;
 
-  // Recalculate totals from DB fields to ensure correctness
-  await utils.recalcCartTotals(cart);
-  await cart.save();
-
-  const totals = {
-    subTotal: cart.subTotal || 0,
-    shipping: cart.shipping || 0,
-    grandTotal: cart.grandTotal || 0
-  };
-
-  // applied coupon object (null or object with fields code, discountValue, discountAmount)
-  const appliedCoupon = cart.appliedCoupon? {
-    code: cart.appliedCoupon.code,
-    discountType: cart.appliedCoupon.discountType,
-    discountValue: cart.appliedCoupon.discountValue,
-    discountAmount: cart.appliedCoupon.discountAmount
-  } : null;
-
-  return res.render('user/cart', { cartItems, totals, appliedCoupon });
+    return res.render('user/cart', { cartItems, totals, appliedCoupon });
 });
 
 //GET CART PAGE GPT
@@ -529,7 +529,9 @@ const getOrderSummaryPage = asyncHandler(async (req, res) => {
 
 
 
-// ERROR PAGE
+
+
+// --------------------------------------------------------ERROR PAGE
 
 const errorPage = async (req, res) => {
 
@@ -537,7 +539,26 @@ const errorPage = async (req, res) => {
 
 }
 
+// -------------------------------------------------------CONTACT PAGE
 
+const getContactPage = asyncHandler(async (req, res) => {
+
+    return res.render('user/contact')
+})
+
+
+// ------------------------------------------------------- ABOUT PAGE
+
+const getAboutPage = asyncHandler(async (req, res) => {
+    try {
+        return res.render('user/about')
+    } catch (error) {
+        console.log('Error in getAboutPage =', error.stack, error.message);
+        return res.redirect('/error')
+
+    }
+
+})
 
 module.exports = {
     getLoginUser,
@@ -557,5 +578,7 @@ module.exports = {
     getCheckoutPageByProduct,
     getOrderSummaryPage,
     errorPage,
-    getUserOrdersPage
+    getUserOrdersPage,
+    getContactPage,
+    getAboutPage,
 }

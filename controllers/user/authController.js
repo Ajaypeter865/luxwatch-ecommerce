@@ -16,6 +16,7 @@ const productModel = require('../../models/products')
 const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
 const couponModel = require('../../models/coupon')
+const enquiryModel = require('../../models/enquiry')
 // const { name } = require('ejs')
 require('dotenv').config()
 
@@ -1195,101 +1196,105 @@ const proccedToPayement = asyncHandler(async (req, res) => {
 
 // THIS IS THE APPLY COUPOUN BY GPT 
 const applyCoupon = asyncHandler(async (req, res) => {
-  try {
-    const userId = req.auth?.id || req.user?.id;
-    const { couponCode } = req.body;
-    if (!couponCode || typeof couponCode !== 'string') {
-      req.flash('error', 'Invalid coupon code');
+   try {
+      const userId = req.auth?.id || req.user?.id;
+      const { couponCode } = req.body;
+      if (!couponCode || typeof couponCode !== 'string') {
+         req.flash('error', 'Invalid coupon code');
+         return res.redirect('/cart');
+      }
+
+      const codeUpper = couponCode.trim().toUpperCase();
+
+      const coupon = await couponModel.findOne({ code: codeUpper });
+      if (!coupon) {
+         req.flash('error', 'Coupon not found');
+         return res.redirect('/cart');
+      }
+
+      // Basic validations
+      if (!coupon.active) {
+         req.flash('error', 'This coupon is not active');
+         return res.redirect('/cart');
+      }
+
+      const now = new Date();
+      if (coupon.expiryDate && coupon.expiryDate < now) {
+         req.flash('error', 'Coupon expired');
+         return res.redirect('/cart');
+      }
+
+      // Prevent reuse by same user
+      if (coupon.usedBy && coupon.usedBy.some(u => u.toString() === userId.toString())) {
+         req.flash('error', 'You have already used this coupon');
+         return res.redirect('/cart');
+      }
+
+      // Load cart and recalc totals
+      let cart = await cartModel.findOne({ user: userId });
+      if (!cart) {
+         req.flash('error', 'Cart not found');
+         return res.redirect('/cart');
+      }
+
+      await utils.recalcCartTotals(cart);
+
+      // Check minPurchase
+      const subTotal = cart.subTotal || 0;
+      if (coupon.minPurchase && subTotal < coupon.minPurchase) {
+         req.flash('error', `Minimum purchase of ₹${coupon.minPurchase} required to use this coupon`);
+         return res.redirect('/cart');
+      }
+
+      // Only one coupon per cart
+      if (cart.appliedCoupon) {
+         req.flash('error', 'A coupon is already applied to your cart');
+         return res.redirect('/cart');
+      }
+
+      // compute discountAmount (in rupees)
+      let discountAmount = 0;
+      if (coupon.discountType === 'Percentage') {
+         // coupon.discountValue is percentage (e.g., 10 for 10%)
+         discountAmount = (subTotal * (Number(coupon.discountValue) / 100));
+         console.log('applyCoupon - discountAmount if');
+      } else { // Fixed
+         discountAmount = Number(coupon.discountValue);
+         console.log('applyCoupon - discountAmount else');
+      }
+
+      // Normalize to 2 decimal places
+      discountAmount = Number(discountAmount.toFixed(2));
+      console.log('applyCoupon - discountAmount =', discountAmount);
+
+      if (discountAmount < 0) discountAmount = 0;
+
+      // Save appliedCoupon into cart
+      cart.appliedCoupon = {
+         coupon: coupon._id,
+         code: coupon.code,
+         discountType: coupon.discountType,
+         discountValue: coupon.discountValue,
+         discountAmount
+      };
+
+      // recalc grand total
+      cart = await utils.recalcCartTotals(cart);
+      await cart.save();
+
+      // Mark coupon as used by this user (so they can't use again)
+      await couponModel.findByIdAndUpdate(coupon._id, {
+         $addToSet: { usedBy: userId } // addToSet to avoid duplicates
+      });
+
+      req.flash('success', `Coupon ${coupon.code} applied. You saved ₹${discountAmount.toFixed(2)}`);
       return res.redirect('/cart');
-    }
 
-    const codeUpper = couponCode.trim().toUpperCase();
-
-    const coupon = await couponModel.findOne({ code: codeUpper });
-    if (!coupon) {
-      req.flash('error', 'Coupon not found');
+   } catch (error) {
+      console.error('applyCoupon error:', error);
+      req.flash('error', 'Something went wrong while applying coupon');
       return res.redirect('/cart');
-    }
-
-    // Basic validations
-    if (!coupon.active) {
-      req.flash('error', 'This coupon is not active');
-      return res.redirect('/cart');
-    }
-
-    const now = new Date();
-    if (coupon.expiryDate && coupon.expiryDate < now) {
-      req.flash('error', 'Coupon expired');
-      return res.redirect('/cart');
-    }
-
-    // Prevent reuse by same user
-    if (coupon.usedBy && coupon.usedBy.some(u => u.toString() === userId.toString())) {
-      req.flash('error', 'You have already used this coupon');
-      return res.redirect('/cart');
-    }
-
-    // Load cart and recalc totals
-    let cart = await cartModel.findOne({ user: userId });
-    if (!cart) {
-      req.flash('error', 'Cart not found');
-      return res.redirect('/cart');
-    }
-
-    await utils.recalcCartTotals(cart);
-
-    // Check minPurchase
-    const subTotal = cart.subTotal || 0;
-    if (coupon.minPurchase && subTotal < coupon.minPurchase) {
-      req.flash('error', `Minimum purchase of ₹${coupon.minPurchase} required to use this coupon`);
-      return res.redirect('/cart');
-    }
-
-    // Only one coupon per cart
-    if (cart.appliedCoupon) {
-      req.flash('error', 'A coupon is already applied to your cart');
-      return res.redirect('/cart');
-    }
-
-    // compute discountAmount (in rupees)
-    let discountAmount = 0;
-    if (coupon.discountType === 'Percentage') {
-      // coupon.discountValue is percentage (e.g., 10 for 10%)
-      discountAmount = (subTotal * (Number(coupon.discountValue) / 100));
-    } else { // Fixed
-      discountAmount = Number(coupon.discountValue);
-    }
-
-    // Normalize to 2 decimal places
-    discountAmount = Number(discountAmount.toFixed(2));
-    if (discountAmount < 0) discountAmount = 0;
-
-    // Save appliedCoupon into cart
-    cart.appliedCoupon = {
-      coupon: coupon._id,
-      code: coupon.code,
-      discountType: coupon.discountType,
-      discountValue: coupon.discountValue,
-      discountAmount
-    };
-
-    // recalc grand total
-    cart = await utils.recalcCartTotals(cart);
-    await cart.save();
-
-    // Mark coupon as used by this user (so they can't use again)
-    await couponModel.findByIdAndUpdate(coupon._id, {
-      $addToSet: { usedBy: userId } // addToSet to avoid duplicates
-    });
-
-    req.flash('success', `Coupon ${coupon.code} applied. You saved ₹${discountAmount.toFixed(2)}`);
-    return res.redirect('/cart');
-
-  } catch (error) {
-    console.error('applyCoupon error:', error);
-    req.flash('error', 'Something went wrong while applying coupon');
-    return res.redirect('/cart');
-  }
+   }
 });
 
 
@@ -1331,34 +1336,63 @@ const applyCoupon = asyncHandler(async (req, res) => {
 
 //  THIS IS THE REMOVE COUPON BY GPT
 const removeCoupon = asyncHandler(async (req, res) => {
-  try {
-    const userId = req.auth?.id || req.user?.id;
-    let cart = await cartModel.findOne({ user: userId });
-    if (!cart) {
-      req.flash('error', 'Cart not found');
+   try {
+      const userId = req.auth?.id || req.user?.id;
+      let cart = await cartModel.findOne({ user: userId });
+      if (!cart) {
+         req.flash('error', 'Cart not found');
+         return res.redirect('/cart');
+      }
+
+      if (!cart.appliedCoupon) {
+         req.flash('error', 'No coupon applied');
+         return res.redirect('/cart');
+      }
+
+      // Note: We keep coupon.usedBy entry as-is (so user cannot reuse)
+      cart.appliedCoupon = null;
+
+      await utils.recalcCartTotals(cart);
+      await cart.save();
+
+      req.flash('success', 'Coupon removed');
       return res.redirect('/cart');
-    }
 
-    if (!cart.appliedCoupon) {
-      req.flash('error', 'No coupon applied');
+   } catch (error) {
+      console.error('removeCoupon error:', error);
+      req.flash('error', 'Something went wrong while removing coupon');
       return res.redirect('/cart');
-    }
-
-    // Note: We keep coupon.usedBy entry as-is (so user cannot reuse)
-    cart.appliedCoupon = null;
-
-    await utils.recalcCartTotals(cart);
-    await cart.save();
-
-    req.flash('success', 'Coupon removed');
-    return res.redirect('/cart');
-
-  } catch (error) {
-    console.error('removeCoupon error:', error);
-    req.flash('error', 'Something went wrong while removing coupon');
-    return res.redirect('/cart');
-  }
+   }
 });
+
+//------------------------------------------------------- ENQUIRY FUNCTIONS
+
+const postEnquiry = asyncHandler(async (req, res) => {
+   try {
+
+      const { message, name, email, subject } = req.body
+
+      if (!message && !name && !email && !subject) {
+         req.flash('Need to fill all the forms')
+         return res.redirect('/contact')
+      }
+      await enquiryModel.create({
+         name: name,
+         email: email,
+         subject: subject,
+         message: message,
+         status: 'Pending'
+      })
+      req.flash('success', 'Your enquiry send successfully, will Reply soon')
+      return res.redirect('/contact')
+
+   } catch (error) {
+      console.log('Error from postEnquiry', error.message, error.stack);
+      return res.redirect('/error')
+
+   }
+})
+
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
 
@@ -1395,5 +1429,6 @@ module.exports = {
    // postCheckoutByProduct,
    applyCoupon,
    removeCoupon,
+   postEnquiry,
 
 }

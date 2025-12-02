@@ -13,6 +13,9 @@ const userModel = require('../../models/user')
 const orderModel = require('../../models/order')
 const couponModel = require('../../models/coupon')
 
+const transporter = require('../../utils/mailer')
+const enquiryModel = require('../../models/enquiry')
+
 
 
 
@@ -261,7 +264,7 @@ const unblockCoupon = asyncHandler(async (req, res) => {
     try {
         const couponId = req.params.id
         console.log('unblockCoupon - couponId =', couponId);
-        const active = await couponModel.findByIdAndUpdate(couponId, { active: true }, {new : true})
+        const active = await couponModel.findByIdAndUpdate(couponId, { active: true }, { new: true })
         return res.json({ message: 'Success', active })
 
     } catch (error) {
@@ -276,13 +279,78 @@ const blockCoupon = asyncHandler(async (req, res) => {
     try {
         const couponId = req.params.id
         console.log('blockCoupon - couponId =', couponId);
-        const active = await couponModel.findByIdAndUpdate(couponId, { active: false }, {new : true})
+        const active = await couponModel.findByIdAndUpdate(couponId, { active: false }, { new: true })
         return res.json({ message: 'Success', active })
 
     } catch (error) {
         console.log('Error from blockCoupon =', error.message, error.stack);
         return res.redirect('/error')
 
+    }
+
+})
+
+
+// --------------------------------------------------- ENQUIRY CONTROLLER
+
+const sendReply = asyncHandler(async (req, res) => {
+
+
+    try {
+        const { email, reply, enquiryId } = req.body
+
+        if (!email && !reply) {
+            req.flash('error', 'Invalid input')
+            res.json({ success: flase })
+        }
+
+        await transporter.sendMail({
+            from: `"Time Zone" <${process.env.emailUser}>`,
+            to: email,
+            subject: 'Support reply',
+            text: reply
+
+        })
+
+        await enquiryModel.findByIdAndUpdate(enquiryId, {
+            reply: true,
+            status: 'Resolved'
+        })
+
+        res.json({ success: true })
+
+    } catch (error) {
+        console.log('Error from sendReply =', error.message, error.stack);
+        return res.redirect('/error')
+
+    }
+
+    return res.json({ success: true })
+
+
+})
+
+const resolveButton = asyncHandler(async (req, res) => {
+
+    try {
+
+        const { id } = req.body
+
+        if (!id) {
+            req.flash('error', 'No id found')
+            return res.json({ success: false })
+        }
+
+        await enquiryModel.findByIdAndUpdate(id, {
+            status: 'Resolved',
+            reply: true
+        })
+
+        return res.json({ success: true })
+
+    } catch (error) {
+        console.log('Error in resolveButton =', error.message, error.stack);
+        return res.redirect('/error')
     }
 
 })
@@ -300,6 +368,8 @@ module.exports = {
     updateCoupon,
     deleteCoupon,
     unblockCoupon,
-    blockCoupon
+    blockCoupon,
+    sendReply,
+    resolveButton,
 
 }

@@ -1,0 +1,133 @@
+/* ================================
+   ADMIN SUPPORT PAGE STYLES
+   Theme: #ff2020 + Josefin Sans
+   ================================ */
+
+body, .admin-main {
+    font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* --------------------------------
+   Table Styling
+----------------------------------- */
+.table-header {
+    background: #ff2020 !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-bottom: 0;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #fff1f1; /* soft red tint */
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* --------------------------------
+   Badges
+----------------------------------- */
+.badge-warning-custom {
+    background-color: #ffcd39 !important;
+    color: #000 !important;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+}
+
+.badge-resolved {
+    background-color: #28a745 !important;
+    padding: 6px 10px;
+}
+
+/* --------------------------------
+   Buttons
+----------------------------------- */
+.btn-reply {
+    border-color: #ff2020 !important;
+    color: #ff2020 !important;
+    font-weight: 500;
+    transition: 0.25s ease;
+}
+
+.btn-reply:hover {
+    background-color: #ff2020 !important;
+    color: #fff !important;
+}
+
+.btn-resolve {
+    border-color: #28a745 !important;
+    color: #28a745 !important;
+    font-weight: 500;
+    transition: 0.25s ease;
+}
+
+.btn-resolve:hover {
+    background-color: #28a745 !important;
+    color: #fff !important;
+}
+
+/* Disabled state */
+button:disabled,
+button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --------------------------------
+   Card Styling
+----------------------------------- */
+.card {
+    border: none !important;
+    border-radius: 8px !important;
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* --------------------------------
+   Empty State Styling
+----------------------------------- */
+.empty-support-message {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-support-message h5 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.empty-support-message p {
+    color: #6c757d;
+}
+
+/* --------------------------------
+   Modal Styling
+----------------------------------- */
+.modal-header {
+    background-color: #ff2020 !important;
+    color: #fff !important;
+}
+
+.modal-header .btn-close {
+    filter: brightness(200%);
+}
+
+.modal-footer button {
+    font-weight: 500;
+}
+
+/* --------------------------------
+   Responsive 
+----------------------------------- */
+@media (max-width: 768px) {
+    .btn-reply,
+    .btn-resolve {
+        margin-bottom: 6px;
+        display: block;
+        width: 100%;
+    }
+}

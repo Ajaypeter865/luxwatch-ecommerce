@@ -8,7 +8,8 @@ const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProf
     logoutUser, addAddress, setDefaultAddress, editAddress, deleteAddress, addToCart,
     deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
     proccedToPayement, postCheckoutByProduct, cancelOrder, removeCoupon,
-    applyCoupon } = require('../../controllers/user/authController')
+    applyCoupon,
+    postEnquiry } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -63,6 +64,10 @@ router.post('/checkout/proccedPayment', proctedAuth, proccedToPayement)
 
 router.post('/cart/apply-coupon', proctedAuth, applyCoupon)
 router.post('/cart/remove-coupon', proctedAuth, removeCoupon)
+
+// ----------------------------------------------------- ENQUIRY FUNCTION
+
+router.post('/contact', proctedAuth, postEnquiry)
 
 
 

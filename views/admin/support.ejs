@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Support Messages | Watch Shop</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/admin-sidebar.css" />
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
+    <link rel="stylesheet" href="/css/admin-support.css">
+
+    <style>
+        body {
+            font-family: 'Josefin Sans', sans-serif !important;
+        }
+
+        .table-header {
+            background: #ff2020;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .badge-warning-custom {
+            background-color: #ffcd39;
+            color: #000;
+        }
+
+        .btn-reply {
+            border-color: #ff2020;
+            color: #ff2020;
+        }
+
+        .btn-reply:hover {
+            background-color: #ff2020;
+            color: #fff;
+        }
+
+        .btn-resolve {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .btn-resolve:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .modal-header {
+            background: #ff2020;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+    <%- include('../partials/admin/_sidebar', { activePage: 'support' }) %>
+
+    <main class="admin-main">
+        <div class="container-fluid py-4">
+
+            <!-- Page Title -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                <h2 class="fw-bold text-dark mb-0">Support Messages</h2>
+            </div>
+
+            <!-- If messages exist -->
+            <% if (enquiries && enquiries.length > 0) { %>
+
+                <div class="card shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-header">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                    <th>Status</th>
+                                    <th style="width: 160px;">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% enquiries.forEach((msg, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= msg.name %></td>
+                                    <td><%= msg.email %></td>
+                                    <td><%= msg.subject %></td>
+                                    <td><%= msg.message %></td>
+
+                                    <td>
+                                        <% if (msg.status === 'Pending') { %>
+                                            <span class="badge badge-warning-custom px-3 py-2">Pending</span>
+                                        <% } else { %>
+                                            <span class="badge bg-success px-3 py-2">Resolved</span>
+                                        <% } %>
+                                    </td>
+
+                                    <td>
+                                        <% if (!msg.reply) { %>
+                                            <button 
+                                                class="btn btn-sm btn-reply me-2 reply-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#replyModal"
+                                                data-email="<%= msg.email %>"
+                                                data-id="<%= msg._id %>">
+                                                <i class="fa-regular fa-envelope"></i> Reply
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-sm btn-secondary me-2" disabled>
+                                                Replied
+                                            </button>
+                                        <% } %>
+
+                                        <% if (msg.status === 'Pending') { %>
+                                            <button 
+                                                class="btn btn-sm btn-resolve resolve-btn"
+                                                data-id="<%= msg._id %>">
+                                                <i class="fa-solid fa-check"></i> Done
+                                            </button>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <% } else { %>
+
+                <div class="card shadow-sm mt-4">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold">No Messages Found</h5>
+                        <p class="text-muted">Customers have not contacted support yet.</p>
+                    </div>
+                </div>
+
+            <% } %>
+
+        </div>
+    </main>
+
+    <!-- Reply Modal -->
+    <div class="modal fade" id="replyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" id="replyForm">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Reply to Message</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Customer Email</label>
+                        <input type="email" id="replyEmail" class="form-control" readonly />
+                        <input type="hidden" id="enquiryId" name="enquiryId" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Your Reply</label>
+                        <textarea class="form-control" rows="4" placeholder="Write your reply here..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Send Reply</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Open Modal With Email + ID
+        document.addEventListener("DOMContentLoaded", () => {
+            const replyModal = document.getElementById("replyModal");
+
+            replyModal.addEventListener("show.bs.modal", function (event) {
+                const btn = event.relatedTarget;
+                document.getElementById("replyEmail").value = btn.getAttribute("data-email");
+                document.getElementById("enquiryId").value = btn.getAttribute("data-id");
+            });
+        });
+
+        // Resolve Button
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".resolve-btn").forEach(btn => {
+                btn.addEventListener("click", async function () {
+                    const id = this.dataset.id;
+
+                    const res = await fetch("/admin/support/resolve", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("Failed to update status");
+                    }
+                });
+            });
+        });
+
+        // Submit Reply
+        document.getElementById("replyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("replyEmail").value;
+            const enquiryId = document.getElementById("enquiryId").value;
+            const reply = document.querySelector("#replyModal textarea").value;
+
+            const res = await fetch("/admin/support/reply", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, reply, enquiryId })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("Failed to send reply");
+            }
+        });
+    </script>
+
+</body>
+</html>

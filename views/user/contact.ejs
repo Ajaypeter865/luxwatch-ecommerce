@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | Watch Shop</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="/css/flaticon.css">
+  <link rel="stylesheet" href="/css/slicknav.css">
+  <link rel="stylesheet" href="/css/animate.min.css">
+  <link rel="stylesheet" href="/css/magnific-popup.css">
+  <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+  <link rel="stylesheet" href="/css/themify-icons.css">
+  <link rel="stylesheet" href="/css/slick.css">
+  <link rel="stylesheet" href="/css/nice-select.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/contact.css">
+
+ 
+</head>
+
+<body>
+ <%- include('../partials/user/navbar') %>
+  <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+  <!-- Hero Section -->
+  <main>
+    <div class="slider-area">
+      <div class="single-slider slider-height2 d-flex align-items-center">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-12">
+              <div class="hero-cap text-center">
+                <h2>Contact Us</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="container">
+      <div class="row">
+        
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+          <h2 class="contact-title">Get in Touch</h2>
+
+          <form action="/contact" method="POST" class="contact-form">
+
+            <div class="form-group">
+              <textarea name="message" class="form-control" placeholder="Enter Message" required></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+              </div>
+
+              <div class="col-sm-6">
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
+              </div>
+            </div>
+
+            <div class="form-group mt-3">
+              <input type="text" name="subject" class="form-control" placeholder="Enter Subject" required>
+            </div>
+
+            <button type="submit" class="send-btn">SEND</button>
+          </form>
+        </div>
+
+
+        <!-- Right Contact Info -->
+        <div class="col-lg-4 contact-info-section">
+
+          <div class="info-box">
+            <i class="fa fa-home"></i>
+            <div>
+              <h4>Kannur Azhikode.</h4>
+              <p>Poothapara, CA 91770</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <i class="fa fa-phone"></i>
+            <div>
+              <h4>+1 253 565 2365</h4>
+              <p>Mon to Fri 9am to 6pm</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <i class="fa fa-envelope"></i>
+            <div>
+              <h4>support@timezone.com</h4>
+              <p>Send us your query anytime!</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <%- include('../partials/user/footer') %>
+
+</body>
+</html>

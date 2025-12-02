@@ -26,7 +26,9 @@ const {
     getCheckoutPageByProduct,
     getOrderSummaryPage,
     errorPage,
-    getUserOrdersPage
+    getUserOrdersPage,
+    getContactPage,
+    getAboutPage,
 
 } = require('../../controllers/user/getController')
 
@@ -47,7 +49,7 @@ router.get('/logout', proctedAuth, getLogout)
 router.get('/profile', proctedAuth, getUserOrdersPage)     // PROFILE PAGE COMEING FROM AUTHCONTROLLERS
 router.get('/', proctedAuth, resLocals, getHomePage)  // IF NEED TO CHANGE THE HOME PAGE CHANGE THE '/' INTO '/INDEX'
 router.get('/address', proctedAuth, getAddressPage)
-router.get('/orders', proctedAuth,getUserOrdersPage)
+router.get('/orders', proctedAuth, getUserOrdersPage)
 
 
 // SHOP ROUTES
@@ -73,6 +75,12 @@ router.get('/checkout/:id', proctedAuth, getCheckoutPageByProduct)
 
 // ORDER SUMMARY PAGE 
 router.get('/order/success/:id', getOrderSummaryPage)
+
+// CONTACT PAGE 
+router.get('/contact', proctedAuth, getContactPage)
+
+// ABOUT PAGE
+router.get('/about', getAboutPage)
 
 
 

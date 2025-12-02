@@ -5,6 +5,7 @@ const userModel = require('../../models/user')
 const addressesModel = require('../../models/addresses')
 const orderModel = require('../../models/order')
 const couponModel = require('../../models/coupon')
+const enquiryModel = require('../../models/enquiry')
 
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
@@ -349,6 +350,13 @@ const getCoupons = asyncHandler(async (req, res) => {
 })
 
 
+const getSupport = asyncHandler(async (req, res) => {
+  
+  const enquiries  = await enquiryModel.find()
+
+  return res.render('admin/support', {enquiries })
+})
+
 
 
 
@@ -364,4 +372,5 @@ module.exports = {
   getChartData,
   generateChartData,
   getCoupons,
+  getSupport,
 }

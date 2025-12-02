@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router()
 
 // IMPORT MODULES
-const { gethomePageAdmin, getloginPageAdmin, getOrdersAdmin, getProductsAdmin, getCustomers, getChartData, getCoupons } = require('../../controllers/admin/getControllersAdmin')
+const { gethomePageAdmin, getloginPageAdmin, getOrdersAdmin, getProductsAdmin, getCustomers, getChartData, getCoupons, getSupport } = require('../../controllers/admin/getControllersAdmin')
 
 // IMPORT MIDDLEWARE
 const { proctedAuthAdmin, proctedAuth } = require('../../middlewares/auth')
@@ -21,7 +21,8 @@ router.get('/admin/chart-data', proctedAuthAdmin, getChartData)
 router.get('/admin/orders', proctedAuthAdmin, getOrdersAdmin)
 router.get('/admin/products', proctedAuthAdmin, getProductsAdmin)
 router.get('/admin/customers', getCustomers)
-router.get('/admin/coupons', getCoupons)
+router.get('/admin/support', getSupport)
+
 
 
 module.exports = router
