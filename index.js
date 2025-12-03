@@ -19,6 +19,7 @@ const staticRoutesAdmin = require('./routes/admin/staticRoutesAdmin')
 const authRoutesAdmin = require('./routes/admin/authRoutesAdmin')
 const passport = require('passport');
 const passportSetup = require('./config/passport');  // IMPORTANT 
+const stripeRoutes = require('./routes/user/stripeRoutes')
 
 
 // MIDDLEWARES
@@ -89,8 +90,11 @@ app.use('/node_modules', express.static(__dirname + '/node_modules')) // FOR TOA
 // ROUTES
 app.use('/', staticRoutesUser)
 app.use('/', authRoutesUser)
+
 app.use('/', staticRoutesAdmin)
 app.use('/', authRoutesAdmin)
+
+app.use('/', stripeRoutes)
 
 
 

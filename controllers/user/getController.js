@@ -11,6 +11,8 @@ const couponModel = require('../../models/coupon')
 const utils = require('../../utils/helpers')
 const { ensureEmbeddingForProduct } = require('../../lib/embeddings');
 const mongoose = require('mongoose');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 
 //------------------------------------------------------ REGISTER FUNCTIONS
 const getLoginUser = async (req, res) => {
@@ -451,8 +453,20 @@ const getproductPage = async (req, res) => {
         const productDoc = await productModel.findById(productId);
         await ensureEmbeddingForProduct(productDoc);
 
-        // Fetch updated version with embedding
+        // // Fetch updated version with embedding
         const freshProduct = await productModel.findById(productId).lean();
+
+
+        // ABINAV CODE --------------------
+
+        // let freshProduct = product;
+        // try {
+        //     const productDoc = await Product.findById(id);
+        //     await ensureEmbeddingForProduct(productDoc);
+        //     freshProduct = await Product.findById(id).lean();
+        // } catch (embeddingErr) {
+        //     console.warn('Embedding skipped, fallback suggestions:', embeddingErr.message);
+        // }
 
         // If still no embedding → fallback
         if (!freshProduct.embedding || freshProduct.embedding.length === 0) {
@@ -597,18 +611,71 @@ const getCheckoutPageByProduct = asyncHandler(async (req, res) => {
 
 })
 
+// ORDER SUMMARY BY ME FOR ONLY CARD
 
+// const getOrderSummaryPage = asyncHandler(async (req, res) => {
+//     const orderId = req.params.id
+//     console.log('getOrderPageSummary - orderId =', orderId);
+
+//     const order = await orderModel.findOne({ _id: orderId })
+//     // console.log('getOrderPageSummary - order =', order);
+
+
+//     return res.render('user/orderConfirmation', { order })
+
+// })
+
+
+
+
+
+
+// ORDER SUMMARY MY GPT FOR BOTH COD AND CARD
 const getOrderSummaryPage = asyncHandler(async (req, res) => {
-    const orderId = req.params.id
-    // console.log('getOrderPageSummary - orderId =', orderId);
+    const id = req.params.id;
+    console.log("ID received =", id);
 
-    const order = await orderModel.findOne({ _id: orderId })
-    // console.log('getOrderPageSummary - order =', order);
+    // 1️⃣ COD ORDER FLOW — if id is a valid MongoDB ObjectId
+    if (mongoose.Types.ObjectId.isValid(id) && id.length === 24) {
+        console.log("Detected: COD Order ID");
 
+        const order = await orderModel.findById(id);
+        if (!order) {
+            req.flash("error", "Order not found");
+            return res.redirect("/shop");
+        }
 
-    return res.render('user/orderConfirmation', { order })
+        return res.render("user/orderConfirmation", { order });
+    }
 
-})
+    // 2️⃣ STRIPE ORDER FLOW — if id is a Stripe Checkout Session
+    if (id.startsWith("cs_")) {
+        console.log("Detected: Stripe Checkout Session");
+
+        // Retrieve full Stripe session
+        const session = await stripe.checkout.sessions.retrieve(id);
+
+        if (!session || !session.metadata || !session.metadata.orderId) {
+            req.flash("error", "Invalid Stripe session");
+            return res.redirect("/shop");
+        }
+
+        const orderId = session.metadata.orderId;
+        console.log("Stripe mapped order ID =", orderId);
+
+        const order = await orderModel.findById(orderId);
+        if (!order) {
+            req.flash("error", "Order not found");
+            return res.redirect("/shop");
+        }
+
+        return res.render("user/orderConfirmation", { order });
+    }
+
+    // 3️⃣ Unknown ID type
+    req.flash("error", "Invalid URL");
+    res.redirect("/shop");
+});
 
 
 

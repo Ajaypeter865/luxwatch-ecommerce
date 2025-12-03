@@ -46,7 +46,7 @@ const orderSchema = new mongoose.Schema({
         pincode: String,
         alternatePhone: Number,
         email: String,
-        label : String,
+        label: String,
     },
 
     deliveryInstruction: {
@@ -91,9 +91,16 @@ const orderSchema = new mongoose.Schema({
         default: false
     },
 
-    cancelReason : {
-        type : String,
-        default : ''
+    cancelReason: {
+        type: String,
+        default: ''
+    },
+
+    stripeSessionId: {
+        type: String
+    },
+    stripePaymentIntentId: {
+        type: String
     }
 
 },
