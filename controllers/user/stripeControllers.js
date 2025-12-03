@@ -49,6 +49,8 @@ const getStripePayment = async (req, res) => {
 
 
 const stripeWebhook = async (req, res) => {
+    console.log('stripeWebhook -1');
+
     const sig = req.headers['stripe-signature'];
 
     let event;
@@ -56,8 +58,11 @@ const stripeWebhook = async (req, res) => {
         event = stripe.webhooks.constructEvent(
             req.body,
             sig,
-            process.env.STRIPE_WEBHOOK_SECRET
+            process.env.WEBHOOK_SECRET_KEY
         );
+
+        console.log('stripeWebhook - event =', event);
+
     } catch (err) {
         console.log("Webhook signature failed:", err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -65,6 +70,7 @@ const stripeWebhook = async (req, res) => {
 
     try {
         switch (event.type) {
+
             case 'checkout.session.completed': {
                 const session = event.data.object;
                 const orderId = session.metadata.orderId;
@@ -87,7 +93,10 @@ const stripeWebhook = async (req, res) => {
 
                     // CLEAR CART
                     await cartModel.findOneAndDelete({ user: order.user });
+
                 }
+                console.log('stripeWebhook -2');
+
                 break;
             }
 

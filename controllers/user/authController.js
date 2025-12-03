@@ -1138,6 +1138,7 @@ const proccedToPayement = asyncHandler(async (req, res) => {
    })
 
    if (paymentMethod === 'COD') {
+      await cartModel.findOneAndDelete({user : userId})
       return res.redirect(`/order/success/${order.id}`)
    } else {
       return res.redirect(`/order/payment/${order.id}`)

@@ -24,6 +24,9 @@ const stripeRoutes = require('./routes/user/stripeRoutes')
 
 // MIDDLEWARES
 const app = express();
+const stripeWebhookRoute = require('./routes/user/stripeWebhookRoute');
+app.use('/', stripeWebhookRoute)
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());
