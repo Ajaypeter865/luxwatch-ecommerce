@@ -548,76 +548,116 @@ const addToCartAjax = async (req, res) => {
 };
 
 // GEMINI
+// const updateCart = asyncHandler(async (req, res) => {
+//    // Assuming you have middleware to get userId (e.g., req.user.id or req.auth.id)
+//    const userId = req.user?.id || req.auth?.id;
+//    // req.body.quantities is an object: { productId_1: quantity_1, productId_2: quantity_2, ... }
+//    const { quantities } = req.body;
+
+//    if (!userId || !quantities) {
+//       req.flash("error", "Invalid request data.");
+//       return res.redirect("/cart");
+//    }
+
+//    try {
+//       // 1. Fetch the user's cart
+//       const cart = await cartModel.findOne({ user: userId });
+
+//       if (!cart) {
+//          req.flash("error", "Cart not found.");
+//          return res.redirect("/cart");
+//       }
+
+//       // 2. Iterate through the submitted quantities and update the cart object in memory
+//       for (const [productId, qtyString] of Object.entries(quantities)) {
+//          const newQuantity = parseInt(qtyString);
+
+//          // Find the index of the product in the cart's array
+//          const productIndex = cart.products.findIndex(
+//             // Use .toString() to safely compare the ObjectId with the string ID from the form
+//             item => item.product.toString() === productId
+//          );
+
+//          if (productIndex > -1) {
+//             const item = cart.products[productIndex];
+
+//             // Ensure quantity is positive
+//             if (newQuantity > 0) {
+//                item.quantity = newQuantity;
+//                // Recalculate the line item's totalPrice immediately
+//                item.totalPrice = item.quantity * item.price;
+//             } else {
+//                // OPTIONAL: If the quantity is zero or less, you may want to remove the item
+//                // For now, we will just set it to 1 to prevent issues, or you can use filter later.
+//                item.quantity = 1;
+//             }
+//          }
+//       }
+
+//       // 3. Recalculate the entire cart's totals
+
+//       // Calculate new subTotal (sum of all line item totalPrices)
+//       cart.subTotal = cart.products.reduce((sum, item) => {
+//          return sum + item.totalPrice;
+//       }, 0);
+
+//       // Calculate grandTotal
+//       // Assuming shipping is a fixed value you manage elsewhere (e.g., cart.shipping = 10)
+//       cart.shipping = 10;
+//       cart.grandTotal = cart.subTotal + cart.shipping;
+
+//       // 4. Save the fully updated cart object back to the database
+//       await cart.save();
+
+//       req.flash("success", "Cart updated successfully!");
+//       return res.redirect("/cart");
+
+//    } catch (error) {
+//       console.error("Error updating cart:", error.message);
+//       req.flash("error", "Failed to update cart. Please try again.");
+//       return res.redirect("/cart");
+//    }
+// });
+
 const updateCart = asyncHandler(async (req, res) => {
-   // Assuming you have middleware to get userId (e.g., req.user.id or req.auth.id)
-   const userId = req.user?.id || req.auth?.id;
-   // req.body.quantities is an object: { productId_1: quantity_1, productId_2: quantity_2, ... }
-   const { quantities } = req.body;
+  const userId = req.user?.id || req.auth?.id;
+  const { quantities } = req.body;
 
-   if (!userId || !quantities) {
-      req.flash("error", "Invalid request data.");
-      return res.redirect("/cart");
-   }
+  if (!userId || !quantities) {
+    return res.json({ success: false, message: "Invalid request" });
+  }
 
-   try {
-      // 1. Fetch the user's cart
-      const cart = await cartModel.findOne({ user: userId });
+  try {
+    const cart = await cartModel.findOne({ user: userId });
+    if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-      if (!cart) {
-         req.flash("error", "Cart not found.");
-         return res.redirect("/cart");
+    // Update quantities
+    for (const [productId, qtyString] of Object.entries(quantities)) {
+      const newQty = parseInt(qtyString);
+
+      const index = cart.products.findIndex(
+        item => item.product.toString() === productId
+      );
+
+      if (index > -1) {
+        cart.products[index].quantity = newQty;
+        cart.products[index].totalPrice =
+          cart.products[index].price * newQty;
       }
+    }
 
-      // 2. Iterate through the submitted quantities and update the cart object in memory
-      for (const [productId, qtyString] of Object.entries(quantities)) {
-         const newQuantity = parseInt(qtyString);
+    // Recalculate totals
+    await utils.recalcCartTotals(cart);
+    await cart.save();
 
-         // Find the index of the product in the cart's array
-         const productIndex = cart.products.findIndex(
-            // Use .toString() to safely compare the ObjectId with the string ID from the form
-            item => item.product.toString() === productId
-         );
+    return res.json({ success: true });
 
-         if (productIndex > -1) {
-            const item = cart.products[productIndex];
-
-            // Ensure quantity is positive
-            if (newQuantity > 0) {
-               item.quantity = newQuantity;
-               // Recalculate the line item's totalPrice immediately
-               item.totalPrice = item.quantity * item.price;
-            } else {
-               // OPTIONAL: If the quantity is zero or less, you may want to remove the item
-               // For now, we will just set it to 1 to prevent issues, or you can use filter later.
-               item.quantity = 1;
-            }
-         }
-      }
-
-      // 3. Recalculate the entire cart's totals
-
-      // Calculate new subTotal (sum of all line item totalPrices)
-      cart.subTotal = cart.products.reduce((sum, item) => {
-         return sum + item.totalPrice;
-      }, 0);
-
-      // Calculate grandTotal
-      // Assuming shipping is a fixed value you manage elsewhere (e.g., cart.shipping = 10)
-      cart.shipping = 10;
-      cart.grandTotal = cart.subTotal + cart.shipping;
-
-      // 4. Save the fully updated cart object back to the database
-      await cart.save();
-
-      req.flash("success", "Cart updated successfully!");
-      return res.redirect("/cart");
-
-   } catch (error) {
-      console.error("Error updating cart:", error.message);
-      req.flash("error", "Failed to update cart. Please try again.");
-      return res.redirect("/cart");
-   }
+  } catch (err) {
+    console.log("Update Cart Error:", err.message);
+    return res.json({ success: false, message: "Server error" });
+  }
 });
+
 
 // const updateCart = async (req, res) => {
 
@@ -641,51 +681,75 @@ const updateCart = asyncHandler(async (req, res) => {
 // }
 
 
+// const deleteCartProducts = async (req, res) => {
+
+//    try {
+//       const userId = req.auth?.id || req.user?.id
+
+//       const productId = req.params.id
+
+//       const cart = await cartModel.findOne({ user: userId })
+//       // console.log('deleteCartProducts - cart 1 =', cart);
+
+
+//       const updatedProducts = cart.products.filter(item => {
+//          return item.product._id.toString() !== productId
+//       })
+
+//       console.log('deleteCartProducts - updatedProducts =', updatedProducts);
+
+//       await cartModel.updateOne({ user: userId },
+//          {
+//             $set: {
+//                products: updatedProducts
+//             }
+//          }
+//       )
+
+//       const updatedCart = await cartModel.findOne({ user: userId })
+
+//       updatedCart.subTotal = updatedCart.products.reduce((sum, item) => {
+//          return sum + item.totalPrice
+//       }, 0)
+//       updatedCart.shipping = 10,
+
+//          updatedCart.grandTotal = updatedCart.subTotal + updatedCart.shipping
+
+//       await updatedCart.save()
+
+//       req.flash('error', 'Item deleted') // THIS MESSAGE IS NOT RENDERING DONT KNOW WHY
+//       return res.redirect('/cart')
+
+//    } catch (error) {
+//       console.log('Error from deleteCartProducts', error.message, error.stack);
+//       return res.redirect('/cart')
+
+//    }
+// }
+
+
 const deleteCartProducts = async (req, res) => {
+  try {
+    const userId = req.auth?.id || req.user?.id;
+    const productId = req.params.id;
 
-   try {
-      const userId = req.auth?.id || req.user?.id
+    const cart = await cartModel.findOne({ user: userId });
+    if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-      const productId = req.params.id
+    cart.products = cart.products.filter(
+      item => item.product.toString() !== productId
+    );
 
-      const cart = await cartModel.findOne({ user: userId })
-      // console.log('deleteCartProducts - cart 1 =', cart);
+    await utils.recalcCartTotals(cart);
+    await cart.save();
 
+    return res.json({ success: true });
 
-      const updatedProducts = cart.products.filter(item => {
-         return item.product._id.toString() !== productId
-      })
-
-      console.log('deleteCartProducts - updatedProducts =', updatedProducts);
-
-      await cartModel.updateOne({ user: userId },
-         {
-            $set: {
-               products: updatedProducts
-            }
-         }
-      )
-
-      const updatedCart = await cartModel.findOne({ user: userId })
-
-      updatedCart.subTotal = updatedCart.products.reduce((sum, item) => {
-         return sum + item.totalPrice
-      }, 0)
-      updatedCart.shipping = 10,
-
-         updatedCart.grandTotal = updatedCart.subTotal + updatedCart.shipping
-
-      await updatedCart.save()
-
-      req.flash('error', 'Item deleted') // THIS MESSAGE IS NOT RENDERING DONT KNOW WHY
-      return res.redirect('/cart')
-
-   } catch (error) {
-      console.log('Error from deleteCartProducts', error.message, error.stack);
-      return res.redirect('/cart')
-
-   }
-}
+  } catch (error) {
+    console.log("Delete Cart Error:", error.message);
+    return res.json({ success: false, message: "Server error" });
+  }
+};
 
 
 //------------------------------------------------------- WISHLIST FUNCTIONS

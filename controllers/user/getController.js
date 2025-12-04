@@ -281,11 +281,10 @@ const getCartPage = asyncHandler(async (req, res) => {
     const userId = req.auth?.id || req.user?.id;
 
     let cart = await cartModel.findOne({ user: userId })
-        .populate('products.product', 'name image price') // product fields
+        .populate('products.product', 'name image price')
         .populate('appliedCoupon.coupon', 'code discountType discountValue');
 
     if (!cart) {
-        // Create empty cart if not exist (optional)
         cart = new cartModel({
             user: userId,
             products: [],
@@ -297,7 +296,7 @@ const getCartPage = asyncHandler(async (req, res) => {
         await cart.save();
     }
 
-    // filter out deleted product refs
+    // Filter out deleted product refs
     const validProducts = cart.products.filter(p => p.product !== null);
 
     const cartItems = validProducts.map(item => ({
@@ -309,8 +308,21 @@ const getCartPage = asyncHandler(async (req, res) => {
         total: Number(item.totalPrice || (item.price * item.quantity) || 0)
     }));
 
-    // Recalculate totals from DB fields to ensure correctness
-    await utils.recalcCartTotals(cart);
+    // ✅ FIXED LOGIC HERE
+    if (validProducts.length === 0) {
+        // If the cart is empty, force all values to 0
+        cart.products = [];
+        cart.subTotal = 0;
+        cart.shipping = 0;
+        cart.grandTotal = 0;
+        cart.appliedCoupon = null; // Optional: Remove coupon if cart is empty
+    } else {
+        // Only run calculation if items exist
+        cart.products = validProducts; // Update cart with valid products only
+        await utils.recalcCartTotals(cart);
+    }
+
+    // Save the changes (whether it was zeroed out or recalculated)
     await cart.save();
 
     const totals = {
@@ -319,7 +331,6 @@ const getCartPage = asyncHandler(async (req, res) => {
         grandTotal: cart.grandTotal || 0
     };
 
-    // applied coupon object (null or object with fields code, discountValue, discountAmount)
     const appliedCoupon = cart.appliedCoupon ? {
         code: cart.appliedCoupon.code,
         discountType: cart.appliedCoupon.discountType,
@@ -330,58 +341,6 @@ const getCartPage = asyncHandler(async (req, res) => {
     return res.render('user/cart', { cartItems, totals, appliedCoupon });
 });
 
-//GET CART PAGE GPT
-// const getCartPage = asyncHandler(async (req, res) => {
-//     const userId = req.auth?.id || req.user?.id;
-
-//     let cart = await cartModel
-//         .findOne({ user: userId })
-//         .populate('products.product', 'name image price');
-
-//     if (!cart || !cart.products || cart.products.length === 0) {
-//         return res.render('user/cart', {
-//             cartItems: [],
-//             totals: { subTotal: 0, shipping: 0, grandTotal: 0 },
-//         });
-//     }
-
-//     // ✅ Filter out items with null product (deleted)
-//     const validProducts = cart.products.filter(
-//         (item) => item.product !== null
-//     );
-
-//     const cartItems = validProducts.map((item) => ({
-//         _id: item.product._id,
-//         name: item.product.name,
-//         image: item.product.image,
-//         price: Number(item.product.price),
-//         quantity: item.quantity,
-//         total: Number(item.product.price) * item.quantity,
-//     }));
-
-//     // ✅ Safely calculate totals
-//     const subTotal = cartItems.reduce((sum, item) => sum + item.total, 0);
-//     const shipping = cart.shipping || 10;
-//     const grandTotal = subTotal + shipping;
-
-//     // Optionally clean invalid items from DB to prevent future errors
-//     if (validProducts.length !== cart.products.length) {
-//         cart.products = validProducts;
-//         cart.subTotal = subTotal;
-//         cart.shipping = shipping;
-//         cart.grandTotal = grandTotal;
-//         await cart.save();
-//     }
-
-//     const totals = { subTotal, shipping, grandTotal };
-
-//     return res.render('user/cart', { cartItems, totals });
-// });
-
-// -----------------------------------------------------WISHLIST FUNCTIONS
-
-
-// -----------------------------------------------------WISHLIST FUNCTIONS
 
 const getWishList = async (req, res) => {
     try {
@@ -457,16 +416,6 @@ const getproductPage = async (req, res) => {
         const freshProduct = await productModel.findById(productId).lean();
 
 
-        // ABINAV CODE --------------------
-
-        // let freshProduct = product;
-        // try {
-        //     const productDoc = await Product.findById(id);
-        //     await ensureEmbeddingForProduct(productDoc);
-        //     freshProduct = await Product.findById(id).lean();
-        // } catch (embeddingErr) {
-        //     console.warn('Embedding skipped, fallback suggestions:', embeddingErr.message);
-        // }
 
         // If still no embedding → fallback
         if (!freshProduct.embedding || freshProduct.embedding.length === 0) {
@@ -709,6 +658,7 @@ const getAboutPage = asyncHandler(async (req, res) => {
     }
 
 })
+
 
 module.exports = {
     getLoginUser,

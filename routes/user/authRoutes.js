@@ -39,7 +39,7 @@ router.post('/orders/cancel', cancelOrder)
 //----------------------------------------------------- ADD TO CART FUCNTION
 
 // router.post('/shop/addtocart/:id', proctedAuth, addToCart)
-router.post('/cart/delete/:id', proctedAuth, deleteCartProducts)
+router.delete('/cart/delete/:id', proctedAuth, deleteCartProducts)
 router.post('/cart/update', proctedAuth, updateCart)
 
 //----------------------------------------------------- WISHLIST FUCNTION
