@@ -41,67 +41,93 @@ const gethomePageAdmin = asyncHandler(async (req, res) => {
   });
 });
 
-// const gethomePageAdmin = asyncHandler(async (req, res) => {
-//   const chartData = 'Hi'
 
-//   const totalSales = await orderModel.aggregate([
-//     {
-//       $group : {
-//         _id : null, grandTotal : { $ : '$grandTotal'}
-//       }
-//     }
-//   ])
-//   console.log('gethomePageAdmin - totalSales =', totalSales);
-//   const totalOrders = await orderModel.
-
-//   res.send('Hi')
-// })
 // Helper function to generate chart data based on filter
 const generateChartData = async (filterType) => {
   let dateFilter;
 
+  // --------------------------
+  // 1️⃣ SET DATE RANGE
+  // --------------------------
   if (filterType === "weekly") {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     dateFilter = { createdAt: { $gte: sevenDaysAgo } };
+
+  } else if (filterType === "monthly") {
+    const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
+    dateFilter = { createdAt: { $gte: oneMonthAgo } };
+
   } else if (filterType === "yearly") {
     const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
     dateFilter = { createdAt: { $gte: oneYearAgo } };
+
+  } else if (filterType === "fiveYears") {
+    const fiveYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 5));
+    dateFilter = { createdAt: { $gte: fiveYearsAgo } };
+
   } else {
-    // Default: monthly
     const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
     dateFilter = { createdAt: { $gte: oneMonthAgo } };
   }
 
-  // LINE CHART: Revenue by Day
+  // --------------------------
+  // 2️⃣ DYNAMIC GROUPING LOGIC
+  // --------------------------
+  let groupStage;
+
+  if (filterType === "fiveYears") {
+    groupStage = {
+      _id: { year: { $year: "$createdAt" } },
+      total: { $sum: "$grandTotal" }
+    };
+
+  } else if (filterType === "yearly") {
+    groupStage = {
+      _id: { month: { $month: "$createdAt" } },
+      total: { $sum: "$grandTotal" }
+    };
+
+  } else {
+    groupStage = {
+      _id: { day: { $dayOfMonth: "$createdAt" } },
+      total: { $sum: "$grandTotal" }
+    };
+  }
+
+  // --------------------------
+  // 3️⃣ LINE CHART – REVENUE AGGREGATION
+  // --------------------------
   const revenueAgg = await orderModel.aggregate([
     { $match: dateFilter },
-    {
-      $group: {
-        _id: { $dayOfMonth: "$createdAt" },
-        total: { $sum: "$grandTotal" }
-      }
-    },
+    { $group: groupStage },
     { $sort: { "_id": 1 } }
   ]);
 
-  // console.log('generateChartData - revenueAgg =', revenueAgg);
+  let lineLabels = [];
+  let lineRevenue = [];
 
-  const lineLabels = revenueAgg.map(r => "Day " + r._id);
-  const lineRevenue = revenueAgg.map(r => r.total);
+  if (filterType === "fiveYears") {
+    lineLabels = revenueAgg.map(r => r._id.year.toString());
+    lineRevenue = revenueAgg.map(r => r.total);
 
-  // console.log('generateChartData - lineLabels =', lineLabels);
-  // console.log('generateChartData - lineRevenue =', lineRevenue);
+  } else if (filterType === "yearly") {
+    lineLabels = revenueAgg.map(r => "Month " + r._id.month);
+    lineRevenue = revenueAgg.map(r => r.total);
 
+  } else {
+    lineLabels = revenueAgg.map(r => "Day " + (r._id.day || r._id));
+    lineRevenue = revenueAgg.map(r => r.total);
+  }
 
-
-  // BAR CHART: Orders by Category
-  // We need to unwind orderItems, lookup product info, then group by category
+  // --------------------------
+  // 4️⃣ BAR CHART – ORDERS BY CATEGORY
+  // --------------------------
   const orderCategory = await orderModel.aggregate([
     { $match: dateFilter },
     { $unwind: "$orderItems" },
     {
       $lookup: {
-        from: "products",  // Collection name from productModel
+        from: "products",
         localField: "orderItems.productId",
         foreignField: "_id",
         as: "productInfo"
@@ -116,22 +142,21 @@ const generateChartData = async (filterType) => {
     }
   ]);
 
-  // console.log('generateChartData - orderCategory =', orderCategory);
-
-
   const ordersByCategory = {
     Manual: orderCategory.find(c => c._id === "Manual")?.totalOrders || 0,
     "Limited-Edition": orderCategory.find(c => c._id === "Limited-Edition")?.totalOrders || 0,
     Automatic: orderCategory.find(c => c._id === "Automatic")?.totalOrders || 0
   };
 
-  // PIE CHART: Revenue by Category
+  // --------------------------
+  // 5️⃣ PIE CHART – REVENUE BY CATEGORY
+  // --------------------------
   const revCategory = await orderModel.aggregate([
     { $match: dateFilter },
     { $unwind: "$orderItems" },
     {
       $lookup: {
-        from: "products",  // Collection name from productModel
+        from: "products",
         localField: "orderItems.productId",
         foreignField: "_id",
         as: "productInfo"
@@ -243,12 +268,20 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
   }
 });
 
+// Assuming you have access to Mongoose and your productModel
+// Adjust path as necessary
+
 const getProductsAdmin = asyncHandler(async (req, res) => {
 
-  const products = await productModel.find().sort({ createdAt: -1 })
-  return res.render('admin/products', { products })
+    const products = await productModel.find().sort({ createdAt: -1 });
 
-})
+    // 1. Define the hardcoded list of categories from your product schema
+    const categories = ['Automatic', 'Manual', 'Limited-Edition'];
+
+    // 2. Pass both 'products' AND 'categories' to the EJS view
+    return res.render('admin/products', { products, categories });
+
+});
 
 
 const getCustomers = asyncHandler(async (req, res) => {
@@ -276,62 +309,6 @@ const getCustomers = asyncHandler(async (req, res) => {
   }))
   return res.render('admin/customers', { customers })
 })
-
-// const getCoupons = async (req, res) => {
-//   // Dummy coupons array exactly in the format coupon.ejs expects
-//   const coupons = [
-//     {
-//       _id: "C001",
-//       code: "WELCOME10",
-//       discountValue: 10,
-//       expiryDate: new Date("2025-12-31"),
-//       minPurchase: 500,
-//       active: true
-//     },
-//     {
-//       _id: "C002",
-//       code: "FESTIVE20",
-//       discountValue: 20,
-//       expiryDate: new Date("2025-11-30"),
-//       minPurchase: 1000,
-//       active: false
-//     },
-//     {
-//       _id: "C003",
-//       code: "SUPER5",
-//       discountValue: 5,
-//       expiryDate: new Date("2026-01-15"),
-//       minPurchase: 0,
-//       active: true
-//     },
-//     {
-//       _id: "C004",
-//       code: "NEWYEAR30",
-//       discountValue: 30,
-//       expiryDate: new Date("2025-12-31"),
-//       minPurchase: 2000,
-//       active: false
-//     }
-//   ];
-
-//   // Dummy pagination (matches your ejs usage)
-//   // const pagination = `
-//   //     <nav>
-//   //       <ul class="pagination mb-0">
-//   //         <li class="page-item disabled"><span class="page-link">Prev</span></li>
-//   //         <li class="page-item active"><span class="page-link">1</span></li>
-//   //         <li class="page-item"><a class="page-link" href="#">2</a></li>
-//   //         <li class="page-item"><a class="page-link" href="#">Next</a></li>
-//   //       </ul>
-//   //     </nav>
-//   // `;
-
-//   res.render("admin/coupon", {
-//     coupons,
-//     // pagination,
-
-//   });
-// };
 
 
 const getCoupons = asyncHandler(async (req, res) => {

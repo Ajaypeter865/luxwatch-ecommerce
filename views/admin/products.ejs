@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,246 +14,349 @@
     <link rel="stylesheet" href="/css/admin-sidebar.css">
     <link rel="stylesheet" href="/css/admin-dashboard.css">
     <link rel="stylesheet" href="/css/admin-products.css">
+    <style>
+        /* CSS to match the image display in the table and modal */
+        .product-image-container {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .current-image-wrapper {
+            display: inline-block;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .current-image-wrapper img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+
+        /* Styling to match the 'LunaLoom' theme visuals */
+        .btn-save {
+            background-color: #8A639A; /* Custom color for save button */
+            color: white;
+            border: none;
+        }
+        .btn-danger {
+            background-color: #dc3545; /* Standard red */
+        }
+        .btn-warning {
+            background-color: #ffc107; /* Standard yellow */
+        }
+        .modal-content {
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body>
     <%- include('../partials/admin/_sidebar', { activePage: 'products' }) %>
 
-        <main class="admin-main">
-            <div class="container-fluid py-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold text-dark">Products Management</h2>
+    <main class="admin-main">
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-dark">Products Management</h2>
 
-                    <div>
-                        <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                            <i class="fas fa-plus me-2"></i>Add New Product
-                        </button>
-                    </div>
+                <div>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </button>
                 </div>
+            </div>
 
-                <div class="d-flex justify-content-end mb-3">
-                    <select class="form-select w-auto" id="categoryFilter">
-                        <option value="All">All Categories</option>
-                        <option value="Automatic">Automatic</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Limited-Edition">Limited Edition</option>
-                    </select>
-                </div>
+            <div class="d-flex justify-content-start mb-3">
+                <select class="form-select w-auto" id="categoryFilter">
+                    <option value="All">All Categories</option>
+                    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                    <% categories.forEach(category => { %>
+                    <option value="<%= category %>"><%= category %></option>
+                    <% }) %>
+                    <% } %>
+                </select>
+            </div>
 
-                <div class="card shadow-sm">
-                    <div class="card-body p-0">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-header">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Brand</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-header">
+                            <tr>
+                                <th>ID</th>
+                                <th>Images</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Brand</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                            <tbody>
-                                <% if (products.length> 0) { %>
-                                    <% products.forEach((product, i)=> { %>
-                                        <tr>
-                                            <td>
-                                                <%= i + 1 %>
-                                            </td>
-                                            <td>
-                                                <img src="<%= product.image %>" alt="product" class="product-thumb">
-                                            </td>
-                                            <td>
-                                                <%= product.name %>
-                                            </td>
-                                            <td>
-                                                <%= product.category %>
-                                            </td>
-                                            <td>
-                                                <%= product.brand %>
-                                            </td>
-                                            <td>₹<%= product.price.toLocaleString() %>
-                                            </td>
-                                            <td>
-                                                <%= product.stock %>
-                                            </td>
-                                            <td>
-                                                <span
-                                                    class="badge <%= product.status === 'Active' ? 'bg-success' : 'bg-secondary' %>">
-                                                    <%= product.status %>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-edit" data-bs-toggle="modal"
-                                                    data-bs-target="#editProductModal" data-id="<%= product._id %>">
-                                                    <i class="fas fa-pen"></i>
-                                                    </butt on>
-
-                                                    <form action="/admin/products/delete/<%= product._id %>"
-                                                        method="POST" class="d-inline">
-                                                        <button class="btn btn-sm btn-delete" type="submit">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                            </td>
-                                        </tr>
+                        <tbody>
+                            <% if (products.length> 0) { %>
+                            <% products.forEach((product, i)=> { %>
+                            <tr>
+                                <td>
+                                    <%= i + 1 %>
+                                </td>
+                                <td>
+                                    <div class="product-image-container">
+                                        <% if (Array.isArray(product.image) && product.image.length > 0) { %>
+                                        <% product.image.forEach(image => { %>
+                                            <img src="<%= image %>" alt="product" class="product-thumb"> 
                                         <% }) %>
-                                            <% } else { %>
-                                                <tr>
-                                                    <td colspan="9" class="text-center text-muted py-4">No products
-                                                        found</td>
-                                                </tr>
-                                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Add Product Modal -->
-        <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold">Add New Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="/admin/products/add" method="POST" enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" name="name" class="form-control" id="name" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Category</label>
-                                    <select name="category" class="form-select" required>
-                                        <option value="Automatic">Automatic</option>
-                                        <option value="Manual">Manual</option>
-                                        <option value="Limited-Edition">Limited-Edition</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Brand</label>
-                                    <input type="text" name="brand" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Price (₹)</label>
-                                    <input type="number" name="price" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Stock</label>
-                                    <input type="number" name="stock" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Status</label>
-                                    <select name="status" class="form-select" required>
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label class="form-label">Images</label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="file" name="images" class="form-control" multiple>
-                                        <button type="button" class="btn btn-add-image"><i
-                                                class="fas fa-plus"></i></button>
+                                        <% } else { %>
+                                            <img src="/path/to/default/image.jpg" alt="No image" class="product-thumb">
+                                        <% } %>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-save w-100" type="submit">Save Product</button>
-                        </div>
-                    </form>
+                                </td>
+                                <td>
+                                    <%= product.name %>
+                                </td>
+                                <td>
+                                    <%= product.category %>
+                                </td>
+                                <td>
+                                    <%= product.brand %>
+                                </td>
+                                <td>₹<%= product.price.toLocaleString() %>
+                                </td>
+                                <td>
+                                    <%= product.stock %>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge <%= product.stock > 0 ? 'bg-success' : 'bg-danger' %>">
+                                        <%= product.stock > 0 ? 'Available' : 'Out of Stock' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning text-dark me-1" data-bs-toggle="modal"
+                                        data-bs-target="#editProductModal" data-id="<%= product._id %>"
+                                        data-product='<%= JSON.stringify(product) %>'>
+                                        Edit
+                                    </button>
+
+                                    <form action="/admin/products/delete/<%= product._id %>" method="POST"
+                                        class="d-inline">
+                                        <button class="btn btn-sm btn-danger" type="submit">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                            <% } else { %>
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">No products
+                                    found</td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Edit Product Modal -->
-        <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold">Edit Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="/admin/products/edit/:id" method="POST" enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <input type="hidden" name="id" id="editProductId">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" name="name" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Category</label>
-                                    <select name="category" class="form-select" required>
-                                        <option value="Automatic">Automatic</option>
-                                        <option value="Manual">Manual</option>
-                                        <option value="Limited-Edition">Limited-Edition</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Brand</label>
-                                    <input type="text" name="brand" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Price (₹)</label>
-                                    <input type="number" name="price" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Stock</label>
-                                    <input type="number" name="stock" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Status</label>
-                                    <select name="status" class="form-select" required>
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label class="form-label">Images</label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="file" name="images" class="form-control" multiple>
-                                        <button type="button" class="btn btn-add-image"><i
-                                                class="fas fa-plus"></i></button>
-                                    </div>
-                                </div>
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/products/add" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Category</label>
+                                <select name="category" class="form-select" required>
+                                    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                    <% categories.forEach(category => { %>
+                                    <option value="<%= category %>"><%= category %></option>
+                                    <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Brand</label>
+                                <input type="text" name="brand" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price (₹)</label>
+                                <input type="number" name="price" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock</label>
+                                <input type="number" name="stock" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Images</label>
+                                <input type="file" name="images" class="form-control" multiple required>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-save w-100" type="submit">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-save w-100" type="submit">Save Product</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editProductForm" action="/admin/products/edit/:id" method="POST"
+                    enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editProductId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" name="name" class="form-control" id="editProductName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Category</label>
+                                <select name="category" class="form-select" id="editProductCategory" required>
+                                    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                    <% categories.forEach(category => { %>
+                                    <option value="<%= category %>"><%= category %></option>
+                                    <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Brand</label>
+                                <input type="text" name="brand" class="form-control" id="editProductBrand" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price (₹)</label>
+                                <input type="number" name="price" class="form-control" id="editProductPrice" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock</label>
+                                <input type="number" name="stock" class="form-control" id="editProductStock" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select" id="editProductStatus" required>
+                                    <option value="Active">Available</option>
+                                    <option value="Inactive">Out of Stock</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Current Images</label>
+                                <div id="currentImagesContainer" class="d-flex flex-wrap gap-3">
+                                    </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Upload New Images (optional)</label>
+                                <input type="file" name="images" class="form-control" multiple>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-save w-100" type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 <script>
     const editModal = document.getElementById('editProductModal');
+    const editProductForm = document.getElementById('editProductForm');
+    const currentImagesContainer = document.getElementById('currentImagesContainer');
 
     editModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const productId = button.getAttribute('data-id');
+        // Retrieve and parse the product data
+        const productData = JSON.parse(button.getAttribute('data-product'));
 
-        // set dynamic action url with productId
-        const form = editModal.querySelector('form');
-        form.action = `/admin/products/edit/${productId}`;
+        // 1. Set dynamic form action URL
+        editProductForm.action = `/admin/products/edit/${productId}`;
+        document.getElementById('editProductId').value = productId;
 
-        // if you want to also set the hidden input
-        editModal.querySelector('#editProductId').value = productId;
+        // 2. Populate basic form fields
+        document.getElementById('editProductName').value = productData.name || '';
+        document.getElementById('editProductCategory').value = productData.category || '';
+        document.getElementById('editProductBrand').value = productData.brand || '';
+        document.getElementById('editProductPrice').value = productData.price || '';
+        document.getElementById('editProductStock').value = productData.stock || '';
+        
+        // Set status based on stock
+        const statusValue = productData.stock > 0 ? 'Active' : 'Inactive';
+        document.getElementById('editProductStatus').value = statusValue;
+
+
+        // 3. Populate current images section with delete option
+        currentImagesContainer.innerHTML = ''; // Clear previous images
+
+        if (Array.isArray(productData.image) && productData.image.length > 0) {
+            productData.images.forEach((image, index) => {
+                // IMPORTANT: Assuming 'image' is the URL string here. 
+                // If you need to track a unique ID for deletion, you might need to adjust your data-product JSON.
+                
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'current-image-wrapper';
+                imageWrapper.innerHTML = `
+                    <img src="${image}" alt="product image ${index + 1}">
+                    <div class="form-check d-flex justify-content-center">
+                        <input class="form-check-input" type="checkbox" name="deleteImages" value="${image}" id="deleteImage${index}">
+                        <label class="form-check-label ms-1" for="deleteImage${index}" style="font-size: 0.8rem;">
+                            Delete
+                        </label>
+                    </div>
+                `;
+                currentImagesContainer.appendChild(imageWrapper);
+            });
+        }
+    });
+
+    // Clear content when modal is hidden (good practice)
+    editModal.addEventListener('hidden.bs.modal', function () {
+        currentImagesContainer.innerHTML = '';
+        editProductForm.reset(); 
     });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </html>
+```

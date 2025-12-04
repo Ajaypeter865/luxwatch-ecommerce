@@ -20,8 +20,9 @@ router.get('/admin/chart-data', proctedAuthAdmin, getChartData)
 
 router.get('/admin/orders', proctedAuthAdmin, getOrdersAdmin)
 router.get('/admin/products', proctedAuthAdmin, getProductsAdmin)
-router.get('/admin/customers', getCustomers)
-router.get('/admin/support', getSupport)
+router.get('/admin/customers', proctedAuthAdmin,getCustomers)
+router.get('/admin/support',proctedAuthAdmin, getSupport)
+router.get('/admin/coupons', getCoupons)
 
 
 

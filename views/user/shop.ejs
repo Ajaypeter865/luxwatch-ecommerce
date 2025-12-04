@@ -11,7 +11,6 @@
   <link rel="manifest" href="site.webmanifest">
   <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
-  <!-- CSS -->
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/owl.carousel.min.css">
   <link rel="stylesheet" href="/css/flaticon.css">
@@ -69,7 +68,6 @@
 
 
       <main>
-        <!-- Hero Section -->
         <div class="slider-area">
           <div class="single-slider slider-height2 d-flex align-items-center">
             <div class="container">
@@ -84,31 +82,25 @@
           </div>
         </div>
 
-        <!-- Product Section -->
         <section class="popular-items latest-padding">
           <div class="container">
 
-            <!-- keep the same nav-tab style you had but make them actual links that set query params -->
             <div class="row product-btn justify-content-between mb-40">
               <div class="properties__button">
                 <nav>
                   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <!-- Newest Arrivals (looks like nav link but works as a link) -->
                     <a class="nav-item nav-link <%= sort === 'newest' || !sort ? 'active' : '' %>" id="nav-home-tab"
                       href="/shop?<% if (category) { %>category=<%= encodeURIComponent(category) %>&<% } %>sort=newest"
                       role="tab" aria-controls="nav-home" aria-selected="<%= sort === 'newest' || !sort %>">
                       Newest Arrivals
                     </a>
 
-                    <!-- Price High to Low -->
                     <a class="nav-item nav-link <%= sort === 'high-low' ? 'active' : '' %>" id="nav-profile-tab"
                       href="/shop?<% if (category) { %>category=<%= encodeURIComponent(category) %>&<% } %>sort=high-low"
                       role="tab" aria-controls="nav-profile" aria-selected="<%= sort === 'high-low' %>">
                       Price High To Low
                     </a>
 
-                    <!-- if you also want Price Low to High, keep link but not shown in original nav — you can add elsewhere -->
-                    <!-- Category Dropdown (same as before, linking by category slug) -->
                     <li class="nav-item dropdown">
                       <a class="nav-item nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
                         aria-haspopup="true" aria-expanded="false">Category</a>
@@ -139,10 +131,21 @@
                       <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                         <div class="single-popular-items mb-50 text-center">
                           <div class="popular-img">
-                            <img src="<%= product.image %>" alt="<%= product.name %>">
+                            
+                            <% 
+                                let imageUrl = '/img/default-product.jpg'; // Path to your default placeholder image
+
+                                if (Array.isArray(product.image) && product.image.length > 0) {
+                                    // If 'product.image' is an array (multiple uploads), use the first path
+                                    imageUrl = product.image[0];
+                                } else if (typeof product.image === 'string' && product.image.length > 0) {
+                                    // If 'product.image' is a single string (single upload), use it directly
+                                    imageUrl = product.image;
+                                } 
+                            %>
+                            <img src="<%= imageUrl %>" alt="<%= product.name %>">
                             <div class="img-cap">
                               <span>
-                                <!-- Add to Cart form remains a POST to /shop/addtocart/:id -->
                                 <form action="/shop/addtocart/<%= product._id %>" method="POST"
                                   class="add-to-cart-form">
                                   <button type="submit" class="add-to-cart-btn">
@@ -180,7 +183,6 @@
           </div>
         </section>
 
-        <!-- Shop Method -->
         <div class="shop-method-area">
           <div class="container">
             <div class="method-wrapper">
@@ -214,7 +216,6 @@
 
       <%- include('../partials/user/footer') %>
 
-        <!-- JS -->
         <script src="/js/vendor/modernizr-3.5.0.min.js"></script>
         <script src="/js/vendor/jquery-1.12.4.min.js"></script>
         <script src="/js/popper.min.js"></script>
@@ -237,37 +238,6 @@
         <script src="/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
-
-          <!------------------------------------- THIS IS THE 1ST SCRIPT THAT I HAD BEFORE AJAX ---------------------------->
-
-        <!-- <script>
-          // Add to cart AJAX + Toastify handler
-          $('.add-to-cart-btn').on('click', function (e) {
-            e.preventDefault();
-            const form = $(this).closest('form');
-            const action = form.attr('action');
-
-            // Send AJAX request
-            $.post(action, form.serialize(), function (res) {
-              Toastify({
-                text: "Added to cart!",
-                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-                duration: 2000,
-                close: true
-              }).showToast();
-            }).fail(function () {
-              Toastify({
-                text: "Something went wrong, please try again.",
-                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                duration: 2000,
-                close: true
-              }).showToast();
-            });
-          });
-        </script> -->
-
-
-
 
         <script>
           // ✅ Reusable Toastify function

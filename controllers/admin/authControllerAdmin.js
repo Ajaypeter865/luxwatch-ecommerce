@@ -66,29 +66,27 @@ const loginAdmin = asyncHandler(async (req, res) => {
 //------------------------------------------------------- PRODUCTS CONTROLLER
 
 const addProducts = asyncHandler(async (req, res) => {
-    const { name, category, brand, price, stock, status } = req.body
+    const { name, category, brand, price, stock, status, description } = req.body;
 
-    console.log('addProducts - req.body =', req.body);
-    console.log('addProducts - req.file', req.file);
-    const imagePath = req.file.filename ? `/img/uploads/${req.file.filename}` : null
-    // console.log('addProducts - imagePath =', imagePath);
+    let imagePaths = [];
 
+    if (req.files && req.files.length > 0) {
+        imagePaths = req.files.map(f => `/img/uploads/${f.filename}`);
+    }
 
     await productModel.create({
-        name: name,
+        name,
+        description,
         category,
         brand,
         price,
         stock,
-        image: imagePath,
         status,
+        image: imagePaths   // IMPORTANT → use image
+    });
 
-    })
-    console.log('addProducts - products created');
-    // const products = await productModel.find().sort({ createdAt: -1 })
-    return res.redirect('/admin/products')
-})
-
+    return res.redirect('/admin/products');
+});
 
 
 const editProducts = asyncHandler(async (req, res) => {

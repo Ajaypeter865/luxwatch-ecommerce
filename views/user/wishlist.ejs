@@ -52,7 +52,15 @@
                                     <div class="col-md-4 col-sm-6 mb-4">
                                         <div class="wishlist-card text-center">
                                             <div class="wishlist-img">
-                                                <img src="<%= item.image %>" alt="<%= item.name %>">
+                                                <% let wishlistItemImageUrl='/img/default-wishlist-item.jpg' ; if
+                                                    (Array.isArray(item.image) && item.image.length> 0) {
+                                                    wishlistItemImageUrl = item.image[0];
+                                                    } else if (typeof item.image === 'string' && item.image.length > 0)
+                                                    {
+                                                    wishlistItemImageUrl = item.image;
+                                                    }
+                                                    %>
+                                                    <img src="<%= wishlistItemImageUrl %>" alt="<%= item.name %>">
                                             </div>
                                             <div class="wishlist-info mt-3">
                                                 <h5>

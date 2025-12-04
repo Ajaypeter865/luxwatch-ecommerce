@@ -416,72 +416,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
 
 //------------------------------------------------------- CART FUNCTIONS
 
-// const addToCart = async (req, res) => {
 
-//    const userId = req.auth?.id || req.user?.id
-
-//    const productId = req.params.id
-//    try {
-//       const product = await productModel.findOne({ _id: productId })
-//       if (!product) {
-//          req.flash('error', 'No product found')
-//          return res.redirect('/shop')
-//       }
-
-
-//       let cart = await cartModel.findOne({ user: userId })
-//       if (!cart) {
-//          cart = new cartModel({
-//             product: [],
-//             user: userId,
-//             subTotal: 0,
-//             shipping: 0,
-//             grandTotal: 0
-//          })
-//       }
-
-//       const existingProductIndex = cart.products.findIndex(item => item.product.equals(productId))
-
-//       if (existingProductIndex > -1) {
-//          const productInCart = cart.products[existingProductIndex]
-//          productInCart.quantity += 1,
-
-//             productInCart.totalPrice = productInCart.quantity * productInCart.price
-//          req.flash('success', 'Product Incrimented')
-
-//          // return res.redirect('/shop')
-
-//       } else {
-//          cart.products.push({
-//             product: productId,
-//             price: product.price,
-//             quantity: 1,
-//             totalPrice: product.price,
-
-//          })
-//          req.flash('success', 'Product Added Successfully')
-//       }
-
-//       cart.subTotal = cart.products.reduce((sum, item) => {
-//          return sum + item.totalPrice;
-//       }, 0)
-
-//       cart.shipping = 10,
-
-//          cart.grandTotal = cart.subTotal + cart.shipping
-
-//       await cart.save()
-//       return res.redirect('/shop')
-
-
-//    } catch (error) {
-//       console.log('Error from addToCart', error.message, error.stack);
-//       req.flash('error', 'Server error')
-//       return res.redirect('/shop')
-
-//    }
-
-// }
 
 const addToCartAjax = async (req, res) => {
    const userId = req.auth?.id || req.user?.id;

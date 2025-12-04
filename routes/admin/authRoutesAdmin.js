@@ -15,9 +15,9 @@ const { loginAdmin, addProducts, editProducts, deleteProduct, blockCustomer, del
 router.post('/admin/login', loginAdmin)
 
 //-------------------------------------------------------PRODUCTS ROUTES
-router.post('/admin/products/add', upload.single('images'), addProducts)
-router.post('/admin/products/add', upload.single('images'), addProducts)
-router.post('/admin/products/edit/:id', upload.single('images'), editProducts)
+router.post('/admin/products/add', upload.array('images', 4), addProducts)
+// router.post('/admin/products/edit/:id', upload.single('images'), editProducts)
+router.post('/admin/products/edit/:id', upload.array('images', 4), editProducts)
 router.post('/admin/products/delete/:id', deleteProduct)
 
 //-------------------------------------------------------CUSTOMER ROUTES
