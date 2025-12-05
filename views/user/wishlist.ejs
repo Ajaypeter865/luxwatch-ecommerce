@@ -72,11 +72,10 @@
 
                                                 <!-- CURRENTLY THIS ADD TO CART IS NOT WORKING -->
                                                 <div class="wishlist-actions mt-3">
-                                                    <form action="/wishlist/addtocart/<%= item._id %>" method="POST"
-                                                        class="d-inline">
-                                                        <button class="btn btn-add-cart" type="submit">
-                                                            <i class="ti-shopping-cart"></i> Add to Cart
-                                                        </button>
+                                                    <button class="btn btn-add-cart" data-id="<%= item._id %>">
+                                                        <i class="ti-shopping-cart"></i> Add to Cart
+                                                    </button>
+
                                                     </form>
 
                                                     <form action="/wishlist/delete/<%= item._id %>" method="POST"
@@ -107,5 +106,39 @@
                 <script src="/js/vendor/jquery-1.12.4.min.js"></script>
                 <script src="/js/bootstrap.min.js"></script>
 </body>
+<script>
+    $(document).ready(function () {
+        $(".btn-add-cart").on("click", function (e) {
+            e.preventDefault();
+
+            const productId = $(this).data("id");
+
+            $.ajax({
+                url: `/api/cart/add/${productId}`,
+                method: "POST",
+                success: function (res) {
+                    if (res.success) {
+                        // Optional: update navbar cart count dynamically
+                        $(".cart-count").text(res.totalItems);
+
+                        // Toast / alert
+                        Toastify({
+                            text: res.message,
+                            duration: 2000,
+                            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                        }).showToast();
+                    }
+                },
+                error: function () {
+                    Toastify({
+                        text: "Error adding to cart",
+                        duration: 2000,
+                        backgroundColor: "#linear-gradient(to right, #ff5f6d, #ffc371)",
+                    }).showToast();
+                }
+            });
+        });
+    });
+</script>
 
 </html>

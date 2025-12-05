@@ -66,7 +66,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
 //------------------------------------------------------- PRODUCTS CONTROLLER
 
 const addProducts = asyncHandler(async (req, res) => {
-    const { name, category, brand, price, stock, status, description } = req.body;
+    const { name, category, brand, price, stock, status, discription } = req.body;
+
 
     let imagePaths = [];
 
@@ -76,12 +77,12 @@ const addProducts = asyncHandler(async (req, res) => {
 
     await productModel.create({
         name,
-        description,
         category,
         brand,
         price,
         stock,
         status,
+        description: discription,
         image: imagePaths   // IMPORTANT → use image
     });
 
@@ -90,37 +91,49 @@ const addProducts = asyncHandler(async (req, res) => {
 
 
 const editProducts = asyncHandler(async (req, res) => {
-    const { name, category, brand, price, stock, status } = req.body
+    const { name, category, brand, price, stock, status, deleteImages } = req.body
 
     const productId = req.params.id
     console.log('editProducts - productId', productId);
 
     const selectedProduct = await productModel.findById(productId)
 
-    if (req.file) {
-        const newImagePath = `/img/uploads/${req.file.filename}`
-        const oldImagePath = path.join(__dirname, '...', 'public', selectedProduct.image)
+    // Handle deletion of selected images
+    if (deleteImages) {
+        // deleteImages could be a string (single image) or array (multiple images)
+        const imagesToDelete = Array.isArray(deleteImages) ? deleteImages : [deleteImages]
 
-        if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath)
-            console.log('editProducts - oldImagedelted');
+        imagesToDelete.forEach(imagePath => {
+            const fullImagePath = path.join(__dirname, '...', 'public', imagePath)
 
-        }
-        selectedProduct.image = newImagePath
+            if (fs.existsSync(fullImagePath)) {
+                fs.unlinkSync(fullImagePath)
+                console.log('editProducts - image deleted:', imagePath)
+            }
+        })
+
+        // Remove deleted images from the product's image array
+        selectedProduct.image = selectedProduct.image.filter(img => !imagesToDelete.includes(img))
     }
-    // console.log('editProducts - flage 1');
 
-    // await imageUpdate.save()
-    selectedProduct.name = name,
-        selectedProduct.category = category,
-        selectedProduct.brand = brand,
-        selectedProduct.price = price,
-        selectedProduct.stock = stock,
-        selectedProduct.status = status,
-        await selectedProduct.save()
+    // Handle new image upload
+    if (req.files && req.files.length > 0) {
+        req.files.forEach(file => {
+            const newImagePath = `/img/uploads/${file.filename}`
+            selectedProduct.image.push(newImagePath)
+        })
+    }
 
-    // console.log('editProducts - flage 2');
-    // const products = await productModel.find()
+    // Update other product fields
+    selectedProduct.name = name
+    selectedProduct.category = category
+    selectedProduct.brand = brand
+    selectedProduct.price = price
+    selectedProduct.stock = stock
+    selectedProduct.status = status
+
+    await selectedProduct.save()
+
     return res.redirect('/admin/products')
 })
 
@@ -354,6 +367,16 @@ const resolveButton = asyncHandler(async (req, res) => {
 })
 
 
+
+// ---------------------------------------------------LOGOUT 
+
+const logoutAdmin = async (req, res) => {
+
+   res.clearCookie('adminToken')
+   res.render('user/login')
+
+}
+
 module.exports = {
     loginAdmin,
     addProducts,
@@ -369,5 +392,6 @@ module.exports = {
     blockCoupon,
     sendReply,
     resolveButton,
+    logoutAdmin,
 
 }
