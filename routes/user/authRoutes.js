@@ -9,7 +9,8 @@ const { signupUser, loginUser, forgotPassword, verifyOtp, restPassword, editProf
     deleteCartProducts, updateCart, addToWishlist, removeFromWishlist, addToCartAjax, addToWishlistAjax,
     proccedToPayement, postCheckoutByProduct, cancelOrder, removeCoupon,
     applyCoupon,
-    postEnquiry } = require('../../controllers/user/authController')
+    postEnquiry,
+    rating } = require('../../controllers/user/authController')
 
 //----------------------------------------------------------- MIDDLEWARES
 const { signUpValidator, loginValidator } = require('../../middlewares/validation')
@@ -70,6 +71,9 @@ router.post('/cart/remove-coupon', proctedAuth, removeCoupon)
 router.post('/contact', proctedAuth, postEnquiry)
 
 
+// ----------------------------------------------------- RATING FUNCTION
+
+router.post('/product/rating', proctedAuth, rating)
 
 
 module.exports = router

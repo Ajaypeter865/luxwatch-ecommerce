@@ -38,7 +38,7 @@ const productSchema = new mongoose.Schema({
     },
     image: {
         type: [String],
-        default : [],
+        default: [],
     },
 
     embedding: {
@@ -46,10 +46,22 @@ const productSchema = new mongoose.Schema({
         default: []
     },
 
-    reviews: {
-        type: String,
-
-    }
+    averageRate: {
+        type: Number,
+        default: 0,
+    },
+    totalReviews: {
+        type: Number,
+        default: 0
+    },
+    reviews: [
+        {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+            rating: { type: Number, min: 1, max: 5, required: true },
+            comment: { type: String, trim: true },
+            createdAt: { type: Date, default: Date.now },
+        }
+    ],
 }, { timestamps: true })
 
 

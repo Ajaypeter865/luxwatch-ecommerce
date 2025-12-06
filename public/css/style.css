@@ -11501,5 +11501,12 @@ input:focus {
     color: #ff0000 !important; 
 }
 
+.rate-product-btn {
+  padding: 4px 6px !important ;  /* reduce padding */
+  font-size: 12px !important ;    /* smaller text */
+  line-height: 1.2 !important ;   /* tighter vertical spacing */
+}
+
+
 /* Optional: If the entire 'favorit-items' div has its own background, 
    you might need to ensure the button is positioned correctly. */

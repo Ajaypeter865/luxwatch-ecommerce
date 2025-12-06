@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/profile.css">
+
 </head>
 
 <body>
@@ -33,12 +34,10 @@
         <div class="container">
             <div class="row">
 
-                <!-- Sidebar -->
                 <div class="col-lg-4 col-md-5 mb-4">
                     <%- include('../partials/user/_sidebar', { user: user, activePage: 'orders' }) %>
                 </div>
 
-                <!-- Main Content -->
                 <div class="col-lg-8 col-md-7">
                     <div class="card main-content-card shadow-sm">
                         <div class="card-body p-4">
@@ -51,7 +50,6 @@
 
                                 <div class="order-box">
 
-                                    <!-- Header -->
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <h5 class="fw-bold">Order #<%= order._id %></h5>
 
@@ -60,7 +58,6 @@
                                         </span>
                                     </div>
 
-                                    <!-- Meta -->
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <strong>Order Date:</strong>
@@ -76,7 +73,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Items -->
                                     <div class="table-responsive">
                                         <table class="table order-table">
                                             <thead>
@@ -84,6 +80,7 @@
                                                     <th>Product</th>
                                                     <th>Qty</th>
                                                     <th>Price</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -92,24 +89,31 @@
                                                     <td><%= item.name %></td>
                                                     <td><%= item.quantity %></td>
                                                     <td>₹<%= item.price %></td>
+                                                    <td>
+                                                        <% if (order.orderStatus === 'Delivered') { %>
+                                                        <button class="btn btn-sm btn-warning rate-product-btn"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#ratingModal"
+                                                            data-product-id="<%= item.productId %>"
+                                                            data-product-name="<%= item.name %>">
+                                                            Rate
+                                                        </button>
+                                                        <% } %>
+                                                    </td>
                                                 </tr>
                                                 <% }) %>
                                             </tbody>
                                         </table>
                                     </div>
 
-                                    <!-- Buttons -->
                                     <div class="d-flex gap-2 mt-3">
-
                                         <% if (order.orderStatus === 'Pending' || order.orderStatus === 'processing') { %>
-                                        <button class="btn cancel-btn"
-                                            data-bs-toggle="modal"
+                                        <button class="btn cancel-btn" data-bs-toggle="modal"
                                             data-bs-target="#cancelModal"
                                             data-order-id="<%= order._id %>">
                                             ⓧ Cancel Order
                                         </button>
                                         <% } %>
-
                                     </div>
 
                                 </div>
@@ -135,48 +139,101 @@
         </div>
     </main>
 
-    <!-- Cancel Order Modal -->
+    <!-- ================= CANCEL MODAL ================== -->
     <div class="modal fade" id="cancelModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-dialog">
+            <div class="modal-content">
 
-          <div class="modal-header">
-            <h5 class="modal-title">Cancel Order</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+                <div class="modal-header">
+                    <h5 class="modal-title">Cancel Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-          <form action="/orders/cancel" method="POST">
-            <div class="modal-body">
+                <form action="/orders/cancel" method="POST">
+                    <div class="modal-body">
 
-              <input type="hidden" name="orderId" id="modalOrderId">
+                        <input type="hidden" name="orderId" id="modalOrderId">
 
-              <p>Select a reason:</p>
+                        <p>Select a reason:</p>
 
-              <div class="mb-2"><input type="radio" name="reason" value="Ordered by mistake" required> Ordered by mistake</div>
-              <div class="mb-2"><input type="radio" name="reason" value="Found better price"> Found better price elsewhere</div>
-              <div class="mb-2"><input type="radio" name="reason" value="Delivery too long"> Delivery time is too long</div>
-              <div class="mb-2"><input type="radio" name="reason" value="Not needed"> Not needed anymore</div>
-              <div class="mb-2">
-                <input type="radio" name="reason" value="custom" id="customReasonRadio"> Other
-              </div>
+                        <div class="mb-2"><input type="radio" name="reason" value="Ordered by mistake" required> Ordered
+                            by mistake</div>
+                        <div class="mb-2"><input type="radio" name="reason" value="Found better price"> Found better
+                            price elsewhere</div>
+                        <div class="mb-2"><input type="radio" name="reason" value="Delivery too long"> Delivery time is
+                            too long</div>
+                        <div class="mb-2"><input type="radio" name="reason" value="Not needed"> Not needed anymore</div>
+                        <div class="mb-2">
+                            <input type="radio" name="reason" value="custom" id="customReasonRadio"> Other
+                        </div>
 
-              <textarea name="customReason" id="customReasonInput" class="form-control mt-2"
-                style="display:none;" placeholder="Please specify..."></textarea>
+                        <textarea name="customReason" id="customReasonInput" class="form-control mt-2" style="display:none;"
+                            placeholder="Please specify..."></textarea>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    </div>
+                </form>
 
             </div>
-
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-danger">Cancel Order</button>
-            </div>
-          </form>
-
         </div>
-      </div>
     </div>
 
+    <!-- ================= RATING MODAL (UPDATED, NO AJAX) ================== -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-2 border-warning">
+
+                <!-- FORM SUBMITS TO /product/rating -->
+                <form action="/product/rating" method="POST">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title text-warning fw-bold">Rate Product</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <h6 id="ratingProductName" class="mb-3"></h6>
+
+                        <!-- Hidden Product ID -->
+                        <input type="hidden" name="productId" id="ratingProductId">
+
+                        <label class="fw-bold">Your Rating:</label>
+                        <select name="rating" class="form-control mb-3" required>
+                            <option value="">Select Rating</option>
+                            <option value="1">1 - Very Bad</option>
+                            <option value="2">2 - Bad</option>
+                            <option value="3">3 - Okay</option>
+                            <option value="4">4 - Good</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+
+                        <label class="fw-bold">Review:</label>
+                        <textarea name="comment" class="form-control" rows="3"
+                            placeholder="Write your review..."></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning">Submit</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+
+    <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Cancel modal order ID injection
+        // Inject order ID into cancel modal
         const cancelModal = document.getElementById('cancelModal');
         if (cancelModal) {
             cancelModal.addEventListener('show.bs.modal', function (event) {
@@ -186,7 +243,7 @@
             });
         }
 
-        // Custom reason toggle
+        // Custom reason show/hide
         const customRadio = document.getElementById('customReasonRadio');
         const customInput = document.getElementById('customReasonInput');
         const reasonRadios = document.querySelectorAll('input[name="reason"]');
@@ -203,12 +260,20 @@
                 });
             });
         }
+
+        // Setup Rating Modal (NO AJAX)
+        const ratingModal = document.getElementById('ratingModal');
+        if (ratingModal) {
+            ratingModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const productId = button.getAttribute('data-product-id');
+                const productName = button.getAttribute('data-product-name');
+
+                document.getElementById("ratingProductName").textContent = productName;
+                document.getElementById("ratingProductId").value = productId;
+            });
+        }
     </script>
-
-    <%- include('../partials/user/footer') %>
-
-    <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

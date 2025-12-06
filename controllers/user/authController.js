@@ -555,42 +555,42 @@ const addToCartAjax = async (req, res) => {
 // });
 
 const updateCart = asyncHandler(async (req, res) => {
-  const userId = req.user?.id || req.auth?.id;
-  const { quantities } = req.body;
+   const userId = req.user?.id || req.auth?.id;
+   const { quantities } = req.body;
 
-  if (!userId || !quantities) {
-    return res.json({ success: false, message: "Invalid request" });
-  }
+   if (!userId || !quantities) {
+      return res.json({ success: false, message: "Invalid request" });
+   }
 
-  try {
-    const cart = await cartModel.findOne({ user: userId });
-    if (!cart) return res.json({ success: false, message: "Cart not found" });
+   try {
+      const cart = await cartModel.findOne({ user: userId });
+      if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-    // Update quantities
-    for (const [productId, qtyString] of Object.entries(quantities)) {
-      const newQty = parseInt(qtyString);
+      // Update quantities
+      for (const [productId, qtyString] of Object.entries(quantities)) {
+         const newQty = parseInt(qtyString);
 
-      const index = cart.products.findIndex(
-        item => item.product.toString() === productId
-      );
+         const index = cart.products.findIndex(
+            item => item.product.toString() === productId
+         );
 
-      if (index > -1) {
-        cart.products[index].quantity = newQty;
-        cart.products[index].totalPrice =
-          cart.products[index].price * newQty;
+         if (index > -1) {
+            cart.products[index].quantity = newQty;
+            cart.products[index].totalPrice =
+               cart.products[index].price * newQty;
+         }
       }
-    }
 
-    // Recalculate totals
-    await utils.recalcCartTotals(cart);
-    await cart.save();
+      // Recalculate totals
+      await utils.recalcCartTotals(cart);
+      await cart.save();
 
-    return res.json({ success: true });
+      return res.json({ success: true });
 
-  } catch (err) {
-    console.log("Update Cart Error:", err.message);
-    return res.json({ success: false, message: "Server error" });
-  }
+   } catch (err) {
+      console.log("Update Cart Error:", err.message);
+      return res.json({ success: false, message: "Server error" });
+   }
 });
 
 
@@ -664,26 +664,26 @@ const updateCart = asyncHandler(async (req, res) => {
 
 
 const deleteCartProducts = async (req, res) => {
-  try {
-    const userId = req.auth?.id || req.user?.id;
-    const productId = req.params.id;
+   try {
+      const userId = req.auth?.id || req.user?.id;
+      const productId = req.params.id;
 
-    const cart = await cartModel.findOne({ user: userId });
-    if (!cart) return res.json({ success: false, message: "Cart not found" });
+      const cart = await cartModel.findOne({ user: userId });
+      if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-    cart.products = cart.products.filter(
-      item => item.product.toString() !== productId
-    );
+      cart.products = cart.products.filter(
+         item => item.product.toString() !== productId
+      );
 
-    await utils.recalcCartTotals(cart);
-    await cart.save();
+      await utils.recalcCartTotals(cart);
+      await cart.save();
 
-    return res.json({ success: true });
+      return res.json({ success: true });
 
-  } catch (error) {
-    console.log("Delete Cart Error:", error.message);
-    return res.json({ success: false, message: "Server error" });
-  }
+   } catch (error) {
+      console.log("Delete Cart Error:", error.message);
+      return res.json({ success: false, message: "Server error" });
+   }
 };
 
 
@@ -1137,7 +1137,7 @@ const proccedToPayement = asyncHandler(async (req, res) => {
    })
 
    if (paymentMethod === 'COD') {
-      await cartModel.findOneAndDelete({user : userId})
+      await cartModel.findOneAndDelete({ user: userId })
       return res.redirect(`/order/success/${order.id}`)
    } else {
       return res.redirect(`/order/payment/${order.id}`)
@@ -1298,42 +1298,6 @@ const applyCoupon = asyncHandler(async (req, res) => {
 });
 
 
-// THIS IS THE REMOVE COUPON BY ME 
-
-// const removeCoupon = asyncHandler(async (req, res) => {
-//    try {
-
-//       const userId = req.user?.id || req.auth?.id
-
-//       let cart = await cartModel.findOne({ user: userId })
-
-//       if (!cart) {
-//          req.flash('error', 'No cart found')
-//          return res.redirect('/cart')
-
-//       }
-
-//       if (!cart.coupons) {
-//          req.flash('error', 'No coupon found')
-//          return res.redirect('/cart')
-//       }
-
-//       cart.coupons = null
-
-//       cart.save()
-
-//       req.flash('success', 'Coupon removed')
-//       return res.redirect('/cart')
-
-//    } catch (error) {
-//       console.log('Error from removeCoupon', error.message, error.stack);
-//       return res.redirect('/error')
-//    }
-// })
-
-
-
-
 //  THIS IS THE REMOVE COUPON BY GPT
 const removeCoupon = asyncHandler(async (req, res) => {
    try {
@@ -1393,10 +1357,78 @@ const postEnquiry = asyncHandler(async (req, res) => {
    }
 })
 
+// -------------------------------------------------------- RATEING FUNCTION
+
+const rating = asyncHandler(async (req, res) => {
+   // Assuming 'req.user' contains the logged-in user's information
+
+   try {
+      const userId = req.user?.id || req.auth?.id;
+      console.log('rating - userId =', userId);
+
+      // Retrieve all fields from the request body, including productId
+      const { productId, rating, comment } = req.body;
+      console.log('rating - req.body =', req.body);
 
 
+      // Basic validation
+      if (!productId || !rating || isNaN(parseInt(rating))) {
+         res.status(400);
+         throw new Error('Product ID and a valid rating are required.');
+      }
 
-// ------------------------------------------------------ PAYMENT FUNCTIONS
+      const numericRating = parseInt(rating);
+      if (numericRating < 1 || numericRating > 5) {
+         res.status(400);
+         throw new Error('Rating must be between 1 and 5.');
+      }
+
+      const product = await productModel.findById(productId);
+
+      if (!product) {
+         res.status(404);
+         throw new Error('Product not found.');
+      }
+
+      // Check if the user has already reviewed this product
+      const alreadyReviewed = product.reviews.find(
+         (rev) => rev.userId.toString() === userId.toString()
+      );
+
+      if (alreadyReviewed) {
+         req.flash('error', 'You are already reviewd this product')
+         return res.redirect('/profile')
+      }
+
+      // 1. Add the new review to the product's reviews array
+      const newReview = {
+         userId: userId,
+         rating: numericRating,
+         comment: comment || '', // Use empty string if no comment is provided
+      };
+
+      product.reviews.push(newReview);
+      product.totalReviews = product.reviews.length;
+
+      // 2. Recalculate the average rating
+      const totalRatingSum = product.reviews.reduce((acc, item) => item.rating + acc, 0);
+      product.averageRate = (totalRatingSum / product.totalReviews).toFixed(1); // Keep one decimal place
+
+      // 3. Save the updated product
+      await product.save();
+
+      return res.redirect('/profile')
+
+   } catch (error) {
+      console.log('Error from rating', error.message, error.stack);
+      return res.redirect('/error')
+
+   }
+
+
+});
+
+
 
 //------------------------------------------------------- LOGOUT FUNCTIONS
 
@@ -1435,5 +1467,5 @@ module.exports = {
    applyCoupon,
    removeCoupon,
    postEnquiry,
-
+   rating,
 }

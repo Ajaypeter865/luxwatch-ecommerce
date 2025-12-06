@@ -15,48 +15,55 @@
                     <div class="suggestion-card shadow-sm p-3 rounded" style="transition:0.3s; background:#fff;">
 
                         <!-- Product Image -->
-                        <a href="/product/<%= s._id %>" class="d-block text-center">
-                            <img src="<%= s.image || (s.images && s.images[0]) || '/images/no-image.png' %>"
-                                alt="<%= s.name %>" class="img-fluid rounded" style="height:250px; object-fit:cover;">
-                        </a>
+                        <% let suggestionImage='/images/no-image.png' ; if (Array.isArray(s.image) && s.image.length> 0)
+                            {
+                            suggestionImage = s.image[0]; // array -> first image
+                            } else if (typeof s.image === 'string' && s.image.length > 0) {
+                            suggestionImage = s.image; // single string
+                            }
+                            %>
 
-                        <!-- Product Title -->
-                        <h5 class="mt-3 text-center" style="font-weight:600;">
-                            <%= s.name %>
-                        </h5>
+                            <img src="<%= suggestionImage %>" alt="<%= s.name %>" class="img-fluid rounded"
+                                style="height:250px; object-fit:cover;">
 
-                        <!-- Price -->
-                        <p class="text-center mb-1" style="font-size:18px; color:#ff2020; font-weight:600;">
-                            ₹ <%= s.price.toLocaleString('en-IN') %>
-                        </p>
 
-                        <!-- Status -->
-                        <p class="text-center fw-bold 
+                            <!-- Product Title -->
+                            <h5 class="mt-3 text-center" style="font-weight:600;">
+                                <%= s.name %>
+                            </h5>
+
+                            <!-- Price -->
+                            <p class="text-center mb-1" style="font-size:18px; color:#ff2020; font-weight:600;">
+                                ₹ <%= s.price.toLocaleString('en-IN') %>
+                            </p>
+
+                            <!-- Status -->
+                            <p class="text-center fw-bold 
                     <%= s.status === 'Active' ? 'text-success' 
                         : s.status === 'Inactive' ? 'text-danger' 
                         : 'text-warning' %>">
-                            <%= s.status==='Active' ? 'In Stock' : 'Out Of Stock' %>
-                        </p>
+                                <%= s.status==='Active' ? 'In Stock' : 'Out Of Stock' %>
+                            </p>
 
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-center gap-2">
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-center gap-2">
 
-                            <!-- Add to Cart -->
-                            <form class="add-to-cart-form" action="/api/cart/add/<%= s._id %>" method="POST">
-                                <button type="submit" class="btn btn-add-cart" <%=s.status !=='Active' ? 'disabled' : ''
-                                    %>>
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                            </form>
+                                <!-- Add to Cart -->
+                                <form class="add-to-cart-form" action="/api/cart/add/<%= s._id %>" method="POST">
+                                    <button type="submit" class="btn btn-add-cart" <%=s.status !=='Active' ? 'disabled'
+                                        : '' %>>
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </form>
 
-                            <!-- Wishlist -->
-                            <form class="wishlist-form" action="/api/wishlist/add/<%= s._id %>" method="POST">
-                                <button type="submit" class="btn btn-wishlist">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </form>
+                                <!-- Wishlist -->
+                                <form class="wishlist-form" action="/api/wishlist/add/<%= s._id %>" method="POST">
+                                    <button type="submit" class="btn btn-wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </form>
 
-                        </div>
+                            </div>
 
                     </div>
 

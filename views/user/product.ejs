@@ -58,28 +58,29 @@
                                 <div id="productCarousel" class="carousel slide" data-ride="carousel">
                                     <div class="carousel-inner">
 
-                                        <% 
-                                            // Ensure we reference the correct array field (product.image)
-                                            const imagesArray = product.image;
-                                            let hasImages = Array.isArray(imagesArray) && imagesArray.length > 0;
-                                        %>
+                                        <% // Ensure we reference the correct array field (product.image) const
+                                            imagesArray=product.image; let hasImages=Array.isArray(imagesArray) &&
+                                            imagesArray.length> 0;
+                                            %>
 
-                                        <% if (hasImages) { %>
-                                            <% imagesArray.forEach((img, index)=> { %>
-                                                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                                    <img src="<%= img %>" alt="<%= product.name %> Image <%= index + 1 %>"
-                                                        class="d-block w-100 product-image">
-                                                </div>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <div class="carousel-item active">
-                                                <img src="/img/default-product.jpg" alt="No image available"
-                                                    class="d-block w-100 product-image">
-                                            </div>
-                                        <% } %>
+                                            <% if (hasImages) { %>
+                                                <% imagesArray.forEach((img, index)=> { %>
+                                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                                        <img src="<%= img %>"
+                                                            alt="<%= product.name %> Image <%= index + 1 %>"
+                                                            class="d-block w-100 product-image">
+                                                    </div>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <div class="carousel-item active">
+                                                                <img src="/img/default-product.jpg"
+                                                                    alt="No image available"
+                                                                    class="d-block w-100 product-image">
+                                                            </div>
+                                                            <% } %>
                                     </div>
 
-                                    <% if (hasImages && imagesArray.length > 1) { %>
+                                    <% if (hasImages && imagesArray.length> 1) { %>
                                         <a class="carousel-control-prev" href="#productCarousel" role="button"
                                             data-slide="prev">
                                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -90,7 +91,7 @@
                                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                             <span class="sr-only">Next</span>
                                         </a>
-                                    <% } %>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +116,22 @@
 
                                 <p class="delivery"><strong>Delivery:</strong> within 7–10 days</p>
 
+                                <!-- Customer Rating -->
+                                <div class="product-rating mb-2">
+
+                                    <% for (let i=1; i <=5; i++) { %>
+                                        <% if (i <=Math.floor(product.averageRate)) { %>
+                                            <i class="fas fa-star" style="color:#F28123;"></i>
+                                            <% } else if (i - product.averageRate < 1) { %>
+                                                <i class="fas fa-star-half-alt" style="color:#F28123;"></i>
+                                                <% } else { %>
+                                                    <i class="far fa-star" style="color:#F28123;"></i>
+                                                    <% } %>
+                                                        <% } %>
+
+                                                            <span class="ms-2">(<%= product.averageRate %>)</span>
+                                </div>
+
                                 <div class="product-actions mt-4 d-flex flex-wrap gap-3">
                                     <form action="/api/cart/add/<%= product._id %>" method="POST"
                                         class="add-to-cart-form">
@@ -127,7 +144,7 @@
                                     </form>
                                 </div>
 
-                                </div>
+                            </div>
                         </div>
 
                     </div>

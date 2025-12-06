@@ -150,11 +150,12 @@ const getUserOrdersPage = asyncHandler(async (req, res) => {
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
+                productId: item.productId
             }))
         }))
 
         return res.render('user/profile', {
-            user, orders
+            user, orders,
         })
 
     } catch (error) {
@@ -650,7 +651,8 @@ const getContactPage = asyncHandler(async (req, res) => {
 
 const getAboutPage = asyncHandler(async (req, res) => {
     try {
-        return res.render('user/about')
+        const userId = req.user?.id || req.auth?.id
+        return res.render('user/about',)
     } catch (error) {
         console.log('Error in getAboutPage =', error.stack, error.message);
         return res.redirect('/error')
