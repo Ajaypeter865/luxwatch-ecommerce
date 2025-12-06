@@ -92,11 +92,19 @@
                                                                         class="flaticon-shopping-cart"></span></a></li>
                                                             <% } %>
 
-                                                             <% if (user) { %>
-                                                        <li><a href="/about"></a></li>
-                                                        <% } else { %>
-                                                            <li><a href="/login"></a></li>
-                                                            <% } %>
+                                                                <% if (user) { %>
+                                                                    <li><a href="/about"></a></li>
+                                                                    <% } else { %>
+                                                                        <li><a href="/login"></a></li>
+                                                                        <% } %>
+
+                                                                            <% if (user) { %>
+                                                                                <li><a href="/contact"></a></li>
+                                                                                <% } else { %>
+                                                                                    <li><a href="/login"></a></li>
+                                                                                    <% } %>
+
+
                         </ul>
                     </div>
                 </div>

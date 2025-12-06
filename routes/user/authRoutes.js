@@ -31,10 +31,10 @@ router.post('/logout', logoutUser)
 router.post('/address/add', proctedAuth, addAddress)
 router.post('/address/set-default/:id', proctedAuth, setDefaultAddress)
 router.post('/address/delete/:id', proctedAuth, deleteAddress)
-// router.post('/address/edit', proctedAuth, editAddress)
+router.post('/address/edit', proctedAuth, editAddress)
 
 //------------------------------------------------------- ORDER FUNCTIONS
-router.post('/orders/cancel', cancelOrder)
+router.post('/orders/cancel',proctedAuth, cancelOrder)
 
 
 //----------------------------------------------------- ADD TO CART FUCNTION

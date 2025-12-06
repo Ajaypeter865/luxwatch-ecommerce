@@ -642,8 +642,8 @@ const errorPage = async (req, res) => {
 // -------------------------------------------------------CONTACT PAGE
 
 const getContactPage = asyncHandler(async (req, res) => {
-
-    return res.render('user/contact')
+    const userId = req.user?.id || req.auth?.id
+    return res.render('user/contact', { user: userId })
 })
 
 
@@ -652,7 +652,9 @@ const getContactPage = asyncHandler(async (req, res) => {
 const getAboutPage = asyncHandler(async (req, res) => {
     try {
         const userId = req.user?.id || req.auth?.id
-        return res.render('user/about',)
+        console.log('getABoutPage - userID', userId, req.users);
+
+        return res.render('user/about', { user: userId })
     } catch (error) {
         console.log('Error in getAboutPage =', error.stack, error.message);
         return res.redirect('/error')

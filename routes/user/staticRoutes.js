@@ -74,13 +74,13 @@ router.get('/checkout', proctedAuth, getCheckoutPage)
 router.get('/checkout/:id', proctedAuth, getCheckoutPageByProduct)
 
 // ORDER SUMMARY PAGE 
-router.get('/order/success/:id', getOrderSummaryPage)
+router.get('/order/success/:id',proctedAuth, getOrderSummaryPage)
 
 // CONTACT PAGE 
 router.get('/contact', proctedAuth, getContactPage)
 
 // ABOUT PAGE
-router.get('/about', getAboutPage)
+router.get('/about',proctedAuth, getAboutPage)
 
 
 

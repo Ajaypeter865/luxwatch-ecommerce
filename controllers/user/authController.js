@@ -327,42 +327,46 @@ const setDefaultAddress = async (req, res) => {
 }
 
 
-// const editAddress = asyncHandler(async (req, res) => {
-//    const { addressId, label, name, phone, pincode, addressLine, city, state } = req.body;
+const editAddress = asyncHandler(async (req, res) => {
 
-//    const userId = req.auth?.id || req.user?.id;
+   try {
+      const { addressId, label, name, phone, pincode, addressLine, city, state } = req.body;
+      console.log('editAddress - req.body', req.body);
 
-//    // 1️⃣ Make sure the address belongs to this user
-//    const address = await addressModel.findOne({ _id: addressId, user: userId });
-//    if (!address) {
-//       return res.render('user/address', {
-//          addresses: null,
-//          user: req.auth || req.user,
-//          error: 'Address not found or not yours',
-//       });
-//    }
 
-//    // 2️⃣ Update fields safely
-//    address.label = label;
-//    address.name = name;
-//    address.phone = phone;
-//    address.pincode = pincode;
-//    address.addressLine = addressLine;
-//    address.city = city;
-//    address.state = state;
+      const userId = req.user?.id || req.auth?.id
 
-//    await address.save();
+      if (!userId) {
+         req.flash('error', 'No user found')
+         return res.redirect('/address')
+      }
 
-//    // 3️⃣ Fetch updated list of addresses to show on UI
-//    const addresses = await addressModel.find({ user: userId });
+      let changedAddress = await addressModel.findOneAndUpdate({ user: userId }, {
+         label,
+         name,
+         phone,
+         pincode,
+         addressLine : req.body.addressLine,
+         city,
+         state,
+      })
 
-//    // 4️⃣ Render the page with updated data
-//    return res.render('user/address', {
-//       addresses,
-//       user: req.auth || req.user,
-//       success: 'Address updated successfully!',
-//    });
-// });
+      changedAddress = await addressModel.findOne({ user: userId })
+
+      console.log('editAddress - changedAddress =', changedAddress);
+     return res.redirect('/address')
+
+
+
+   } catch (error) {
+      console.log('Error editAdderess', error.message, error.stack);
+      return redirect('/error')
+
+   }
+
+
+
+});
 
 
 const deleteAddress = asyncHandler(async (req, res) => {
@@ -1451,7 +1455,7 @@ module.exports = {
    logoutUser,
    addAddress,
    setDefaultAddress,
-   // editAddress,
+   editAddress,
    deleteAddress,
    // addToCart,
    deleteCartProducts,
