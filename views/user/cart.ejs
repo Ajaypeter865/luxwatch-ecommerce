@@ -90,7 +90,9 @@
                                                     <td>
                                                         <div class="quantity-control">
                                                             <button class="qty-btn minus" type="button"><i class="ti-minus"></i></button>
-                                                            <input type="text" name="quantities[<%= item._id %>]" value="<%= item.quantity %>" class="qty-input" readonly>
+                                                            <!-- <input type="text" name="quantities[<%= item._id %>]" value="<%= item.quantity %>" class="qty-input" readonly> -->
+                                                             <input type="text" value="<%= item.quantity %>" class="qty-input" data-id="<%= item._id %>" readonly>
+
                                                             <button class="qty-btn plus" type="button"><i class="ti-plus"></i></button>
                                                         </div>
                                                     </td>
@@ -117,7 +119,7 @@
 
                             <div class="cart-buttons d-flex justify-content-between">
                                 <a href="/shop" class="btn-theme-outline">Continue Shopping</a>
-                                <button type="button" class="btn-theme" id="updateCartBtn">Update Cart</button>
+                                <!-- <button type="button" class="btn-theme" id="updateCartBtn">Update Cart</button> -->
                             </div>
                         </form>
 
@@ -203,7 +205,7 @@
             }
         }
     </script>
-
+<!-- 
     <script>
         document.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -220,63 +222,183 @@
                 // Optional: Trigger update immediately if you prefer, otherwise user clicks "Update Cart"
             });
         });
-    </script>
+    </script> -->
 
     <script>
-        document.getElementById("updateCartBtn").addEventListener("click", async function() {
-            const btn = this;
-            const originalText = btn.innerText;
+    //     document.getElementById("updateCartBtn").addEventListener("click", async function() {
+    //         const btn = this;
+    //         const originalText = btn.innerText;
             
-            // 1. Show loading state
-            btn.innerText = "Updating...";
-            btn.disabled = true;
+    //         // 1. Show loading state
+    //         btn.innerText = "Updating...";
+    //         btn.disabled = true;
 
-            const form = document.getElementById("updateCartForm");
-            const formData = new FormData(form);
-            const quantities = {};
+    //         const form = document.getElementById("updateCartForm");
+    //         const formData = new FormData(form);
+    //         const quantities = {};
 
-            for (const [key, value] of formData.entries()) {
-                if (key.startsWith("quantities[")) {
-                    // Extracts ID from quantities[ID]
-                    const productId = key.match(/quantities\[(.*)\]/)[1];
-                    quantities[productId] = value;
-                }
+    //         for (const [key, value] of formData.entries()) {
+    //             if (key.startsWith("quantities[")) {
+    //                 // Extracts ID from quantities[ID]
+    //                 const productId = key.match(/quantities\[(.*)\]/)[1];
+    //                 quantities[productId] = value;
+    //             }
+    //         }
+
+    //         try {
+    //             const response = await fetch("/cart/update", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json"
+    //                 },
+    //                 body: JSON.stringify({
+    //                     quantities
+    //                 })
+    //             });
+
+    //             const data = await response.json();
+
+    //             if (data.success) {
+    //                 showNotification("Cart updated successfully!", "success");
+                    
+    //                 // 2. Reload ONLY after successful response
+    //                 // We add a tiny delay just to let the user see the "Success" toast
+    //                 setTimeout(() => {
+    //                     window.location.reload();
+    //                 }, 500); 
+    //             } else {
+    //                 showNotification(data.message || "Update failed", "error");
+    //                 btn.innerText = originalText;
+    //                 btn.disabled = false;
+    //             }
+    //         } catch (error) {
+    //             console.error("Error updating cart:", error);
+    //             showNotification("Something went wrong", "error");
+    //             btn.innerText = originalText;
+    //             btn.disabled = false;
+    //         }
+    //     });
+    // </script>
+
+
+<!-- NEW UPDATE CART -->
+
+<script>
+    async function updateQuantity(productId, newQty) {
+        try {
+            const res = await fetch("/cart/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId, quantity: newQty })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setTimeout(() => location.reload(), 200);
+            } else {
+                alert(data.message || "Failed to update quantity");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong.");
+        }
+    }
+
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const input = this.parentElement.querySelector(".qty-input");
+            let value = parseInt(input.value);
+            const productId = input.dataset.id;
+
+            if (this.classList.contains("plus")) {
+                value++;
+            } else if (this.classList.contains("minus") && value > 1) {
+                value--;
             }
 
-            try {
-                const response = await fetch("/cart/update", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        quantities
-                    })
-                });
+            input.value = value;
 
-                const data = await response.json();
+            updateQuantity(productId, value);
+        });
+    });
+</script>
 
-                if (data.success) {
-                    showNotification("Cart updated successfully!", "success");
-                    
-                    // 2. Reload ONLY after successful response
-                    // We add a tiny delay just to let the user see the "Success" toast
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500); 
-                } else {
-                    showNotification(data.message || "Update failed", "error");
-                    btn.innerText = originalText;
-                    btn.disabled = false;
+
+
+<!-- AJAX WITH DOM MANUPULATION GEMINI -->
+
+<!-- <script>
+    /**
+     * Updates the cart quantity via AJAX and updates the DOM without a page reload.
+     * * @param {string} productId - The ID of the product to update.
+     * @param {number} newQty - The new quantity.
+     * @param {HTMLInputElement} qtyInput - The DOM input element for the quantity.
+     */
+    async function updateQuantity(productId, newQty, qtyInput) {
+        try {
+            const res = await fetch("/cart/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId, quantity: newQty })
+            });
+
+            const data = await res.json();
+            
+            if (data.success) {
+                // Find the parent row <tr> element
+                const row = qtyInput.closest('tr');
+                
+                // 1. Update the item's Total price in the table
+                // I added a class 'item-total-price' to the <td> for easier targeting, 
+                // but the old method (4th column) is used for maximum compatibility with your existing HTML structure.
+                const newTotal = data.updatedItem.total.toFixed(2);
+                row.querySelector('td:nth-child(4)').innerText = `₹${newTotal}`; 
+
+                // 2. Update the Cart Summary totals
+                document.querySelector('.summary-subtotal').innerText = `₹${data.totals.subTotal.toFixed(2)}`;
+                document.querySelector('.summary-shipping').innerText = `₹${data.totals.shipping.toFixed(2)}`;
+                document.querySelector('.summary-grandtotal').innerText = `₹${data.totals.grandTotal.toFixed(2)}`;
+
+                // 3. Update navbar cart count (if you have element with id="cart-count")
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement && data.totalCartItems !== undefined) {
+                    cartCountElement.innerText = data.totalCartItems;
                 }
-            } catch (error) {
-                console.error("Error updating cart:", error);
-                showNotification("Something went wrong", "error");
-                btn.innerText = originalText;
-                btn.disabled = false;
+
+                showNotification("Cart quantity updated!", "success");
+
+            } else {
+                // Revert the input value to the server's known quantity if the update failed (e.g., ran out of stock)
+                qtyInput.value = data.updatedItem.quantity; 
+                showNotification(data.message || "Failed to update quantity", "error");
+            }
+        } catch (err) {
+            console.error(err);
+            // This is the error that occurs if the JSON parsing fails or the request itself fails
+            showNotification("Something went wrong (AJAX/Server error).", "error"); 
+        }
+    }
+
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const input = this.parentElement.querySelector(".qty-input");
+            let value = parseInt(input.value);
+            const productId = input.dataset.id;
+            const originalValue = value; 
+
+            if (this.classList.contains("plus")) {
+                value++;
+            } else if (this.classList.contains("minus") && value > 1) {
+                value--;
+            }
+            
+            if (value !== originalValue) {
+                input.value = value;
+                updateQuantity(productId, value, input);
             }
         });
-    </script>
+    });
+</script> -->
 
     <script>
         async function deleteItem(id) {

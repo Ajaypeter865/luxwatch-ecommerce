@@ -64,6 +64,57 @@ app.use((req, res, next) => {
 
 
 
+app.use(async (req, res, next) => {
+    // First, check if user is authenticated via Passport (Google OAuth)
+    if (req.user) {
+        // User is authenticated via Passport
+    } 
+    // If not, check if JWT token exists and verify it
+    else if (!req.auth) {
+        try {
+            const jwt = require('jsonwebtoken');
+            const token = req.cookies?.userToken;
+            
+            if (token) {
+                const payload = jwt.verify(token, process.env.secretKey);
+                req.auth = payload;
+            }
+        } catch (error) {
+            console.log('JWT verification failed in cart middleware:', error.message);
+        }
+    }
+
+    // Now check if user is authenticated (either way)
+    if (!req.user && !req.auth) {
+        res.locals.cartCount = 0;
+        res.locals.wishlistCount = 0;
+        return next();
+    }
+    
+    const userId = req.auth?.id || req.user?.id;
+    
+    const cartModel = require('./models/cart');
+    const wishlistModel = require('./models/wishlist');
+
+    try {
+        const cart = await cartModel.findOne({ user: userId });
+        const wishlist = await wishlistModel.findOne({ user: userId });
+
+        res.locals.cartCount = cart
+            ? cart.products.reduce((sum, item) => sum + item.quantity, 0)
+            : 0;
+
+        res.locals.wishlistCount = wishlist
+            ? wishlist.products.length
+            : 0;
+    } catch (error) {
+        console.log('Error fetching cart/wishlist:', error.message);
+        res.locals.cartCount = 0;
+        res.locals.wishlistCount = 0;
+    }
+
+    next();
+});
 
 
 

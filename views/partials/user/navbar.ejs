@@ -77,20 +77,37 @@
                                     <% } %>
 
                                         <!-- Wishlist -->
+                                        <!-- Wishlist -->
                                         <% if (user) { %>
-                                            <li><a href="/wishlist"><span class="flaticon-heart"></span></a></li>
+                                            <li>
+                                                <a href="/wishlist" class="nav-icon-wrapper">
+                                                    <span class="flaticon-heart"></span>
+                                                    <span id="wishlist-count" class="nav-badge">
+                                                        <%= wishlistCount || 0 %>
+                                                    </span>
+                                                </a>
+                                            </li>
+
                                             <% } else { %>
                                                 <li><a href="/login"><span class="flaticon-heart"></span></a></li>
                                                 <% } %>
 
                                                     <!-- Cart -->
                                                     <% if (user) { %>
-                                                        <li><a href="/cart"><span
-                                                                    class="flaticon-shopping-cart"></span></a></li>
+                                                        <li>
+                                                            <a href="/cart" class="nav-icon-wrapper">
+                                                                <span class="flaticon-shopping-cart"></span>
+                                                                <span id="cart-count" class="nav-badge">
+                                                                    <%= cartCount || 0 %>
+                                                                </span>
+                                                            </a>
+                                                        </li>
+
                                                         <% } else { %>
                                                             <li><a href="/login"><span
                                                                         class="flaticon-shopping-cart"></span></a></li>
                                                             <% } %>
+
 
                                                                 <% if (user) { %>
                                                                     <li><a href="/about"></a></li>

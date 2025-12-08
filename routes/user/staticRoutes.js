@@ -74,7 +74,7 @@ router.get('/checkout', proctedAuth, getCheckoutPage)
 router.get('/checkout/:id', proctedAuth, getCheckoutPageByProduct)
 
 // ORDER SUMMARY PAGE 
-router.get('/order/success/:id',proctedAuth, getOrderSummaryPage)
+router.get('/order/success/:id', getOrderSummaryPage)
 
 // CONTACT PAGE 
 router.get('/contact', proctedAuth, getContactPage)

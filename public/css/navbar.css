@@ -89,3 +89,20 @@ ul {
 }
 
 
+.nav-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #ff2020;
+    color: white;
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 50%;
+    font-weight: bold;
+}
+    

@@ -558,113 +558,154 @@ const addToCartAjax = async (req, res) => {
 //    }
 // });
 
+
+// NEW UPDATE CART 
 const updateCart = asyncHandler(async (req, res) => {
-   const userId = req.user?.id || req.auth?.id;
-   const { quantities } = req.body;
+    const userId = req.user?.id || req.auth?.id;
+    const { productId, quantity } = req.body;
 
-   if (!userId || !quantities) {
-      return res.json({ success: false, message: "Invalid request" });
-   }
+    if (!userId || !productId || !quantity) {
+        return res.json({ success: false, message: "Invalid request" });
+    }
 
-   try {
-      const cart = await cartModel.findOne({ user: userId });
-      if (!cart) return res.json({ success: false, message: "Cart not found" });
+    try {
+        const cart = await cartModel.findOne({ user: userId });
+        if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-      // Update quantities
-      for (const [productId, qtyString] of Object.entries(quantities)) {
-         const newQty = parseInt(qtyString);
+        const index = cart.products.findIndex(
+            (item) => item.product.toString() === productId
+        );
 
-         const index = cart.products.findIndex(
-            item => item.product.toString() === productId
-         );
+        // If the item is not found, we still need to return a quantity to revert the input
+        if (index === -1) {
+            return res.json({ 
+                success: false, 
+                message: "Product not in cart",
+                updatedItem: { quantity: quantity } // Return the attempted quantity for error handling
+            });
+        }
 
-         if (index > -1) {
-            cart.products[index].quantity = newQty;
-            cart.products[index].totalPrice =
-               cart.products[index].price * newQty;
-         }
-      }
+        // --- CORE UPDATE LOGIC ---
+        
+        // 1. Update quantity and item total price
+        cart.products[index].quantity = quantity;
+        cart.products[index].totalPrice = cart.products[index].price * quantity;
 
-      // Recalculate totals
-      await utils.recalcCartTotals(cart);
-      await cart.save();
+        // 2. Recalculate cart totals (Subtotal, Shipping, Grand Total)
+        await utils.recalcCartTotals(cart);
+        await cart.save();
 
-      return res.json({ success: true });
+        // 3. Prepare the data for the client-side DOM update
+        const updatedItem = cart.products[index];
+        const newTotals = {
+            subTotal: cart.subTotal,
+            shipping: cart.shipping,
+            // The client expects 'grandTotal' not 'grandtotal'
+            grandTotal: cart.grandTotal
+        };
 
-   } catch (err) {
-      console.log("Update Cart Error:", err.message);
-      return res.json({ success: false, message: "Server error" });
-   }
+        // Calculate total number of items for navbar count (optional, but helpful)
+        const totalCartItems = cart.products.reduce((count, item) => count + item.quantity, 0);
+
+
+        // 4. Send the required full response! 🚀
+        return res.json({ 
+            success: true, 
+            message: "Cart quantity updated successfully.",
+            totalCartItems: totalCartItems,
+            updatedItem: {
+                // Map your backend field 'totalPrice' to the client's expected field 'total'
+                total: updatedItem.totalPrice, 
+                quantity: updatedItem.quantity
+            },
+            totals: newTotals // Contains subTotal, shipping, grandTotal
+        });
+
+    } catch (err) {
+        console.log("Update Cart Error:", err.message);
+        // Ensure you return the failed quantity if possible for the client to revert
+        return res.json({ 
+            success: false, 
+            message: "Server error occurred during update.",
+            updatedItem: { quantity: req.body.quantity } // Assume original quantity for revert, or try to fetch actual if possible
+        });
+    }
 });
 
+// const updateCart = asyncHandler(async (req, res) => {
+//    const userId = req.user?.id || req.auth?.id;
+//    const { quantities } = req.body;
 
-// const updateCart = async (req, res) => {
-
-//    const userId = req.user?.id || req.auth?.id
-
-//    const { quantities } = req.body
-//    console.log('updateCart - req.body =', req.body);
-
-//    const cart = await cartModel.findOne({ user: userId })
-
-//    // req.body.forEach(updateItem => {
-//    //    const index = cart.products.findIndex(p => p.quantities.toString() === updateItem._id)
-
-//    //    if(index > -1)
-
-//    // });
-
-//    return res.send('Hi')
-
-
-// }
-
-
-// const deleteCartProducts = async (req, res) => {
+//    if (!userId || !quantities) {
+//       return res.json({ success: false, message: "Invalid request" });
+//    }
 
 //    try {
-//       const userId = req.auth?.id || req.user?.id
+//       const cart = await cartModel.findOne({ user: userId });
+//       if (!cart) return res.json({ success: false, message: "Cart not found" });
 
-//       const productId = req.params.id
+//       // Update quantities
+//       for (const [productId, qtyString] of Object.entries(quantities)) {
+//          const newQty = parseInt(qtyString);
 
-//       const cart = await cartModel.findOne({ user: userId })
-//       // console.log('deleteCartProducts - cart 1 =', cart);
+//          const index = cart.products.findIndex(
+//             item => item.product.toString() === productId
+//          );
 
-
-//       const updatedProducts = cart.products.filter(item => {
-//          return item.product._id.toString() !== productId
-//       })
-
-//       console.log('deleteCartProducts - updatedProducts =', updatedProducts);
-
-//       await cartModel.updateOne({ user: userId },
-//          {
-//             $set: {
-//                products: updatedProducts
-//             }
+//          if (index > -1) {
+//             cart.products[index].quantity = newQty;
+//             cart.products[index].totalPrice =
+//                cart.products[index].price * newQty;
 //          }
-//       )
+//       }
 
-//       const updatedCart = await cartModel.findOne({ user: userId })
+//       // Recalculate totals
+//       await utils.recalcCartTotals(cart);
+//       await cart.save();
 
-//       updatedCart.subTotal = updatedCart.products.reduce((sum, item) => {
-//          return sum + item.totalPrice
-//       }, 0)
-//       updatedCart.shipping = 10,
+//       return res.json({ success: true });
 
-//          updatedCart.grandTotal = updatedCart.subTotal + updatedCart.shipping
-
-//       await updatedCart.save()
-
-//       req.flash('error', 'Item deleted') // THIS MESSAGE IS NOT RENDERING DONT KNOW WHY
-//       return res.redirect('/cart')
-
-//    } catch (error) {
-//       console.log('Error from deleteCartProducts', error.message, error.stack);
-//       return res.redirect('/cart')
-
+//    } catch (err) {
+//       console.log("Update Cart Error:", err.message);
+//       return res.json({ success: false, message: "Server error" });
 //    }
-// }
+// });
+
+// const updateCart = asyncHandler(async (req, res) => {
+//    const userId = req.user?.id || req.auth?.id;
+//    const { productId, quantity } = req.body;
+
+//    if (!userId || !productId || !quantity) {
+//       return res.json({ success: false, message: "Invalid request" });
+//    }
+
+//    try {
+//       const cart = await cartModel.findOne({ user: userId });
+//       if (!cart) return res.json({ success: false, message: "Cart not found" });
+
+//       const index = cart.products.findIndex(
+//          (item) => item.product.toString() === productId
+//       );
+
+//       if (index === -1)
+//          return res.json({ success: false, message: "Product not in cart" });
+
+//       cart.products[index].quantity = quantity;
+//       cart.products[index].totalPrice =
+//          cart.products[index].price * quantity;
+
+//       await utils.recalcCartTotals(cart);
+//       await cart.save();
+
+//       return res.json({ success: true });
+
+//    } catch (err) {
+//       console.log("Update Cart Error:", err.message);
+//       return res.json({ success: false, message: "Server error" });
+//    }
+// });
+
+
 
 
 const deleteCartProducts = async (req, res) => {
