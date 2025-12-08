@@ -65,7 +65,7 @@ router.get('/cart', proctedAuth, resLocals, getCartPage)
 router.get('/wishlist', proctedAuth, resLocals, getWishList)
 
 // PRODUCT DETAILS 
-router.get('/product/:id', getproductPage)
+router.get('/product/:id',proctedAuth, getproductPage)
 
 // CHECKOUT PAGE
 router.get('/checkout', proctedAuth, getCheckoutPage)

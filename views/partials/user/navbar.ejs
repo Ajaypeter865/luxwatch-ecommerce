@@ -121,6 +121,12 @@
                                                                                     <li><a href="/login"></a></li>
                                                                                     <% } %>
 
+                                                                                      <% if (user) { %>
+                                                                                <li><a href="/product/:id"></a></li>
+                                                                                <% } else { %>
+                                                                                    <li><a href="/login"></a></li>
+                                                                                    <% } %>
+
 
                         </ul>
                     </div>

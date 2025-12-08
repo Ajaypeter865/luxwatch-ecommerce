@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>
-        <%= product.name %> | Watch Shop
-    </title>
+    <title><%= product.name %> | Watch Shop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/owl.carousel.min.css">
@@ -23,6 +21,10 @@
     <link rel="stylesheet" href="/css/productDescription.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
+    <!-- ✅ Magic Zoom Plus (local files in /public/magiczoomplus) -->
+    <link rel="stylesheet" href="/magiczoomplus/magiczoomplus.css">
+    <script src="/magiczoomplus/magiczoomplus.js"></script>
+
     <style>
         body {
             font-family: "Josefin Sans", sans-serif;
@@ -33,186 +35,185 @@
 
 <body>
     <%- include('../partials/user/navbar') %>
-        <%- include('../partials/user/_toastify', { success: success, error: error }) %>
+    <%- include('../partials/user/_toastify', { success: success, error: error }) %>
 
-            <div class="slider-area">
-                <div class="single-slider slider-height2 d-flex align-items-center">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-xl-12">
-                                <div class="hero-cap text-center">
-                                    <h2>Product</h2>
-                                </div>
-                            </div>
+    <div class="slider-area">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Product</h2>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <main class="product-main py-5">
-                <div class="container">
-                    <div class="row align-items-center g-5">
+    <main class="product-main py-5">
+        <div class="container">
+            <div class="row align-items-center g-5">
 
-                        <div class="col-lg-6 text-center">
-                            <div class="product-image-wrapper">
-                                <div id="productCarousel" class="carousel slide" data-ride="carousel">
-                                    <div class="carousel-inner">
+                <!-- LEFT: IMAGE + CAROUSEL + MAGIC ZOOM -->
+                <div class="col-lg-6 text-center">
+                    <div class="product-image-wrapper">
+                        <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner">
 
-                                        <% // Ensure we reference the correct array field (product.image) const
-                                            imagesArray=product.image; let hasImages=Array.isArray(imagesArray) &&
-                                            imagesArray.length> 0;
-                                            %>
+                                <% const imagesArray = product.image; %>
+                                <% const hasImages = Array.isArray(imagesArray) && imagesArray.length > 0; %>
 
-                                            <% if (hasImages) { %>
-                                                <% imagesArray.forEach((img, index)=> { %>
-                                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                                        <img src="<%= img %>"
-                                                            alt="<%= product.name %> Image <%= index + 1 %>"
-                                                            class="d-block w-100 product-image">
-                                                    </div>
-                                                    <% }) %>
-                                                        <% } else { %>
-                                                            <div class="carousel-item active">
-                                                                <img src="/img/default-product.jpg"
-                                                                    alt="No image available"
-                                                                    class="d-block w-100 product-image">
-                                                            </div>
-                                                            <% } %>
+                                <% if (hasImages) { %>
+                                    <% imagesArray.forEach((img, index) => { %>
+                                        <div class="carousel-item <%= index === 0 ? 'active' : '' %> text-center">
+                                            <!-- ✅ Magic Zoom wrapper -->
+                                            <a href="<%= img %>" class="MagicZoom" id="product-zoom-<%= index %>">
+                                                <img src="<%= img %>"
+                                                     alt="<%= product.name %> Image <%= index + 1 %>"
+                                                     class="d-block w-100 product-image">
+                                            </a>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div class="carousel-item active text-center">
+                                        <a href="/img/default-product.jpg" class="MagicZoom">
+                                            <img src="/img/default-product.jpg"
+                                                 alt="No image available"
+                                                 class="d-block w-100 product-image">
+                                        </a>
                                     </div>
+                                <% } %>
 
-                                    <% if (hasImages && imagesArray.length> 1) { %>
-                                        <a class="carousel-control-prev" href="#productCarousel" role="button"
-                                            data-slide="prev">
-                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                        <a class="carousel-control-next" href="#productCarousel" role="button"
-                                            data-slide="next">
-                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
-                                        <% } %>
-                                </div>
                             </div>
+
+                            <% if (hasImages && imagesArray.length > 1) { %>
+                                <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: PRODUCT DETAILS -->
+                <div class="col-lg-6">
+                    <div class="product-details shadow-box">
+                        <h2 class="product-name"><%= product.name %></h2>
+
+                        <p class="product-category">
+                            <%= product.category === 'Automatic'
+                                ? 'Automatic Model'
+                                : product.category === 'Manual'
+                                    ? 'Manual Model'
+                                    : 'Limited Edition Model' %>
+                        </p>
+
+                        <h3 class="product-price">₹ <%= product.price.toLocaleString('en-IN') %></h3>
+
+                        <p class="product-description"><%= product.description %></p>
+
+                        <p class="delivery"><strong>Delivery:</strong> within 7–10 days</p>
+
+                        <!-- Customer Rating -->
+                        <div class="product-rating mb-2">
+                            <% for (let i = 1; i <= 5; i++) { %>
+                                <% if (i <= Math.floor(product.averageRate)) { %>
+                                    <i class="fas fa-star" style="color:#F28123;"></i>
+                                <% } else if (i - product.averageRate < 1) { %>
+                                    <i class="fas fa-star-half-alt" style="color:#F28123;"></i>
+                                <% } else { %>
+                                    <i class="far fa-star" style="color:#F28123;"></i>
+                                <% } %>
+                            <% } %>
+                            <span class="ms-2">(<%= product.averageRate %>)</span>
                         </div>
 
-                        <div class="col-lg-6">
-                            <div class="product-details shadow-box">
-                                <h2 class="product-name">
-                                    <%= product.name %>
-                                </h2>
+                        <div class="product-actions mt-4 d-flex flex-wrap gap-3">
+                            <form action="/api/cart/add/<%= product._id %>" method="POST" class="add-to-cart-form">
+                                <button type="submit" class="btn btn-add-cart">Add to Cart</button>
+                            </form>
 
-                                <p class="product-category">
-                                    <%= product.category==='Automatic' ? 'Automatic Model' : product.category==='Manual'
-                                        ? 'Manual Model' : 'Limited Edition Model' %>
-                                </p>
-
-                                <h3 class="product-price">₹ <%= product.price.toLocaleString('en-IN') %>
-                                </h3>
-
-                                <p class="product-description">
-                                    <%= product.description %>
-                                </p>
-
-                                <p class="delivery"><strong>Delivery:</strong> within 7–10 days</p>
-
-                                <!-- Customer Rating -->
-                                <div class="product-rating mb-2">
-
-                                    <% for (let i=1; i <=5; i++) { %>
-                                        <% if (i <=Math.floor(product.averageRate)) { %>
-                                            <i class="fas fa-star" style="color:#F28123;"></i>
-                                            <% } else if (i - product.averageRate < 1) { %>
-                                                <i class="fas fa-star-half-alt" style="color:#F28123;"></i>
-                                                <% } else { %>
-                                                    <i class="far fa-star" style="color:#F28123;"></i>
-                                                    <% } %>
-                                                        <% } %>
-
-                                                            <span class="ms-2">(<%= product.averageRate %>)</span>
-                                </div>
-
-                                <div class="product-actions mt-4 d-flex flex-wrap gap-3">
-                                    <form action="/api/cart/add/<%= product._id %>" method="POST"
-                                        class="add-to-cart-form">
-                                        <button type="submit" class="btn btn-add-cart">Add to Cart</button>
-                                    </form>
-
-                                    <form action="/api/wishlist/add/<%= product._id %>" method="POST"
-                                        class="wishlist-form">
-                                        <button type="submit" class="btn btn-wishlist">Wishlist</button>
-                                    </form>
-                                </div>
-
-                            </div>
+                            <form action="/api/wishlist/add/<%= product._id %>" method="POST" class="wishlist-form">
+                                <button type="submit" class="btn btn-wishlist">Wishlist</button>
+                            </form>
                         </div>
 
                     </div>
                 </div>
-            </main>
 
-            <div class="container my-5">
-                <%- include('../partials/user/aiSuggestions', { suggestions: suggestions }) %>
             </div>
-            <%- include('../partials/user/footer') %>
+        </div>
+    </main>
 
-                <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-                <script src="/js/bootstrap.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+    <div class="container my-5">
+        <%- include('../partials/user/aiSuggestions', { suggestions: suggestions }) %>
+    </div>
 
-                <script>
-                    // ✅ Reusable Toastify function
-                    function showToast(message, success = true) {
-                        Toastify({
-                            text: message,
-                            backgroundColor: success
-                                ? "linear-gradient(to right, #00b09b, #96c93d)"
-                                : "linear-gradient(to right, #ff5f6d, #ffc371)",
-                            duration: 2500,
-                            close: true
-                        }).showToast();
-                    }
+    <%- include('../partials/user/footer') %>
 
-                    // ✅ ADD TO CART AJAX
-                    $(document).on('submit', '.add-to-cart-form', function (e) {
-                        e.preventDefault();
-                        const action = $(this).attr('action');
+    <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
 
-                        $.ajax({
-                            url: action,
-                            type: 'POST',
-                            success: function (res) {
-                                if (res.success) {
-                                    showToast(res.message, true);
-                                    if (res.totalItems !== undefined) $('#cart-count').text(res.totalItems);
-                                } else showToast(res.message, false);
-                            },
-                            error: function () {
-                                showToast('Error adding to cart', false);
-                            }
-                        });
-                    });
+    <script>
+        // Toast helper
+        function showToast(message, success = true) {
+            Toastify({
+                text: message,
+                backgroundColor: success
+                    ? "linear-gradient(to right, #00b09b, #96c93d)"
+                    : "linear-gradient(to right, #ff5f6d, #ffc371)",
+                duration: 2500,
+                close: true
+            }).showToast();
+        }
 
-                    // ✅ ADD TO WISHLIST AJAX
-                    $(document).on('submit', '.wishlist-form', function (e) {
-                        e.preventDefault();
-                        const action = $(this).attr('action');
+        // Add to Cart AJAX
+        $(document).on('submit', '.add-to-cart-form', function (e) {
+            e.preventDefault();
+            const action = $(this).attr('action');
 
-                        $.ajax({
-                            url: action,
-                            type: 'POST',
-                            success: function (res) {
-                                if (res.success) {
-                                    showToast(res.message, true);
-                                    if (res.totalItems !== undefined) $('#wishlist-count').text(res.totalItems);
-                                } else showToast(res.message, false);
-                            },
-                            error: function () {
-                                showToast('Error adding to wishlist', false);
-                            }
-                        });
-                    });
-                </script>
+            $.ajax({
+                url: action,
+                type: 'POST',
+                success: function (res) {
+                    if (res.success) {
+                        showToast(res.message, true);
+                        if (res.totalItems !== undefined) $('#cart-count').text(res.totalItems);
+                    } else showToast(res.message, false);
+                },
+                error: function () {
+                    showToast('Error adding to cart', false);
+                }
+            });
+        });
+
+        // Wishlist AJAX
+        $(document).on('submit', '.wishlist-form', function (e) {
+            e.preventDefault();
+            const action = $(this).attr('action');
+
+            $.ajax({
+                url: action,
+                type: 'POST',
+                success: function (res) {
+                    if (res.success) {
+                        showToast(res.message, true);
+                        if (res.totalItems !== undefined) $('#wishlist-count').text(res.totalItems);
+                    } else showToast(res.message, false);
+                },
+                error: function () {
+                    showToast('Error adding to wishlist', false);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

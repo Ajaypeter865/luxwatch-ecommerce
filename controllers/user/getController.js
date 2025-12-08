@@ -397,6 +397,9 @@ const getWishList = async (req, res) => {
 //THIS IS THE GETPRODUCT PAGE WITH AI (NEW)
 const getproductPage = async (req, res) => {
     try {
+        const userId = req.auth?.id || req.user?.id
+        console.log('getproductPage - userId =', userId);
+        
         const productId = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -465,7 +468,7 @@ const getproductPage = async (req, res) => {
 
         return res.render('user/product', {
             product: freshProduct,
-            suggestions
+            suggestions, user: userId
         });
 
     } catch (error) {
