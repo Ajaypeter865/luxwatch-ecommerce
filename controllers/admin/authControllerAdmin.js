@@ -12,6 +12,7 @@ const { emitWarning } = require('process')
 const userModel = require('../../models/user')
 const orderModel = require('../../models/order')
 const couponModel = require('../../models/coupon')
+const bannerModel = require('../../models/banner')
 
 const transporter = require('../../utils/mailer')
 const enquiryModel = require('../../models/enquiry')
@@ -366,14 +367,70 @@ const resolveButton = asyncHandler(async (req, res) => {
 
 })
 
+// --------------------------------------------------- BANNER CONTROLLERS
+
+const uploadBanner = asyncHandler(async (req, res) => {
+
+    try {
+        const { main, sub, bannerImage } = req.body
+        console.log('uploadBanner - req.body =', req.body);
+
+        console.log('uploadBanner - req.file', req.file);
+
+        if (!req.file) {
+            req.flash('error', 'No file selected')
+            return res.redirect('/admin/banner')
+        }
+
+        const imagePath = `/img/uploads/${req.file.filename}`
+
+
+
+        await bannerModel.create({
+            main,
+            sub,
+            bannerImage: imagePath,
+        })
+
+        return res.redirect('/admin/banner')
+    } catch (error) {
+        console.log('Error from uploadBanner', error.message, error.message);
+        return res.redirect('/error')
+
+    }
+
+
+})
+
+const deleteBanner = asyncHandler(async (req, res) => {
+
+
+    try {
+        const bannerId = req.params.id
+        console.log('deleteBanner - bannerId', bannerId);
+
+        await bannerModel.findByIdAndDelete(bannerId)
+
+        return res.redirect('/admin/banner')
+
+    } catch (error) {
+
+        console.log('Error in deleteBanner', error.message,error.stack);
+        return res.redirect('/error')
+        
+
+    }
+
+
+})
 
 
 // ---------------------------------------------------LOGOUT 
 
 const logoutAdmin = async (req, res) => {
 
-   res.clearCookie('adminToken')
-   res.render('user/login')
+    res.clearCookie('adminToken')
+    res.render('user/login')
 
 }
 
@@ -393,5 +450,7 @@ module.exports = {
     sendReply,
     resolveButton,
     logoutAdmin,
+    uploadBanner,
+    deleteBanner,
 
 }

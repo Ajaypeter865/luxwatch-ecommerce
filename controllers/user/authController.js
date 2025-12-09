@@ -563,6 +563,7 @@ const addToCartAjax = async (req, res) => {
 const updateCart = asyncHandler(async (req, res) => {
     const userId = req.user?.id || req.auth?.id;
     const { productId, quantity } = req.body;
+    console.log('updateCart - req.body', req.body)
 
     if (!userId || !productId || !quantity) {
         return res.json({ success: false, message: "Invalid request" });
@@ -575,6 +576,10 @@ const updateCart = asyncHandler(async (req, res) => {
         const index = cart.products.findIndex(
             (item) => item.product.toString() === productId
         );
+
+    console.log('updateCart -index', index)
+
+        
 
         // If the item is not found, we still need to return a quantity to revert the input
         if (index === -1) {

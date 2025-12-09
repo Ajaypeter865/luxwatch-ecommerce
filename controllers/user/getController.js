@@ -8,6 +8,7 @@ const wishlistModel = require('../../models/wishlist')
 const orderModel = require('../../models/order')
 const { report } = require('../../routes/user/staticRoutes')
 const couponModel = require('../../models/coupon')
+const bannerModel = require('../../models/banner')
 const utils = require('../../utils/helpers')
 const { ensureEmbeddingForProduct } = require('../../lib/embeddings');
 const mongoose = require('mongoose');
@@ -34,10 +35,10 @@ const getHomePage = async (req, res) => {
 
     try {
         // NEED TO RENDER PRODUCTS HERE
-        products = await productModel.find()
+        const banner  = await bannerModel.findOne().sort({ createdAt: -1 })
 
         return res.render('user/index', {
-            products,
+            banner,
             success: null,
             error: null,
             user: res.locals
@@ -397,7 +398,7 @@ const getWishList = async (req, res) => {
 //THIS IS THE GETPRODUCT PAGE WITH AI (NEW)
 const getproductPage = async (req, res) => {
     try {
-        const userId = req.auth?.id || req.user?.id
+        const userId = req.auth?.id || req.user?.id ||   req.session?.user?.id;
         console.log('getproductPage - userId =', userId);
         
         const productId = req.params.id;

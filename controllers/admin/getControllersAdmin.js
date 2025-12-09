@@ -6,6 +6,7 @@ const addressesModel = require('../../models/addresses')
 const orderModel = require('../../models/order')
 const couponModel = require('../../models/coupon')
 const enquiryModel = require('../../models/enquiry')
+const bannerModel = require('../../models/banner')
 
 
 const getloginPageAdmin = asyncHandler(async (req, res) => {
@@ -273,13 +274,13 @@ const getOrdersAdmin = asyncHandler(async (req, res) => {
 
 const getProductsAdmin = asyncHandler(async (req, res) => {
 
-    const products = await productModel.find().sort({ createdAt: -1 });
+  const products = await productModel.find().sort({ createdAt: -1 });
 
-    // 1. Define the hardcoded list of categories from your product schema
-    const categories = ['Automatic', 'Manual', 'Limited-Edition'];
+  // 1. Define the hardcoded list of categories from your product schema
+  const categories = ['Automatic', 'Manual', 'Limited-Edition'];
 
-    // 2. Pass both 'products' AND 'categories' to the EJS view
-    return res.render('admin/products', { products, categories });
+  // 2. Pass both 'products' AND 'categories' to the EJS view
+  return res.render('admin/products', { products, categories });
 
 });
 
@@ -328,10 +329,20 @@ const getCoupons = asyncHandler(async (req, res) => {
 
 
 const getSupport = asyncHandler(async (req, res) => {
-  
-  const enquiries  = await enquiryModel.find()
 
-  return res.render('admin/support', {enquiries })
+  const enquiries = await enquiryModel.find()
+
+  return res.render('admin/support', { enquiries })
+})
+
+const getBanner = asyncHandler(async (req, res) => {
+  // const banners = await bannerModel.findOne().sort({ createdAt: -1 });
+  const banners = await bannerModel.find()
+  console.log('getBanner - banners =', banners);
+  
+
+  return res.render('admin/banner', { banners })
+
 })
 
 
@@ -350,4 +361,5 @@ module.exports = {
   generateChartData,
   getCoupons,
   getSupport,
+  getBanner,
 }
