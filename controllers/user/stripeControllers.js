@@ -31,8 +31,8 @@ const getStripePayment = async (req, res) => {
                 orderId: order._id.toString(),
                 userId: order.user.toString()
             },
-            success_url: `${req.protocol}://${req.get('host')}/order/success/{CHECKOUT_SESSION_ID}`,
-            cancel_url: `${req.protocol}://${req.get('host')}/checkout`,
+            success_url: process.env.STRIPE_SUCCESS_URL || `${req.protocol}://${req.get('host')}/order/success/{CHECKOUT_SESSION_ID}`,
+            cancel_url: process.env.STRIPE_CANCEL_URL || `${req.protocol}://${req.get('host')}/checkout`,
         });
 
         order.stripeSessionId = session.id;

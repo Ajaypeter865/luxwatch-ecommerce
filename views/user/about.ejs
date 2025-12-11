@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact | Watch Shop</title>
+  <title>About Us | Watch Shop</title>
 
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/owl.carousel.min.css">
   <link rel="stylesheet" href="/css/flaticon.css">
   <link rel="stylesheet" href="/css/slicknav.css">
@@ -18,21 +20,63 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/contact.css">
 
- 
+  <!-- EXTRA RESPONSIVE FIX -->
+  <style>
+    .about-section p,
+    .about-section h3 {
+      text-align: left;
+    }
+
+    /* Make text centered on mobile */
+    @media (max-width: 768px) {
+      .hero-cap h2 {
+        font-size: 36px;
+      }
+
+      .about-section h3 {
+        text-align: center;
+        font-size: 26px;
+      }
+
+      .about-section p {
+        text-align: center;
+        font-size: 16px;
+        line-height: 28px;
+      }
+
+      .about-section {
+        padding: 30px 15px !important;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .about-section h3 {
+        font-size: 22px;
+      }
+
+      .about-section p {
+        font-size: 15px;
+      }
+    }
+  </style>
+
 </head>
 
-<%- include('../partials/user/navbar') %>
+<body>
 
-<main style="font-family: 'Josefin Sans', sans-serif;">  
+  <!-- NAVBAR -->
+  <%- include('../partials/user/navbar') %>
 
-  <!-- Hero Section -->
-  <main>
+  <!-- MAIN CONTENT -->
+  <main style="font-family: 'Josefin Sans', sans-serif;">
+
+    <!-- HERO SECTION -->
     <div class="slider-area">
       <div class="single-slider slider-height2 d-flex align-items-center">
         <div class="container">
           <div class="row">
-            <div class="col-xl-12">
-              <div class="hero-cap text-center">
+            <div class="col-xl-12 text-center">
+              <div class="hero-cap">
                 <h2>About Us</h2>
               </div>
             </div>
@@ -40,55 +84,82 @@
         </div>
       </div>
     </div>
-  </main>
 
-  <!-- About Content -->
-  <section style="padding: 60px 0; background: #ffffff;">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-10">
+    <!-- ABOUT CONTENT -->
+    <section class="about-section" style="padding: 60px 0; background: #ffffff;">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
 
-          <h3 style="color: #ff2020; font-size: 32px; text-align: center; margin-bottom: 25px;">
-            Who We Are
-          </h3>
+            <!-- WHO WE ARE -->
+            <h3 style="color: #ff2020; font-size: 32px; text-align: center; margin-bottom: 25px;">
+              Who We Are
+            </h3>
 
-          <p style="font-size: 18px; line-height: 32px; color: #333; text-align: center;">
-            We are a premier destination for luxury timepieces, committed to delivering 
-            world-class craftsmanship and timeless elegance. Our collection features 
-            only the most authentic and refined watches, curated for individuals who 
-            appreciate precision, style, and legacy.
-          </p>
+            <p style="font-size: 18px; line-height: 32px; color: #333; text-align: center;">
+              We are a premier destination for luxury timepieces, committed to delivering
+              world-class craftsmanship and timeless elegance. Our collection features
+              only the most authentic and refined watches, curated for individuals who
+              appreciate precision, style, and legacy.
+            </p>
 
-          <hr style="margin: 50px auto; width: 80%; border-top: 2px solid #ff2020;">
+            <hr style="margin: 50px auto; width: 80%; border-top: 2px solid #ff2020;">
 
-          <!-- Mission -->
-          <h3 style="color: #ff2020; font-size: 30px; margin-bottom: 15px;">
-            Our Mission
-          </h3>
-          <p style="font-size: 18px; line-height: 32px; color: #555;">
-            Our mission is to bring luxury closer to our customers by offering authentic, 
-            premium watches that blend heritage with innovation. We strive to create a 
-            seamless online experience where elegance, trust, and craftsmanship meet.
-          </p>
+            <!-- MISSION -->
+            <h3 style="color: #ff2020; font-size: 30px; margin-bottom: 15px;">
+              Our Mission
+            </h3>
+            <p style="font-size: 18px; line-height: 32px; color: #555;">
+              Our mission is to bring luxury closer to our customers by offering authentic,
+              premium watches that blend heritage with innovation. We strive to create a
+              seamless online experience where elegance, trust, and craftsmanship meet.
+            </p>
 
-          <hr style="margin: 40px 0; border-top: 1px solid #e6e6e6;">
+            <hr style="margin: 40px 0; border-top: 1px solid #e6e6e6;">
 
-          <!-- Vision -->
-          <h3 style="color: #ff2020; font-size: 30px; margin-bottom: 15px;">
-            Our Vision
-          </h3>
-          <p style="font-size: 18px; line-height: 32px; color: #555;">
-            Our vision is to become the most trusted online destination for luxury timepieces, 
-            offering unmatched value, exceptional service, and a carefully curated selection 
-            that reflects sophistication and excellence. We aim to inspire a new generation 
-            of watch enthusiasts worldwide.
-          </p>
+            <!-- VISION -->
+            <h3 style="color: #ff2020; font-size: 30px; margin-bottom: 15px;">
+              Our Vision
+            </h3>
+            <p style="font-size: 18px; line-height: 32px; color: #555;">
+              Our vision is to become the most trusted online destination for luxury timepieces,
+              offering unmatched value, exceptional service, and a carefully curated selection
+              that reflects sophistication and excellence. We aim to inspire a new generation
+              of watch enthusiasts worldwide.
+            </p>
 
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-</main>
+  </main>
 
-<%- include('../partials/user/footer') %>
+  <!-- FOOTER -->
+  <%- include('../partials/user/footer') %>
+
+  <!-- JS FILES -->
+  <script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+  <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+  <script src="/js/popper.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/jquery.slicknav.min.js"></script>
+  <script src="/js/owl.carousel.min.js"></script>
+  <script src="/js/slick.min.js"></script>
+  <script src="/js/wow.min.js"></script>
+  <script src="/js/animated.headline.js"></script>
+  <script src="/js/jquery.magnific-popup.js"></script>
+  <script src="/js/jquery.scrollUp.min.js"></script>
+  <script src="/js/jquery.nice-select.min.js"></script>
+  <script src="/js/jquery.sticky.js"></script>
+  <script src="/js/contact.js"></script>
+  <script src="/js/jquery.form.js"></script>
+  <script src="/js/jquery.validate.min.js"></script>
+  <script src="/js/mail-script.js"></script>
+  <script src="/js/jquery.ajaxchimp.min.js"></script>
+  <script src="/js/plugins.js"></script>
+  <script src="/js/main.js"></script>
+
+</body>
+
+</html>
