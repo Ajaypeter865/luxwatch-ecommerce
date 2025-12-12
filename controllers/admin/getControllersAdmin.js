@@ -296,6 +296,7 @@ const getCustomers = asyncHandler(async (req, res) => {
 
   defaultAddress.forEach(address => {
     // console.log('getCustomers - addAddress =', addAddress);
+     if (!address.user) return; 
     addAddress.set(address.user._id.toString(), `${address.city} ${address.state}`)
     // console.log('getCustomers - addAddress =', addAddress);
 

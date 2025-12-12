@@ -38,14 +38,14 @@ const loginAdmin = asyncHandler(async (req, res) => {
         })
     }
 
-    if (admin.password !== password) {
+    if (admin.password !== password.toString()) {
 
         // return res.render('admin/adminLogin', {
         //     error: 'Password is incorrect',
         // })
         req.flash('error', 'Password is incorrect')
         console.log('loginAdmin - flag 1');
-        return res.redirect('/admin/login')
+        return res.redirect('/admin/login?=passworderror')
     }
 
 
