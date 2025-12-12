@@ -25,10 +25,10 @@ const enquiryModel = require('../../models/enquiry')
 //------------------------------------------------------- LOGIN CONTROLLER
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-    // console.log('loginAdmin - req.body =', req.body);
+    console.log('loginAdmin - req.body =', req.body);
 
     const admin = await adminModel.findOne({ email })
-    // console.log('loginAdmin - admin =', admin);
+    console.log('loginAdmin - admin =', admin);
 
     if (!admin) {
         // console.log('loginAdmin - Enter admin 1');
